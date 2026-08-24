@@ -4,12 +4,16 @@
    AUREX — MONOCHROME SPATIAL SYSTEM
    ------------------------------------------------------------------
    No chromatic accent. The accent is luminance and specular metal.
-   Neutrals carry a deliberate cool bias (hue ~218deg, 6–14% sat):
-   machined aluminium and anodised steel read cool under daylight
-   studio light — a neutral grey reads as unpainted UI, a warm grey
-   reads as paper. Small enough to still register as black and white.
-   Every text token clears WCAG 2.2 AA on every surface it can sit on
-   (worst case 4.91:1).
+
+   The neutrals are split by temperature rather than tinted uniformly.
+   Substrate and secondary type run cool (~218deg); chrome, ink and the
+   specular highlights run warm (~40deg). That is how metal actually
+   behaves — it reflects a cool sky in its shade and a warm bounce in
+   its highlight. Tinting both ends the same direction is exactly what
+   makes a monochrome palette read as flat grey UI instead of as metal.
+   Chroma stays low enough throughout that nothing is nameable as a hue.
+
+   Every text token clears WCAG 2.2 AA on every surface it can sit on.
    ================================================================== */
 @theme {
   /* Grounds, darkest to lightest */
@@ -20,9 +24,9 @@
   --color-edge: #232833;
 
   /* Metal + ink */
-  --color-steel: #6f7889; /* strokes and icon fills — never body text */
-  --color-chrome: #f6f8fb; /* specular highlight, brightest surface */
-  --color-ink: #e8ecf3;
+  --color-steel: #6f7889; /* cool: strokes and icon fills — never body text */
+  --color-chrome: #f4f2ec; /* warm: specular highlight, brightest surface */
+  --color-ink: #f0eeea; /* warm bone, not blue-white */
   --color-ink-muted: #a9b2c1;
   --color-ink-dim: #828b9a;
 
@@ -205,9 +209,12 @@
 
 /* ==================================================================
    METAL RECIPES
-   Real metal is defined by an off-centre, anisotropic highlight and a
-   hard falloff — not by a symmetric grey gradient. Every recipe below
-   puts its highlight off-axis for that reason.
+   Four things separate metal from grey, and every recipe below uses
+   all four: an OFF-CENTRE specular; a TERMINATOR, the hard one-percent
+   flip from light into shadow where the surface turns away from the
+   light; TWO LOBES of unequal strength (a strong key and a weak rim);
+   and ANISOTROPIC grain running on a single axis. A symmetric gradient
+   without a terminator always reads as plastic.
    ================================================================== */
 
 /** Brushed anodised panel: fine directional grain over a raking gradient. */
@@ -221,12 +228,19 @@
       transparent 3px
     ),
     linear-gradient(
-      148deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.028) 26%,
-      rgba(0, 0, 0, 0.26) 62%,
-      rgba(255, 255, 255, 0.045) 100%
+      168deg,
+      rgba(255, 255, 255, 0.085) 0%,
+      rgba(255, 255, 255, 0.125) 9%,
+      rgba(255, 255, 255, 0.034) 24%,
+      rgba(255, 255, 255, 0.008) 46%,
+      /* terminator: the surface turns away from the light here */
+      rgba(0, 0, 0, 0.14) 47%,
+      rgba(0, 0, 0, 0.17) 74%,
+      /* second, weaker lobe — the rim bounce */
+      rgba(255, 255, 255, 0.03) 96%,
+      rgba(255, 255, 255, 0.06) 100%
     ),
+    radial-gradient(78% 62% at 26% 4%, rgba(255, 255, 255, 0.08), transparent 68%),
     linear-gradient(180deg, var(--color-surface), var(--color-abyss));
 }
 
@@ -271,10 +285,12 @@
 /** Machined raised control: bright top bevel, dark underside, cast shadow. */
 @utility metal-control {
   background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.11) 0%,
-    rgba(255, 255, 255, 0.03) 42%,
-    rgba(0, 0, 0, 0.22) 100%
+    176deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.04) 44%,
+    /* terminator */
+    rgba(0, 0, 0, 0.1) 45%,
+    rgba(0, 0, 0, 0.24) 100%
   );
   background-color: var(--color-raised);
   box-shadow:
@@ -289,9 +305,12 @@
   background-image: linear-gradient(
     172deg,
     #ffffff 0%,
-    #e4e9f1 30%,
-    #b9c1cf 52%,
-    #eef1f6 74%,
+    #f3f1ea 26%,
+    #dedad0 44%,
+    /* terminator: polished chrome flips hard, it does not fade */
+    #a9a69d 45%,
+    #cdc9bf 62%,
+    #f6f4ee 82%,
     #ffffff 100%
   );
   color: var(--color-void);

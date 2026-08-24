@@ -71,9 +71,9 @@ in vec4  vClip;
 layout(location = 0) out vec4 fragColor;
 
 // --- monochrome palette (linear-ish, matches --color-void .. --color-chrome) --
-const vec3 C_VOID   = vec3(0.016, 0.017, 0.020); // near-black ground
-const vec3 C_STEEL  = vec3(0.285, 0.310, 0.352); // cool grey structure
-const vec3 C_CHROME = vec3(0.880, 0.902, 0.940); // silver
+const vec3 C_VOID   = vec3(0.027, 0.031, 0.043); // --color-void   #07080b
+const vec3 C_STEEL  = vec3(0.435, 0.471, 0.537); // --color-steel  #6f7889
+const vec3 C_CHROME = vec3(0.965, 0.973, 0.984); // --color-chrome #f6f8fb
 const vec3 C_SPEC   = vec3(1.000, 0.992, 0.976); // hard studio white
 
 // Analytic screen-space-antialiased grid.
@@ -152,7 +152,8 @@ void main() {
 
   float alpha = clamp(lit * 1.7 + spec * 0.5 + sheen, 0.0, 1.0);
 
-  col *= uIntensity;
+  // uIntensity is applied to alpha ONLY. Multiplying colour as well made the
+  // master fade quadratic, so a linear ramp lost most of its visible range.
   alpha *= uIntensity;
 
   fragColor = vec4(col, alpha);
@@ -282,8 +283,10 @@ float field(vec2 p, vec2 ptr) {
   }
 
   // 3. cursor ripples — amplitude driven entirely by pointer speed
-  float rd = length(q - ptr);
-  s += sin(rd * 22.0 - t * 7.5) * exp(-rd * 3.2) * uPointerVel * 0.42;
+  // Measured in UNWARPED space: taking this from the domain-warped q
+  // destroyed the concentricity, so the ripple never read as rings.
+  float rd = length(p - ptr);
+  s += sin(rd * 20.0 - t * 7.5) * exp(-rd * 2.6) * uPointerVel * 1.35;
 
   // 4. fine surface chop so the highlight has something to catch
   s += fbm(q * 3.0 - vec2(0.0, t * 0.28)) * (0.024 + uPointerVel * 0.020);
@@ -317,7 +320,9 @@ void main() {
   vec2 ptr = uPointer * vec2(aspect, 1.0);
 
   // --- field + normal from central differences ------------------------------
-  float e = 3.4 / max(uResolution.y, 1.0) * 2.0;
+  // Derived from the on-screen density of p, not from the viewport, so the
+  // normals stay correct when the quad does not fill the screen.
+  float e = max(max(fwidth(p.x), fwidth(p.y)) * 1.7, 1e-4);
   float f  = field(p, ptr);
   float fx = field(p + vec2(e, 0.0), ptr);
   float fy = field(p + vec2(0.0, e), ptr);
@@ -361,7 +366,7 @@ void main() {
            + pow(max(dot(n, hv2), 0.0), 320.0) * 0.9;
 
   vec3 BODY   = vec3(0.052, 0.056, 0.064);
-  vec3 CHROME = vec3(0.880, 0.902, 0.940);
+  vec3 CHROME = vec3(0.965, 0.973, 0.984); // --color-chrome #f6f8fb
   vec3 SPEC   = vec3(1.000, 0.992, 0.976);
 
   vec3 col = BODY;
@@ -384,7 +389,8 @@ void main() {
 
   float alpha = clamp(mask + halo * 0.30, 0.0, 1.0);
 
-  col *= uIntensity;
+  // uIntensity is applied to alpha ONLY. Multiplying colour as well made the
+  // master fade quadratic, so a linear ramp lost most of its visible range.
   alpha *= uIntensity;
 
   fragColor = vec4(col, alpha);

@@ -74,19 +74,27 @@ export default function LenisProvider() {
        smoothing offset and makes pinned sections drift. A proxy is only needed
        when Lenis is given a custom wrapper element. */
 
+    let disposed = false;
+
     const refresh = () => {
+      if (disposed) return;
       lenis.resize();
       ScrollTrigger.refresh();
     };
     window.addEventListener("resize", refresh);
 
     // Fonts landing late changes every measurement ScrollTrigger has taken.
-    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+    // This promise can settle after unmount, so it must check first — calling
+    // refresh() on a destroyed instance throws.
+    document.fonts?.ready.then(() => {
+      if (!disposed) ScrollTrigger.refresh();
+    });
 
     onLenisScroll();
     ScrollTrigger.refresh();
 
     return () => {
+      disposed = true;
       window.removeEventListener("resize", refresh);
       lenis.off("scroll", onLenisScroll);
       gsap.ticker.remove(raf);
@@ -120,15 +128,25 @@ function writeScrollState(scroll: number, velocity: number) {
     tops.push(el ? el.getBoundingClientRect().top + scroll : Number.NaN);
   }
 
+  /* One slot per ZONE_ID is kept even when a section is absent, so the index
+     here is always the true zone index. Compacting the array instead would
+     silently shift every later section onto the wrong vantage point. */
   let zone = 0;
   for (let i = 0; i < tops.length; i++) {
     const start = tops[i];
-    if (Number.isNaN(start)) continue;
-    const next = i + 1 < tops.length ? tops[i + 1] : doc.scrollHeight;
-    if (midline >= start) {
-      const span = Math.max(1, next - start);
-      zone = i + Math.min(1, (midline - start) / span);
+    if (!Number.isFinite(start) || midline < start) continue;
+
+    // Look ahead past any missing sections for the next real boundary.
+    let next = doc.scrollHeight;
+    for (let j = i + 1; j < tops.length; j++) {
+      if (Number.isFinite(tops[j])) {
+        next = tops[j];
+        break;
+      }
     }
+
+    const span = Math.max(1, next - start);
+    zone = i + Math.min(1, (midline - start) / span);
   }
-  scrollState.zone = zone;
+  scrollState.zone = Number.isFinite(zone) ? zone : 0;
 }
