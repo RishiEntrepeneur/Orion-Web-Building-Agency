@@ -87,17 +87,17 @@ export default function CookieConsent() {
       aria-describedby="cookie-consent-description"
       className="fixed inset-x-3 bottom-3 z-[60] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain sm:inset-x-auto sm:bottom-6 sm:left-6 sm:max-h-[calc(100dvh-3rem)] sm:max-w-md"
     >
-      <div className="relative overflow-hidden rounded-2xl border border-hairline bg-abyss/95 p-5 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl sm:p-6">
+      <div className="relative overflow-hidden rounded-2xl border border-edge bg-abyss/95 p-5 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl sm:p-6">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neon-cyan/70 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-chrome/70 to-transparent"
         />
 
         <button
           type="button"
           onClick={() => decide({ analytics: false, marketing: false })}
           aria-label="Dismiss and reject non-essential cookies"
-          className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-lg border border-transparent text-ink-dim transition-all duration-300 hover:border-hairline hover:text-ink"
+          className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-lg border border-transparent text-ink-dim transition-all duration-300 hover:border-edge hover:text-ink"
         >
           <X className="size-4" strokeWidth={2.2} />
         </button>
@@ -105,7 +105,7 @@ export default function CookieConsent() {
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-neon-cyan/35 bg-neon-cyan/10 text-neon-cyan"
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-chrome/35 bg-chrome/10 text-chrome"
           >
             <Cookie className="size-5" strokeWidth={1.9} />
           </span>
@@ -153,14 +153,14 @@ export default function CookieConsent() {
           <button
             type="button"
             onClick={() => decide({ analytics: true, marketing: true })}
-            className="h-11 flex-1 rounded-xl bg-linear-to-r from-neon-cyan to-neon-violet text-sm font-semibold text-void transition-all duration-300 hover:brightness-110 hover:shadow-[0_10px_36px_-10px_rgba(56,242,255,0.9)]"
+            className="h-11 flex-1 rounded-xl bg-linear-to-r from-chrome to-steel text-sm font-semibold text-void transition-all duration-300 hover:brightness-110 hover:shadow-[0_10px_36px_-10px_rgba(246,248,251,0.56)]"
           >
             Accept all
           </button>
           <button
             type="button"
             onClick={() => decide({ analytics: false, marketing: false })}
-            className="h-11 flex-1 rounded-xl border border-hairline bg-white/[0.04] text-sm font-semibold text-ink transition-all duration-300 hover:border-neon-cyan/45 hover:bg-white/[0.08]"
+            className="h-11 flex-1 rounded-xl border border-edge bg-white/[0.04] text-sm font-semibold text-ink transition-all duration-300 hover:border-chrome/45 hover:bg-white/[0.08]"
           >
             Reject non-essential
           </button>
@@ -169,7 +169,7 @@ export default function CookieConsent() {
         <button
           type="button"
           onClick={() => decide({ analytics, marketing })}
-          className="mt-2.5 h-11 w-full rounded-xl border border-transparent text-[13px] font-medium text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+          className="mt-2.5 h-11 w-full rounded-xl border border-transparent text-[13px] font-medium text-ink-muted transition-colors duration-300 hover:text-chrome"
         >
           Save my selection
         </button>
@@ -201,8 +201,8 @@ function ConsentRow({
   return (
     <label
       className={cn(
-        "flex items-start gap-3 rounded-xl border border-hairline/70 bg-white/[0.02] px-3.5 py-3 transition-colors duration-300",
-        locked ? "cursor-default opacity-80" : "cursor-pointer hover:border-neon-cyan/30",
+        "flex items-start gap-3 rounded-xl border border-edge/70 bg-white/[0.02] px-3.5 py-3 transition-colors duration-300",
+        locked ? "cursor-default opacity-80" : "cursor-pointer hover:border-chrome/30",
       )}
     >
       <input
@@ -218,17 +218,17 @@ function ConsentRow({
           "relative mt-0.5 h-5 w-9 shrink-0 rounded-full border transition-all duration-300",
           /* The real <input> is sr-only, so keyboard focus has to be painted
              on this proxy or the control is invisible to keyboard users. */
-          "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neon-cyan",
+          "peer-focus-visible:shadow-[0_0_0_2px_var(--color-void),0_0_0_4px_var(--color-chrome)]",
           checked
-            ? "border-neon-cyan/60 bg-neon-cyan/25"
-            : "border-hairline bg-white/[0.05]",
+            ? "border-chrome/60 bg-chrome/25"
+            : "border-edge bg-white/[0.05]",
         )}
       >
         <span
           className={cn(
             "absolute top-1/2 size-3.5 -translate-y-1/2 rounded-full transition-all duration-300",
             checked
-              ? "left-[1.15rem] bg-neon-cyan shadow-[0_0_12px_rgba(56,242,255,1)]"
+              ? "left-[1.15rem] bg-chrome shadow-[0_0_12px_rgba(246,248,251,0.62)]"
               : "left-0.5 bg-ink-dim",
           )}
         />

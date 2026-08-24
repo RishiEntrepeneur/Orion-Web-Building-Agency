@@ -1,23 +1,40 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Archivo, Martian_Mono, Syne } from "next/font/google";
 import { site } from "@/lib/site";
-import AmbientBackdrop from "@/components/ui/AmbientBackdrop";
+import LenisProvider from "@/components/motion/LenisProvider";
+import SceneScrim from "@/components/webgl/SceneScrim";
+import SpatialCanvas from "@/components/webgl/SpatialCanvas";
+import SpatialScene from "@/components/webgl/SpatialScene";
+import SpatialCrosshair from "@/components/ui/SpatialCrosshair";
 import CookieConsent from "@/components/CookieConsent";
 import Footer from "@/components/sections/Footer";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
 
-const inter = Inter({
+/* Display: geometric, unusually proportioned, built for art-direction at
+   poster size — memorable where a neutral grotesque is anonymous. */
+const syne = Syne({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  weight: ["600", "700", "800"],
+  variable: "--font-syne",
 });
 
-const spaceGrotesk = Space_Grotesk({
+/* Text: a workhorse grotesque with a width axis, so the editorial scale can
+   vary width as well as size. */
+const archivo = Archivo({
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
+  axes: ["wdth"],
+  variable: "--font-archivo",
+});
+
+/* Technical labels: wide and mechanical, reads as instrumentation. */
+const martianMono = Martian_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "600"],
+  variable: "--font-martian",
 });
 
 export const metadata: Metadata = {
@@ -60,7 +77,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#04050a",
+  themeColor: "#07080b",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -110,17 +127,22 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
-      className={`${inter.variable} ${spaceGrotesk.variable} dark`}
+      className={`${archivo.variable} ${syne.variable} ${martianMono.variable} dark`}
       suppressHydrationWarning
     >
-      <body className="bg-void text-ink font-sans antialiased selection:bg-neon-cyan/30">
+      <body className="bg-void font-sans text-ink antialiased">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:border focus:border-neon-cyan/60 focus:bg-abyss focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-neon-cyan"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:border focus:border-chrome/60 focus:bg-abyss focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-chrome"
         >
           Skip to main content
         </a>
-        <AmbientBackdrop />
+        <LenisProvider />
+        <SpatialCanvas>
+          <SpatialScene />
+        </SpatialCanvas>
+        <SceneScrim />
+        <SpatialCrosshair />
         <Navbar />
         {children}
         <Footer />

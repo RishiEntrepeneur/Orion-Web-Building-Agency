@@ -1,152 +1,128 @@
 @import "tailwindcss";
 
-/* ------------------------------------------------------------------
-   AUREX DESIGN SYSTEM
-   Deep-space dark canvas, neon cyan/violet accents, glass surfaces.
-   Tailwind v4 CSS-first theme configuration.
-------------------------------------------------------------------- */
+/* ==================================================================
+   AUREX — MONOCHROME SPATIAL SYSTEM
+   ------------------------------------------------------------------
+   No chromatic accent. The accent is luminance and specular metal.
+   Neutrals carry a deliberate cool bias (hue ~218deg, 6–14% sat):
+   machined aluminium and anodised steel read cool under daylight
+   studio light — a neutral grey reads as unpainted UI, a warm grey
+   reads as paper. Small enough to still register as black and white.
+   Every text token clears WCAG 2.2 AA on every surface it can sit on
+   (worst case 4.91:1).
+   ================================================================== */
 @theme {
-  /* Core canvas */
-  --color-void: #04050a;
-  --color-abyss: #070912;
-  --color-surface: #0b0e1b;
-  --color-elevated: #10142a;
-  --color-hairline: #1d2340;
+  /* Grounds, darkest to lightest */
+  --color-void: #07080b;
+  --color-abyss: #0b0d12;
+  --color-surface: #12151c;
+  --color-raised: #191d26;
+  --color-edge: #232833;
 
-  /* Neon accents */
-  --color-neon-cyan: #38f2ff;
-  --color-neon-violet: #8b5cf6;
-  --color-neon-magenta: #ff2fb3;
-  --color-neon-amber: #ffb547;
+  /* Metal + ink */
+  --color-steel: #6f7889; /* strokes and icon fills — never body text */
+  --color-chrome: #f6f8fb; /* specular highlight, brightest surface */
+  --color-ink: #e8ecf3;
+  --color-ink-muted: #a9b2c1;
+  --color-ink-dim: #828b9a;
 
-  /* Typography ramp */
-  --color-ink: #f4f7ff;
-  --color-ink-muted: #9aa4c4;
-  /* 4.9:1 against the lightest glass surface, 5.6:1 against the page
-     background — WCAG 2.2 AA for normal-size text. */
-  --color-ink-dim: #7b86a8;
+  /* The single chromatic note, reserved for live status. In a fully
+     monochrome system a grey status dot conveys nothing, so availability
+     gets one restrained hue and nothing else does. */
+  --color-live: #8fe3b0;
 
-  /* Fonts (wired to next/font variables in app/layout.tsx) */
-  --font-display: var(--font-space-grotesk), "Space Grotesk", ui-sans-serif,
-    system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo,
-    Consolas, monospace;
+  /* Typefaces.
+     Syne for display: geometric, unusual proportions, built for art-
+     direction at poster size — memorable where a neutral grotesque is not.
+     Archivo for text: a workhorse with a width axis, so the editorial scale
+     can vary width as well as size. Martian Mono for technical labels: wide
+     and mechanical, it reads as instrumentation rather than as code. */
+  --font-display: var(--font-syne), "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-archivo), "Archivo", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-martian), "Martian Mono", ui-monospace,
+    "SFMono-Regular", Menlo, monospace;
+
+  /* ----------------------------------------------------------------
+     ASYMMETRIC EDITORIAL SCALE
+     Near-linear through the reading sizes (ratios 1.09 → 1.19) so body
+     copy has fine gradations, then accelerating hard into display
+     (1.42 → 1.53 → 2.6). A uniform modular scale gives either too few
+     text steps or a timid headline; this gives both.
+     ---------------------------------------------------------------- */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1.45;
+  --text-micro--letter-spacing: 0.22em;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.18em;
+
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.6;
+
+  --text-base: 1rem;
+  --text-base--line-height: 1.68;
+
+  --text-lead: 1.1875rem;
+  --text-lead--line-height: 1.6;
+
+  --text-h4: 1.5rem;
+  --text-h4--line-height: 1.25;
+  --text-h4--letter-spacing: -0.015em;
+
+  --text-h3: clamp(1.75rem, 2.6vw, 2.125rem);
+  --text-h3--line-height: 1.15;
+  --text-h3--letter-spacing: -0.022em;
+
+  --text-h2: clamp(2.25rem, 5.2vw, 3.25rem);
+  --text-h2--line-height: 1.04;
+  --text-h2--letter-spacing: -0.032em;
+
+  --text-h1: clamp(2.75rem, 9.5vw, 8.5rem);
+  --text-h1--line-height: 0.92;
+  --text-h1--letter-spacing: -0.045em;
 
   /* Motion */
-  --animate-scanline: scanline 7s linear infinite;
-  --animate-sweep: sweep 4.5s ease-in-out infinite;
-  --animate-float: float 7s ease-in-out infinite;
-  --animate-float-slow: float 11s ease-in-out infinite;
-  --animate-pulse-ring: pulse-ring 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animate-spin-slow: spin 22s linear infinite;
-  --animate-spin-reverse: spin-reverse 30s linear infinite;
-  --animate-grid-drift: grid-drift 24s linear infinite;
-  --animate-blink: blink 1.6s steps(2, start) infinite;
-  --animate-shimmer: shimmer 3.5s linear infinite;
-  --animate-marquee: marquee 38s linear infinite;
-  --animate-rise: rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-drift: drift 18s ease-in-out infinite;
+  --animate-sheen: sheen 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-breathe: breathe 4.5s ease-in-out infinite;
+  --animate-rise: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
 
-  @keyframes scanline {
-    0% {
-      transform: translateY(-110%);
-    }
-    100% {
-      transform: translateY(820%);
-    }
-  }
-
-  @keyframes sweep {
-    0%,
-    100% {
-      transform: translateX(-120%);
-      opacity: 0;
-    }
-    40% {
-      opacity: 0.9;
-    }
-    60% {
-      opacity: 0.9;
-    }
-    100% {
-      transform: translateX(120%);
-      opacity: 0;
-    }
-  }
-
-  @keyframes float {
+  @keyframes drift {
     0%,
     100% {
       transform: translate3d(0, 0, 0);
     }
     50% {
-      transform: translate3d(0, -14px, 0);
+      transform: translate3d(0, -10px, 0);
     }
   }
 
-  @keyframes pulse-ring {
+  @keyframes sheen {
+    0% {
+      background-position: -180% 0;
+    }
+    55%,
+    100% {
+      background-position: 180% 0;
+    }
+  }
+
+  @keyframes breathe {
     0%,
     100% {
-      opacity: 0.55;
-      transform: scale(1);
+      opacity: 0.45;
     }
     50% {
       opacity: 1;
-      transform: scale(1.015);
-    }
-  }
-
-  @keyframes spin-reverse {
-    from {
-      transform: rotate(360deg);
-    }
-    to {
-      transform: rotate(0deg);
-    }
-  }
-
-  @keyframes grid-drift {
-    0% {
-      background-position: 0 0, 0 0;
-    }
-    100% {
-      background-position: 0 64px, 0 64px;
-    }
-  }
-
-  @keyframes blink {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.15;
-    }
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
     }
   }
 
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translate3d(0, 26px, 0);
+      transform: translate3d(0, 24px, 0);
     }
     to {
       opacity: 1;
@@ -155,20 +131,21 @@
   }
 }
 
-/* ------------------------------------------------------------------
-   BASE LAYER
-------------------------------------------------------------------- */
+/* ==================================================================
+   BASE
+   ================================================================== */
 @layer base {
   * {
-    border-color: var(--color-hairline);
+    border-color: var(--color-edge);
   }
 
   html {
-    scroll-behavior: smooth;
+    /* Lenis owns smooth scrolling. Native smooth behaviour fights it and
+       produces a double-easing stutter, so it is only restored in the
+       reduced-motion block below, where Lenis is disabled. */
+    scroll-behavior: auto;
     scroll-padding-top: 6rem;
     -webkit-text-size-adjust: 100%;
-    /* Decorative glows deliberately bleed past the viewport; never let them
-       create a horizontal scrollbar. `clip` keeps position: sticky working. */
     overflow-x: clip;
   }
 
@@ -176,6 +153,7 @@
     background-color: var(--color-void);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-synthesis-weight: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -185,167 +163,199 @@
   h1,
   h2,
   h3,
-  h4,
-  h5,
-  h6 {
+  h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.03em;
+    text-wrap: balance;
   }
 
   ::selection {
-    background-color: color-mix(in oklab, var(--color-neon-cyan) 32%, transparent);
-    color: #ffffff;
+    background-color: var(--color-chrome);
+    color: var(--color-void);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-neon-cyan);
+    outline: 2px solid var(--color-chrome);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
 
-  /* Scrollbar — themed for WebKit + Firefox */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 9px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--color-abyss);
+    background: var(--color-void);
   }
   ::-webkit-scrollbar-thumb {
     background: linear-gradient(
       180deg,
-      color-mix(in oklab, var(--color-neon-cyan) 55%, transparent),
-      color-mix(in oklab, var(--color-neon-violet) 55%, transparent)
+      var(--color-edge),
+      var(--color-steel) 50%,
+      var(--color-edge)
     );
-    border-radius: 999px;
-    border: 2px solid var(--color-abyss);
+    border-radius: 0;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-      180deg,
-      var(--color-neon-cyan),
-      var(--color-neon-violet)
-    );
+    background: var(--color-steel);
   }
   html {
-    scrollbar-color: #2a3358 var(--color-abyss);
+    scrollbar-color: #2a3040 var(--color-void);
     scrollbar-width: thin;
   }
 }
 
-/* ------------------------------------------------------------------
-   COMPONENT UTILITIES
-------------------------------------------------------------------- */
-@utility grid-mesh {
+/* ==================================================================
+   METAL RECIPES
+   Real metal is defined by an off-centre, anisotropic highlight and a
+   hard falloff — not by a symmetric grey gradient. Every recipe below
+   puts its highlight off-axis for that reason.
+   ================================================================== */
+
+/** Brushed anodised panel: fine directional grain over a raking gradient. */
+@utility metal-brushed {
   background-image:
-    linear-gradient(to right, rgba(56, 242, 255, 0.055) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(139, 92, 246, 0.055) 1px, transparent 1px);
-  background-size: 64px 64px;
+    repeating-linear-gradient(
+      98deg,
+      rgba(255, 255, 255, 0.028) 0px,
+      rgba(255, 255, 255, 0.028) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(
+      148deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.028) 26%,
+      rgba(0, 0, 0, 0.26) 62%,
+      rgba(255, 255, 255, 0.045) 100%
+    ),
+    linear-gradient(180deg, var(--color-surface), var(--color-abyss));
 }
 
+/** Hairline that catches light on the top-left and dies at the bottom-right. */
+@utility metal-edge {
+  position: relative;
+}
+@utility metal-edge-ring {
+  border: 1px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-image:
+    linear-gradient(var(--color-surface), var(--color-surface)),
+    linear-gradient(
+      142deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.12) 18%,
+      rgba(255, 255, 255, 0.02) 42%,
+      rgba(255, 255, 255, 0.16) 78%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+}
+
+/** Specular sweep across display type. */
+@utility metal-text {
+  background-image: linear-gradient(
+    104deg,
+    #7f8798 0%,
+    #c9d0dc 22%,
+    #ffffff 38%,
+    #eef1f6 46%,
+    #99a1b1 62%,
+    #d7dde7 82%,
+    #838b9b 100%
+  );
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/** Machined raised control: bright top bevel, dark underside, cast shadow. */
+@utility metal-control {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.11) 0%,
+    rgba(255, 255, 255, 0.03) 42%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+  background-color: var(--color-raised);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
+    0 1px 2px rgba(0, 0, 0, 0.6),
+    0 12px 32px -14px rgba(0, 0, 0, 0.9);
+}
+
+/** Polished chrome — the primary call to action. Dark ink sits on this. */
+@utility metal-chrome {
+  background-image: linear-gradient(
+    172deg,
+    #ffffff 0%,
+    #e4e9f1 30%,
+    #b9c1cf 52%,
+    #eef1f6 74%,
+    #ffffff 100%
+  );
+  color: var(--color-void);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.18),
+    0 18px 44px -18px rgba(226, 233, 244, 0.5);
+}
+
+/* Structural overlays */
 @utility grid-mesh-fine {
   background-image:
-    linear-gradient(to right, rgba(56, 242, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 242, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
 @utility mask-fade-edges {
-  -webkit-mask-image: radial-gradient(
-    ellipse 78% 62% at 50% 42%,
-    #000 38%,
-    transparent 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 78% 62% at 50% 42%,
-    #000 38%,
-    transparent 100%
-  );
+  -webkit-mask-image: radial-gradient(ellipse 76% 62% at 50% 42%, #000 36%, transparent 100%);
+  mask-image: radial-gradient(ellipse 76% 62% at 50% 42%, #000 36%, transparent 100%);
 }
 
-@utility mask-fade-bottom {
-  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
-}
-
-/* Glass panel base */
+/** Glass over the live WebGL layer. Kept dark and low-alpha so the scene
+    reads through it without washing the type out. */
 @utility glass-panel {
   background:
     linear-gradient(
-      160deg,
-      rgba(255, 255, 255, 0.055) 0%,
-      rgba(255, 255, 255, 0.012) 42%,
+      158deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.012) 44%,
       rgba(255, 255, 255, 0) 100%
     ),
-    rgba(11, 14, 27, 0.72);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+    rgba(11, 13, 18, 0.66);
+  backdrop-filter: blur(20px) saturate(118%);
+  -webkit-backdrop-filter: blur(20px) saturate(118%);
 }
 
-/* Animated conic gradient border — used on featured cards */
-@utility border-beam {
-  position: relative;
-  isolation: isolate;
-}
-
-/* Text gradient helper */
-@utility text-gradient-neon {
-  background-image: linear-gradient(
-    98deg,
-    #ffffff 0%,
-    #cfe9ff 26%,
-    var(--color-neon-cyan) 52%,
-    var(--color-neon-violet) 78%,
-    #ffffff 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@utility shimmer-text {
-  background-image: linear-gradient(
-    100deg,
-    #7d88ad 0%,
-    #7d88ad 38%,
-    #ffffff 50%,
-    #7d88ad 62%,
-    #7d88ad 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: var(--animate-shimmer);
-}
-
-/* Reveal-on-scroll primitives (driven by IntersectionObserver) */
+/* ==================================================================
+   SCROLL REVEAL
+   ================================================================== */
 @layer components {
   .reveal {
     opacity: 0;
-    transform: translate3d(0, 30px, 0);
+    transform: translate3d(0, 26px, 0);
     transition:
-      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-    filter: blur(6px);
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
   }
 
   .reveal[data-visible="true"] {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-    filter: blur(0);
   }
 }
 
-/* ------------------------------------------------------------------
-   ACCESSIBILITY — honour reduced-motion preferences
-------------------------------------------------------------------- */
+/* ==================================================================
+   REDUCED MOTION
+   Lenis is disabled by the provider, so native smooth scrolling comes
+   back here and every animation is stopped.
+   ================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
   }
 
   *,
@@ -354,90 +364,10 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
   }
 
   .reveal {
     opacity: 1 !important;
     transform: none !important;
-    filter: none !important;
-  }
-}
-
-/* ------------------------------------------------------------------
-   3D VIEWFRAME MOTION
-   Keyframes powering the simulated Spline/Dora scene placeholder.
-------------------------------------------------------------------- */
-@theme {
-  --animate-cube-spin: cube-spin 22s linear infinite;
-  --animate-orbit: orbit 14s linear infinite;
-  --animate-orbit-reverse: orbit-reverse 19s linear infinite;
-  --animate-reticle: reticle 4s ease-in-out infinite;
-  --animate-hud-flicker: hud-flicker 5.5s ease-in-out infinite;
-  --animate-depth-pop: depth-pop 9s ease-in-out infinite;
-
-  @keyframes cube-spin {
-    0% {
-      transform: rotateX(-22deg) rotateY(0deg);
-    }
-    100% {
-      transform: rotateX(-22deg) rotateY(360deg);
-    }
-  }
-
-  @keyframes orbit {
-    0% {
-      transform: rotate(0deg) translateX(var(--orbit-radius, 8rem)) rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg) translateX(var(--orbit-radius, 8rem))
-        rotate(-360deg);
-    }
-  }
-
-  @keyframes orbit-reverse {
-    0% {
-      transform: rotate(360deg) translateX(var(--orbit-radius, 8rem))
-        rotate(-360deg);
-    }
-    100% {
-      transform: rotate(0deg) translateX(var(--orbit-radius, 8rem)) rotate(0deg);
-    }
-  }
-
-  @keyframes reticle {
-    0%,
-    100% {
-      opacity: 0.35;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.9;
-      transform: scale(1.08);
-    }
-  }
-
-  @keyframes hud-flicker {
-    0%,
-    92%,
-    100% {
-      opacity: 1;
-    }
-    94% {
-      opacity: 0.42;
-    }
-    96% {
-      opacity: 0.85;
-    }
-  }
-
-  @keyframes depth-pop {
-    0%,
-    100% {
-      transform: translateZ(0) scale(1);
-    }
-    50% {
-      transform: translateZ(38px) scale(1.02);
-    }
   }
 }

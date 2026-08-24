@@ -58,7 +58,7 @@ export default function ScrollTransformation() {
       {/* Section divider glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-hairline to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-edge to-transparent"
       />
 
       <div className="mx-auto w-full max-w-7xl">
@@ -67,7 +67,7 @@ export default function ScrollTransformation() {
           title={
             <>
               Ordinary pages are flat.{" "}
-              <span className="text-gradient-neon">Yours will have depth.</span>
+              <span className="metal-text">Yours will have depth.</span>
             </>
           }
           description="We take the same content a traditional agency would drop into a template and rebuild it as a navigable environment — layered, lit and reactive to every scroll and cursor movement."
@@ -82,7 +82,7 @@ export default function ScrollTransformation() {
               className="flex h-full flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10"
             >
               <div className="max-w-xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-neon-cyan/25 bg-neon-cyan/[0.06] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-neon-cyan">
+                <span className="inline-flex items-center gap-2 rounded-full border border-chrome/25 bg-chrome/[0.06] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-chrome">
                   Live demonstration
                 </span>
                 <h3 className="mt-5 text-2xl font-semibold leading-tight text-ink sm:text-3xl lg:text-[2rem]">
@@ -97,10 +97,10 @@ export default function ScrollTransformation() {
                 </p>
               </div>
 
-              <div className="relative rounded-2xl border border-hairline/70 bg-void/50 p-6 sm:p-8">
+              <div className="relative rounded-2xl border border-edge/70 bg-void/50 p-6 sm:p-8">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 grid-mesh-fine rounded-2xl opacity-40"
+                  className="pointer-events-none absolute inset-0 grid-mesh-fine-fine rounded-2xl opacity-40"
                 />
                 <DepthStack />
               </div>
@@ -117,7 +117,7 @@ export default function ScrollTransformation() {
               >
                 <span
                   aria-hidden="true"
-                  className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-hairline bg-white/[0.04] text-neon-cyan transition-all duration-500 group-hover/card:scale-110 group-hover/card:border-neon-cyan/50 group-hover/card:shadow-[0_0_28px_-6px_rgba(56,242,255,0.9)]"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-chrome transition-all duration-500 group-hover/card:scale-110 group-hover/card:border-chrome/50 group-hover/card:shadow-[0_0_28px_-6px_rgba(246,248,251,0.56)]"
                 >
                   <feature.icon className="size-5" strokeWidth={1.9} />
                 </span>
@@ -129,7 +129,7 @@ export default function ScrollTransformation() {
                   {feature.body}
                 </p>
 
-                <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-hairline bg-void/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim transition-colors duration-500 group-hover/card:border-neon-cyan/35 group-hover/card:text-neon-cyan">
+                <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-edge bg-void/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim transition-colors duration-500 group-hover/card:border-chrome/35 group-hover/card:text-chrome">
                   <span aria-hidden="true" className="size-1 rounded-full bg-current" />
                   {feature.metric}
                 </span>

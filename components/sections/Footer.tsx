@@ -8,8 +8,9 @@ export default function Footer() {
 
   return (
     <footer
+      id="site-footer"
       aria-labelledby="footer-heading"
-      className="relative overflow-hidden border-t border-hairline bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
+      className="relative overflow-hidden border-t border-edge bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
     >
       <h2 id="footer-heading" className="sr-only">
         Site footer, contact details and legal information
@@ -18,11 +19,11 @@ export default function Footer() {
       {/* Ambient wash */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-neon-cyan/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-chrome/40 to-transparent"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-1/2 h-72 w-[60rem] max-w-none -translate-x-1/2 translate-y-1/3 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(56,242,255,0.1),transparent_70%)] blur-2xl"
+        className="pointer-events-none absolute bottom-0 left-1/2 h-72 w-[60rem] max-w-none -translate-x-1/2 translate-y-1/3 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(246,248,251,0.06),transparent_70%)] blur-2xl"
       />
 
       <div className="relative mx-auto w-full max-w-7xl">
@@ -52,7 +53,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`mailto:${site.email}`}
-                  className="group/link inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+                  className="group/link inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-chrome"
                 >
                   <Mail className="size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
                   {site.email}
@@ -61,7 +62,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`tel:${site.phone.replace(/\s+/g, "")}`}
-                  className="inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+                  className="inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-chrome"
                 >
                   <Phone className="size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
                   {site.phone}
@@ -77,7 +78,7 @@ export default function Footer() {
           {/* Link columns */}
           {footerColumns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
-              <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-neon-cyan">
+              <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-chrome">
                 {column.title}
               </h3>
               <ul className="mt-5 flex flex-col gap-3.5">
@@ -90,7 +91,7 @@ export default function Footer() {
                       {link.label}
                       <span
                         aria-hidden="true"
-                        className="absolute -bottom-0.5 left-0 h-px w-0 bg-linear-to-r from-neon-cyan to-neon-violet transition-all duration-300 group-hover/foot:w-full"
+                        className="absolute -bottom-0.5 left-0 h-px w-0 bg-linear-to-r from-chrome to-steel transition-all duration-300 group-hover/foot:w-full"
                       />
                     </a>
                   </li>
@@ -101,7 +102,7 @@ export default function Footer() {
         </div>
 
         {/* UK legal compliance block */}
-        <div className="mt-14 rounded-2xl border border-hairline bg-white/[0.02] p-6 sm:mt-16 sm:p-7">
+        <div className="mt-14 rounded-2xl border border-edge bg-white/[0.02] p-6 sm:mt-16 sm:p-7">
           <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-dim">
             Company &amp; Compliance
           </h3>
@@ -135,7 +136,7 @@ export default function Footer() {
               </dd>
             </div>
           </dl>
-          <p className="mt-5 border-t border-hairline pt-5 text-pretty text-xs leading-relaxed text-ink-dim">
+          <p className="mt-5 border-t border-edge pt-5 text-pretty text-xs leading-relaxed text-ink-dim">
             Placeholder details — replace the values in{" "}
             <code className="rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] text-ink-muted">
               lib/site.ts
@@ -149,7 +150,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col gap-6 border-t border-hairline pt-8 sm:mt-12 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-10 flex flex-col gap-6 border-t border-edge pt-8 sm:mt-12 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-xs text-ink-dim">
             © {year} {site.legal.entity}. All rights reserved.
           </p>
@@ -161,7 +162,7 @@ export default function Footer() {
             <li>
               <a
                 href="/legal/privacy"
-                className="text-sm text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+                className="text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
               >
                 Privacy
               </a>
@@ -169,7 +170,7 @@ export default function Footer() {
             <li>
               <a
                 href="/legal/terms"
-                className="text-sm text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+                className="text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
               >
                 Terms
               </a>
@@ -178,7 +179,7 @@ export default function Footer() {
 
           <a
             href="#top"
-            className="group/top inline-flex items-center gap-2 self-start rounded-full border border-hairline bg-white/[0.03] px-4 py-2 text-xs font-medium text-ink-muted transition-all duration-300 hover:-translate-y-0.5 hover:border-neon-cyan/50 hover:text-neon-cyan hover:shadow-[0_0_28px_-8px_rgba(56,242,255,0.9)] lg:self-auto"
+            className="group/top inline-flex items-center gap-2 self-start rounded-full border border-edge bg-white/[0.03] px-4 py-2 text-xs font-medium text-ink-muted transition-all duration-300 hover:-translate-y-0.5 hover:border-chrome/50 hover:text-chrome hover:shadow-[0_0_28px_-8px_rgba(246,248,251,0.56)] lg:self-auto"
           >
             Back to top
             <ArrowUp

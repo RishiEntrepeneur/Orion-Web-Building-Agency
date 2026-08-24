@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import CtaLink from "@/components/ui/CtaLink";
 import LogoMark from "@/components/ui/LogoMark";
 
@@ -71,20 +72,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!menuOpen) return;
 
-    const root = document.documentElement;
-    const body = document.body;
-    /* <html> is the scrolling element here, so locking <body> alone does
-       nothing — both have to be pinned, and the scrollbar width compensated
-       so the page does not visibly shift as it locks. */
-    const previous = {
-      rootOverflow: root.style.overflow,
-      bodyOverflow: body.style.overflow,
-      bodyPadding: body.style.paddingRight,
-    };
-    const scrollbar = window.innerWidth - root.clientWidth;
-    root.style.overflow = "hidden";
-    body.style.overflow = "hidden";
-    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+    lockScroll();
 
     const panel = panelRef.current;
     const opener = document.activeElement as HTMLElement | null;
@@ -122,9 +110,7 @@ export default function Navbar() {
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      root.style.overflow = previous.rootOverflow;
-      body.style.overflow = previous.bodyOverflow;
-      body.style.paddingRight = previous.bodyPadding;
+      unlockScroll();
       window.removeEventListener("keydown", onKeyDown);
       opener?.focus?.();
     };
@@ -140,7 +126,7 @@ export default function Navbar() {
         className="h-px w-full bg-transparent"
       >
         <div
-          className="h-px bg-linear-to-r from-neon-cyan via-neon-violet to-neon-magenta shadow-[0_0_12px_rgba(56,242,255,0.9)] transition-[width] duration-150 ease-out"
+          className="h-px bg-linear-to-r from-chrome via-steel to-steel shadow-[0_0_12px_rgba(246,248,251,0.56)] transition-[width] duration-150 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -149,11 +135,11 @@ export default function Navbar() {
         className={cn(
           "relative transition-all duration-500 ease-out",
           scrolled
-            ? "border-b border-hairline/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-30px_rgba(56,242,255,0.5)]"
+            ? "border-b border-edge/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-30px_rgba(246,248,251,0.31)]"
             : "border-b border-transparent bg-transparent",
         )}
       >
-        {/* Cyber hairline with travelling highlight */}
+        {/* Cyber edge with travelling highlight */}
         <span
           aria-hidden="true"
           className={cn(
@@ -161,7 +147,7 @@ export default function Navbar() {
             scrolled ? "opacity-100" : "opacity-0",
           )}
         >
-          <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-neon-cyan/90 to-transparent animate-sweep" />
+          <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-chrome/90 to-transparent animate-sheen" />
         </span>
 
         <nav
@@ -175,7 +161,7 @@ export default function Navbar() {
           >
             <LogoMark instanceId="nav" />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-[17px] font-bold tracking-[0.24em] text-ink transition-colors duration-300 group-hover/logo:text-neon-cyan sm:text-lg">
+              <span className="font-display text-[17px] font-bold tracking-[0.24em] text-ink transition-colors duration-300 group-hover/logo:text-chrome sm:text-lg">
                 {site.name}
               </span>
               <span className="mt-1 hidden font-mono text-[9px] uppercase tracking-[0.3em] text-ink-dim sm:block">
@@ -205,15 +191,15 @@ export default function Navbar() {
                       className={cn(
                         "absolute inset-0 rounded-full border transition-all duration-300",
                         isActive
-                          ? "border-neon-cyan/35 bg-neon-cyan/[0.07] shadow-[0_0_22px_-6px_rgba(56,242,255,0.8)]"
-                          : "border-transparent group-hover/nav:border-hairline group-hover/nav:bg-white/[0.04]",
+                          ? "border-chrome/35 bg-chrome/[0.07] shadow-[0_0_22px_-6px_rgba(246,248,251,0.50)]"
+                          : "border-transparent group-hover/nav:border-edge group-hover/nav:bg-white/[0.04]",
                       )}
                     />
                     <span className="relative z-10">{link.label}</span>
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-linear-to-r from-transparent via-neon-cyan to-transparent transition-all duration-300",
+                        "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-linear-to-r from-transparent via-chrome to-transparent transition-all duration-300",
                         isActive ? "w-3/5" : "w-0 group-hover/nav:w-2/5",
                       )}
                     />
@@ -227,7 +213,7 @@ export default function Navbar() {
           <div className="hidden items-center gap-3 lg:flex">
             <a
               href={`mailto:${site.email}`}
-              className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+              className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-chrome"
             >
               {site.email}
             </a>
@@ -247,7 +233,7 @@ export default function Navbar() {
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            className="flex size-11 items-center justify-center rounded-xl border border-hairline bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-neon-cyan/60 hover:text-neon-cyan hover:shadow-[0_0_24px_-6px_rgba(56,242,255,0.9)] lg:hidden"
+            className="flex size-11 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-chrome/60 hover:text-chrome hover:shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)] lg:hidden"
           >
             {menuOpen ? (
               <X className="size-5" strokeWidth={2} />
@@ -271,8 +257,8 @@ export default function Navbar() {
         />
         <div
           ref={panelRef}
-          className="fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto overscroll-contain border-b border-hairline bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:max-h-[calc(100dvh-5rem)] sm:px-8">
-          <div aria-hidden="true" className="absolute inset-0 grid-mesh-fine opacity-40" />
+          className="fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto overscroll-contain border-b border-edge bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:max-h-[calc(100dvh-5rem)] sm:px-8">
+          <div aria-hidden="true" className="absolute inset-0 grid-mesh-fine-fine opacity-40" />
           <ul className="relative flex flex-col gap-1">
             {navLinks.map((link, index) => (
               <li key={link.href}>
@@ -280,7 +266,7 @@ export default function Navbar() {
                   href={link.href}
                   onClick={closeMenu}
                   style={{ animationDelay: `${index * 55}ms` }}
-                  className="flex items-center justify-between rounded-xl border border-transparent px-4 py-4 text-lg font-medium text-ink-muted transition-all duration-300 animate-rise hover:border-neon-cyan/30 hover:bg-white/[0.04] hover:text-ink"
+                  className="flex items-center justify-between rounded-xl border border-transparent px-4 py-4 text-lg font-medium text-ink-muted transition-all duration-300 animate-rise hover:border-chrome/30 hover:bg-white/[0.04] hover:text-ink"
                 >
                   <span>{link.label}</span>
                   <span className="font-mono text-xs text-ink-dim">

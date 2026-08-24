@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type RevealProps = {
@@ -8,7 +8,11 @@ type RevealProps = {
   /** Stagger in milliseconds applied once the element enters the viewport. */
   delay?: number;
   className?: string;
-  as?: ElementType;
+  /* Deliberately a narrow union rather than React's ElementType.
+     @react-three/fiber augments the global JSX namespace with every three.js
+     object, which widens ElementType far enough that TypeScript can no longer
+     resolve props for a polymorphic tag and falls back to `never`. */
+  as?: "div" | "li" | "section" | "article" | "span";
   /** How much of the element must be visible before revealing (0–1). */
   threshold?: number;
 };
@@ -56,7 +60,7 @@ export default function Reveal({
 
   return (
     <Tag
-      ref={ref}
+      ref={ref as React.RefObject<never>}
       data-visible={visible ? "true" : "false"}
       style={{ transitionDelay: `${delay}ms` }}
       className={cn("reveal", className)}

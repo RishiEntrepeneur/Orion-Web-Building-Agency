@@ -25,7 +25,7 @@ export default function Faq() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-hairline to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-edge to-transparent"
       />
 
       <div className="mx-auto w-full max-w-7xl">
@@ -35,7 +35,7 @@ export default function Faq() {
           title={
             <>
               The questions every client asks{" "}
-              <span className="text-gradient-neon">before they commit.</span>
+              <span className="metal-text">before they commit.</span>
             </>
           }
           description="Straight answers on performance, mobile, ownership and whether the 48-hour promise is real."
@@ -48,10 +48,10 @@ export default function Faq() {
 
           {/* Support aside */}
           <Reveal delay={130} className="lg:sticky lg:top-28 lg:self-start">
-            <aside className="flex flex-col gap-5 rounded-2xl border border-hairline glass-panel p-6 sm:p-7">
+            <aside className="flex flex-col gap-5 rounded-2xl border border-edge glass-panel p-6 sm:p-7">
               <span
                 aria-hidden="true"
-                className="flex size-11 items-center justify-center rounded-xl border border-neon-violet/40 bg-neon-violet/10 text-neon-violet shadow-[0_0_28px_-8px_rgba(139,92,246,1)]"
+                className="flex size-11 items-center justify-center rounded-xl border border-steel/40 bg-steel/10 text-steel shadow-[0_0_28px_-8px_rgba(169,178,193,0.50)]"
               >
                 <MessageSquareText className="size-5" strokeWidth={1.9} />
               </span>
@@ -76,10 +76,10 @@ export default function Faq() {
                 Ask A Direct Question
               </CtaLink>
 
-              <dl className="flex flex-col gap-3 border-t border-hairline pt-5 font-mono text-[11px] uppercase tracking-[0.16em]">
+              <dl className="flex flex-col gap-3 border-t border-edge pt-5 font-mono text-[11px] uppercase tracking-[0.16em]">
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-ink-dim">Reply time</dt>
-                  <dd className="text-neon-cyan">Same working day</dd>
+                  <dd className="text-chrome">Same working day</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-ink-dim">Based in</dt>

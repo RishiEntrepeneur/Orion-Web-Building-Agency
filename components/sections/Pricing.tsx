@@ -105,7 +105,7 @@ export default function Pricing() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[34rem] w-[70rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(139,92,246,0.14),transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[34rem] w-[70rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(169,178,193,0.07),transparent_70%)]"
       />
 
       <div className="mx-auto w-full max-w-7xl">
@@ -114,7 +114,7 @@ export default function Pricing() {
           title={
             <>
               Fixed scope. Fixed price.{" "}
-              <span className="text-gradient-neon">Zero surprises.</span>
+              <span className="metal-text">Zero surprises.</span>
             </>
           }
           description="No day rates, no discovery-phase invoices, no six-week Gantt chart. Choose a package, complete a short brief, and your environment goes live inside 48 hours."
@@ -139,9 +139,9 @@ export default function Pricing() {
 
         {/* Risk reversal / compliance strip */}
         <Reveal delay={140}>
-          <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-hairline glass-panel px-6 py-6 text-center sm:mt-14 sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
+          <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-edge glass-panel px-6 py-6 text-center sm:mt-14 sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
             <BadgeCheck
-              className="size-8 shrink-0 text-neon-cyan"
+              className="size-8 shrink-0 text-chrome"
               strokeWidth={1.8}
               aria-hidden="true"
             />
@@ -178,17 +178,17 @@ function PricingCard({ tier }: { tier: Tier }) {
         <>
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-3xl bg-[linear-gradient(140deg,#38f2ff,#8b5cf6_45%,#ff2fb3_100%)] animate-pulse-ring"
+            className="absolute inset-0 rounded-3xl bg-[linear-gradient(140deg,#f6f8fb,#a9b2c1_45%,#828b9a_100%)] animate-breathe"
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(139,92,246,0.4),transparent_70%)] blur-2xl animate-pulse-ring"
+            className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(169,178,193,0.20),transparent_70%)] blur-2xl animate-breathe"
           />
         </>
       ) : (
         <span
           aria-hidden="true"
-          className="absolute inset-0 rounded-3xl border border-hairline transition-colors duration-500 group-hover/tier:border-neon-cyan/40"
+          className="absolute inset-0 rounded-3xl border border-edge transition-colors duration-500 group-hover/tier:border-chrome/40"
         />
       )}
 
@@ -197,21 +197,21 @@ function PricingCard({ tier }: { tier: Tier }) {
         className={cn(
           "relative flex h-full flex-col rounded-[calc(1.5rem-1px)] p-7 sm:p-8",
           tier.featured
-            ? "bg-[linear-gradient(165deg,#0d1226_0%,#080b18_60%,#06080f_100%)]"
+            ? "bg-[linear-gradient(165deg,#12151c_0%,#0b0d12_60%,#07080b_100%)]"
             : "glass-panel",
         )}
       >
         {tier.featured ? (
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 grid-mesh-fine rounded-[calc(1.5rem-1px)] opacity-30"
+            className="pointer-events-none absolute inset-0 grid-mesh-fine-fine rounded-[calc(1.5rem-1px)] opacity-30"
           />
         ) : null}
 
         {/* Badge */}
         {tier.badge ? (
-          <span className="absolute right-6 top-7 inline-flex items-center gap-1.5 rounded-full border border-neon-cyan/50 bg-neon-cyan/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-neon-cyan shadow-[0_0_24px_-6px_rgba(56,242,255,0.9)] backdrop-blur-sm">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-neon-cyan animate-blink" />
+          <span className="absolute right-6 top-7 inline-flex items-center gap-1.5 rounded-full border border-chrome/50 bg-chrome/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-chrome shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)] backdrop-blur-sm">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-chrome animate-breathe" />
             {tier.badge}
           </span>
         ) : null}
@@ -223,8 +223,8 @@ function PricingCard({ tier }: { tier: Tier }) {
             className={cn(
               "flex size-12 items-center justify-center rounded-xl border transition-all duration-500 group-hover/tier:scale-110",
               tier.featured
-                ? "border-neon-violet/50 bg-neon-violet/10 text-neon-violet shadow-[0_0_30px_-8px_rgba(139,92,246,1)]"
-                : "border-hairline bg-white/[0.04] text-neon-cyan group-hover/tier:border-neon-cyan/50",
+                ? "border-steel/50 bg-steel/10 text-steel shadow-[0_0_30px_-8px_rgba(169,178,193,0.50)]"
+                : "border-edge bg-white/[0.04] text-chrome group-hover/tier:border-chrome/50",
             )}
           >
             <Icon className="size-6" strokeWidth={1.8} />
@@ -243,12 +243,12 @@ function PricingCard({ tier }: { tier: Tier }) {
         </div>
 
         {/* Price */}
-        <div className="relative mt-7 border-y border-hairline/70 py-6">
+        <div className="relative mt-7 border-y border-edge/70 py-6">
           <p className="flex items-end gap-1.5">
             <span
               className={cn(
                 "font-display text-5xl font-bold leading-none tracking-tight sm:text-[3.25rem]",
-                tier.featured ? "text-gradient-neon" : "text-ink",
+                tier.featured ? "metal-text" : "text-ink",
               )}
             >
               {tier.price}
@@ -273,8 +273,8 @@ function PricingCard({ tier }: { tier: Tier }) {
                 className={cn(
                   "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-500",
                   tier.featured
-                    ? "border-neon-cyan/50 bg-neon-cyan/12 text-neon-cyan"
-                    : "border-hairline bg-white/[0.04] text-neon-cyan/80 group-hover/tier:border-neon-cyan/40",
+                    ? "border-chrome/50 bg-chrome/12 text-chrome"
+                    : "border-edge bg-white/[0.04] text-chrome/80 group-hover/tier:border-chrome/40",
                 )}
               >
                 <Check className="size-3" strokeWidth={3} />

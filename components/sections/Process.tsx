@@ -3,6 +3,7 @@ import { site } from "@/lib/site";
 import CtaLink from "@/components/ui/CtaLink";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
+import PinnedPanel from "@/components/motion/PinnedPanel";
 
 const steps = [
   {
@@ -40,7 +41,7 @@ export default function Process() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-hairline to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-edge to-transparent"
       />
 
       <div className="mx-auto w-full max-w-7xl">
@@ -49,23 +50,24 @@ export default function Process() {
           title={
             <>
               Three steps.{" "}
-              <span className="text-gradient-neon">Forty-eight hours.</span>
+              <span className="metal-text">Forty-eight hours.</span>
             </>
           }
           description="A frictionless pipeline built to remove every stage where traditional agency projects stall — approvals, revisions ping-pong and handover limbo."
         />
 
+        <PinnedPanel hold={0.9} depth={560}>
         {/* Timeline */}
         <ol className="relative mt-16 grid grid-cols-1 gap-10 sm:mt-20 md:grid-cols-3 md:gap-7 lg:gap-9">
           {/* Desktop connector rail */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 right-0 top-8 hidden h-px bg-linear-to-r from-neon-cyan/0 via-neon-violet/60 to-neon-magenta/0 md:block"
+            className="pointer-events-none absolute left-0 right-0 top-8 hidden h-px bg-linear-to-r from-chrome/0 via-steel/60 to-steel/0 md:block"
           />
           {/* Mobile connector rail */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-10 left-8 top-8 w-px bg-linear-to-b from-neon-cyan/60 via-neon-violet/45 to-transparent md:hidden"
+            className="pointer-events-none absolute bottom-10 left-8 top-8 w-px bg-linear-to-b from-chrome/60 via-steel/45 to-transparent md:hidden"
           />
 
           {steps.map((step, index) => (
@@ -80,11 +82,11 @@ export default function Process() {
                 <div className="relative shrink-0">
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-2xl bg-neon-cyan/25 blur-lg"
+                    className="absolute inset-0 rounded-2xl bg-chrome/25 blur-lg"
                   />
-                  <span className="relative flex size-16 items-center justify-center rounded-2xl border border-neon-cyan/35 bg-abyss text-neon-cyan shadow-[0_0_40px_-12px_rgba(56,242,255,0.95)] transition-all duration-500 hover:scale-105 hover:border-neon-cyan/70">
+                  <span className="relative flex size-16 items-center justify-center rounded-2xl border border-chrome/35 bg-abyss text-chrome shadow-[0_0_40px_-12px_rgba(246,248,251,0.59)] transition-all duration-500 hover:scale-105 hover:border-chrome/70">
                     <step.icon className="size-7" strokeWidth={1.7} aria-hidden="true" />
-                    <span className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border border-hairline bg-elevated font-mono text-[10px] font-semibold text-ink">
+                    <span className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border border-edge bg-raised font-mono text-[10px] font-semibold text-ink">
                       {step.index}
                     </span>
                   </span>
@@ -92,7 +94,7 @@ export default function Process() {
 
                 {/* Copy */}
                 <div className="pb-2 md:mt-8">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-neon-cyan">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-edge bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-chrome">
                     {step.duration}
                   </span>
                   <h3 className="mt-4 text-xl font-semibold leading-snug text-ink sm:text-2xl">
@@ -101,7 +103,7 @@ export default function Process() {
                   <p className="mt-3 text-pretty text-sm leading-relaxed text-ink-muted sm:text-base">
                     {step.body}
                   </p>
-                  <p className="mt-4 border-l-2 border-neon-violet/40 pl-4 text-pretty text-[13px] italic leading-relaxed text-ink-dim">
+                  <p className="mt-4 border-l-2 border-steel/40 pl-4 text-pretty text-[13px] italic leading-relaxed text-ink-dim">
                     {step.detail}
                   </p>
                 </div>
@@ -112,7 +114,7 @@ export default function Process() {
 
         {/* Closing CTA */}
         <Reveal delay={120}>
-          <div className="mt-16 flex flex-col items-center gap-5 rounded-3xl border border-hairline glass-panel px-6 py-10 text-center sm:mt-20 sm:px-10 sm:py-12">
+          <div className="mt-16 flex flex-col items-center gap-5 rounded-3xl border border-edge glass-panel px-6 py-10 text-center sm:mt-20 sm:px-10 sm:py-12">
             <div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 -z-10"
@@ -138,6 +140,7 @@ export default function Process() {
             </div>
           </div>
         </Reveal>
+        </PinnedPanel>
       </div>
     </section>
   );

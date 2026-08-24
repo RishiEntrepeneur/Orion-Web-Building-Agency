@@ -9,22 +9,22 @@ const LAYERS = [
     id: "ui",
     label: "UI Layer",
     depth: 88,
-    accent: "from-neon-cyan/30 to-neon-cyan/[0.04]",
-    border: "border-neon-cyan/45",
+    accent: "from-chrome/30 to-chrome/[0.04]",
+    border: "border-chrome/45",
   },
   {
     id: "content",
     label: "Content Plane",
     depth: 44,
-    accent: "from-neon-violet/28 to-neon-violet/[0.04]",
-    border: "border-neon-violet/45",
+    accent: "from-steel/28 to-steel/[0.04]",
+    border: "border-steel/45",
   },
   {
     id: "environment",
     label: "3D Environment",
     depth: 0,
-    accent: "from-neon-magenta/24 to-neon-magenta/[0.04]",
-    border: "border-neon-magenta/40",
+    accent: "from-steel/24 to-steel/[0.04]",
+    border: "border-steel/40",
   },
 ] as const;
 
@@ -81,15 +81,15 @@ export default function DepthStack() {
       tabIndex={0}
       role="img"
       aria-label="Diagram: a flat two-dimensional web page separating into three parallax depth layers — UI layer, content plane and 3D environment."
-      className="relative flex h-full min-h-[19rem] w-full cursor-crosshair items-center justify-center rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-cyan sm:min-h-[23rem]"
+      className="relative flex h-full min-h-[19rem] w-full cursor-crosshair items-center justify-center rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-chrome sm:min-h-[23rem]"
     >
       {/* Mode label */}
       <span
         className={cn(
           "absolute left-0 top-0 z-20 flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-all duration-500",
           exploded
-            ? "border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan shadow-[0_0_24px_-6px_rgba(56,242,255,0.9)]"
-            : "border-hairline bg-white/[0.04] text-ink-dim",
+            ? "border-chrome/50 bg-chrome/10 text-chrome shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)]"
+            : "border-edge bg-white/[0.04] text-ink-dim",
         )}
       >
         <Layers className="size-3" strokeWidth={2.4} aria-hidden="true" />

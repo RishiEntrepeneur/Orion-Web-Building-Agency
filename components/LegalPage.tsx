@@ -27,7 +27,7 @@ export default function LegalPage({
       <div className="mx-auto w-full max-w-3xl">
         <a
           href="/"
-          className="group/back inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-neon-cyan"
+          className="group/back inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
         >
           <ArrowLeft
             className="size-4 transition-transform duration-300 group-hover/back:-translate-x-1"
@@ -37,7 +37,7 @@ export default function LegalPage({
           Back to {site.name}
         </a>
 
-        <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-neon-cyan/25 bg-neon-cyan/[0.06] px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-neon-cyan">
+        <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-chrome/25 bg-chrome/[0.06] px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-chrome">
           <ScrollText className="size-3.5" strokeWidth={2.2} aria-hidden="true" />
           Legal
         </span>
@@ -54,8 +54,8 @@ export default function LegalPage({
           Last updated: {lastUpdated}
         </p>
 
-        <div className="mt-8 rounded-2xl border border-neon-amber/25 bg-neon-amber/[0.05] p-5 text-sm leading-relaxed text-ink-muted">
-          <strong className="font-semibold text-neon-amber">
+        <div className="mt-8 rounded-2xl border border-live/25 bg-live/[0.05] p-5 text-sm leading-relaxed text-ink-muted">
+          <strong className="font-semibold text-live">
             Template notice:
           </strong>{" "}
           this document is a structural placeholder supplied with the site build.
@@ -86,14 +86,14 @@ export default function LegalPage({
           ))}
         </div>
 
-        <div className="mt-14 rounded-2xl border border-hairline glass-panel p-6">
+        <div className="mt-14 rounded-2xl border border-edge glass-panel p-6">
           <h2 className="text-lg font-semibold text-ink">Contact the data controller</h2>
           <address className="mt-3 flex flex-col gap-1.5 text-sm not-italic leading-relaxed text-ink-muted">
             <span>{site.legal.entity}</span>
             <span>{site.legal.registeredOffice}</span>
             <a
               href={`mailto:${site.email}`}
-              className="w-fit text-neon-cyan transition-opacity duration-300 hover:opacity-80"
+              className="w-fit text-chrome transition-opacity duration-300 hover:opacity-80"
             >
               {site.email}
             </a>

@@ -12,17 +12,17 @@ type SpotlightCardProps = {
 };
 
 const glowColors = {
-  cyan: "rgba(56,242,255,0.16)",
-  violet: "rgba(139,92,246,0.18)",
-  magenta: "rgba(255,47,179,0.16)",
+  cyan: "rgba(246,248,251,0.10)",
+  violet: "rgba(169,178,193,0.09)",
+  magenta: "rgba(130,139,154,0.08)",
 } as const;
 
 const borderGlow = {
-  cyan: "hover:border-neon-cyan/45 hover:shadow-[0_28px_70px_-30px_rgba(56,242,255,0.75)]",
+  cyan: "hover:border-chrome/45 hover:shadow-[0_28px_70px_-30px_rgba(246,248,251,0.46)]",
   violet:
-    "hover:border-neon-violet/45 hover:shadow-[0_28px_70px_-30px_rgba(139,92,246,0.75)]",
+    "hover:border-steel/45 hover:shadow-[0_28px_70px_-30px_rgba(169,178,193,0.38)]",
   magenta:
-    "hover:border-neon-magenta/45 hover:shadow-[0_28px_70px_-30px_rgba(255,47,179,0.75)]",
+    "hover:border-steel/45 hover:shadow-[0_28px_70px_-30px_rgba(130,139,154,0.38)]",
 } as const;
 
 /**
@@ -57,7 +57,7 @@ export default function SpotlightCard({
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
       className={cn(
-        "group/card relative isolate overflow-hidden rounded-2xl border border-hairline glass-panel",
+        "group/card relative isolate overflow-hidden rounded-2xl border border-edge glass-panel",
         "transition-all duration-500 ease-out hover:-translate-y-1",
         borderGlow[glow],
         className,
@@ -72,7 +72,7 @@ export default function SpotlightCard({
         }}
       />
 
-      {/* Top hairline highlight */}
+      {/* Top edge highlight */}
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/25 to-transparent"
