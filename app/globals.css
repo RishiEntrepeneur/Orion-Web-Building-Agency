@@ -1,0 +1,443 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   AUREX DESIGN SYSTEM
+   Deep-space dark canvas, neon cyan/violet accents, glass surfaces.
+   Tailwind v4 CSS-first theme configuration.
+------------------------------------------------------------------- */
+@theme {
+  /* Core canvas */
+  --color-void: #04050a;
+  --color-abyss: #070912;
+  --color-surface: #0b0e1b;
+  --color-elevated: #10142a;
+  --color-hairline: #1d2340;
+
+  /* Neon accents */
+  --color-neon-cyan: #38f2ff;
+  --color-neon-violet: #8b5cf6;
+  --color-neon-magenta: #ff2fb3;
+  --color-neon-amber: #ffb547;
+
+  /* Typography ramp */
+  --color-ink: #f4f7ff;
+  --color-ink-muted: #9aa4c4;
+  /* 4.9:1 against the lightest glass surface, 5.6:1 against the page
+     background — WCAG 2.2 AA for normal-size text. */
+  --color-ink-dim: #7b86a8;
+
+  /* Fonts (wired to next/font variables in app/layout.tsx) */
+  --font-display: var(--font-space-grotesk), "Space Grotesk", ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo,
+    Consolas, monospace;
+
+  /* Motion */
+  --animate-scanline: scanline 7s linear infinite;
+  --animate-sweep: sweep 4.5s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 11s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 3.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow: spin 22s linear infinite;
+  --animate-spin-reverse: spin-reverse 30s linear infinite;
+  --animate-grid-drift: grid-drift 24s linear infinite;
+  --animate-blink: blink 1.6s steps(2, start) infinite;
+  --animate-shimmer: shimmer 3.5s linear infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-rise: rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes scanline {
+    0% {
+      transform: translateY(-110%);
+    }
+    100% {
+      transform: translateY(820%);
+    }
+  }
+
+  @keyframes sweep {
+    0%,
+    100% {
+      transform: translateX(-120%);
+      opacity: 0;
+    }
+    40% {
+      opacity: 0.9;
+    }
+    60% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translateX(120%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -14px, 0);
+    }
+  }
+
+  @keyframes pulse-ring {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.015);
+    }
+  }
+
+  @keyframes spin-reverse {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes grid-drift {
+    0% {
+      background-position: 0 0, 0 0;
+    }
+    100% {
+      background-position: 0 64px, 0 64px;
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.15;
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 26px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   BASE LAYER
+------------------------------------------------------------------- */
+@layer base {
+  * {
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+    /* Decorative glows deliberately bleed past the viewport; never let them
+       create a horizontal scrollbar. `clip` keeps position: sticky working. */
+    overflow-x: clip;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-neon-cyan) 32%, transparent);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-neon-cyan);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Scrollbar — themed for WebKit + Firefox */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-abyss);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-neon-cyan) 55%, transparent),
+      color-mix(in oklab, var(--color-neon-violet) 55%, transparent)
+    );
+    border-radius: 999px;
+    border: 2px solid var(--color-abyss);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      var(--color-neon-cyan),
+      var(--color-neon-violet)
+    );
+  }
+  html {
+    scrollbar-color: #2a3358 var(--color-abyss);
+    scrollbar-width: thin;
+  }
+}
+
+/* ------------------------------------------------------------------
+   COMPONENT UTILITIES
+------------------------------------------------------------------- */
+@utility grid-mesh {
+  background-image:
+    linear-gradient(to right, rgba(56, 242, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(139, 92, 246, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+@utility grid-mesh-fine {
+  background-image:
+    linear-gradient(to right, rgba(56, 242, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 242, 255, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+@utility mask-fade-edges {
+  -webkit-mask-image: radial-gradient(
+    ellipse 78% 62% at 50% 42%,
+    #000 38%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 78% 62% at 50% 42%,
+    #000 38%,
+    transparent 100%
+  );
+}
+
+@utility mask-fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+}
+
+/* Glass panel base */
+@utility glass-panel {
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.055) 0%,
+      rgba(255, 255, 255, 0.012) 42%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    rgba(11, 14, 27, 0.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Animated conic gradient border — used on featured cards */
+@utility border-beam {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Text gradient helper */
+@utility text-gradient-neon {
+  background-image: linear-gradient(
+    98deg,
+    #ffffff 0%,
+    #cfe9ff 26%,
+    var(--color-neon-cyan) 52%,
+    var(--color-neon-violet) 78%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility shimmer-text {
+  background-image: linear-gradient(
+    100deg,
+    #7d88ad 0%,
+    #7d88ad 38%,
+    #ffffff 50%,
+    #7d88ad 62%,
+    #7d88ad 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: var(--animate-shimmer);
+}
+
+/* Reveal-on-scroll primitives (driven by IntersectionObserver) */
+@layer components {
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+    transition:
+      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: blur(6px);
+    will-change: opacity, transform;
+  }
+
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+/* ------------------------------------------------------------------
+   ACCESSIBILITY — honour reduced-motion preferences
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   3D VIEWFRAME MOTION
+   Keyframes powering the simulated Spline/Dora scene placeholder.
+------------------------------------------------------------------- */
+@theme {
+  --animate-cube-spin: cube-spin 22s linear infinite;
+  --animate-orbit: orbit 14s linear infinite;
+  --animate-orbit-reverse: orbit-reverse 19s linear infinite;
+  --animate-reticle: reticle 4s ease-in-out infinite;
+  --animate-hud-flicker: hud-flicker 5.5s ease-in-out infinite;
+  --animate-depth-pop: depth-pop 9s ease-in-out infinite;
+
+  @keyframes cube-spin {
+    0% {
+      transform: rotateX(-22deg) rotateY(0deg);
+    }
+    100% {
+      transform: rotateX(-22deg) rotateY(360deg);
+    }
+  }
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg) translateX(var(--orbit-radius, 8rem)) rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg) translateX(var(--orbit-radius, 8rem))
+        rotate(-360deg);
+    }
+  }
+
+  @keyframes orbit-reverse {
+    0% {
+      transform: rotate(360deg) translateX(var(--orbit-radius, 8rem))
+        rotate(-360deg);
+    }
+    100% {
+      transform: rotate(0deg) translateX(var(--orbit-radius, 8rem)) rotate(0deg);
+    }
+  }
+
+  @keyframes reticle {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes hud-flicker {
+    0%,
+    92%,
+    100% {
+      opacity: 1;
+    }
+    94% {
+      opacity: 0.42;
+    }
+    96% {
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes depth-pop {
+    0%,
+    100% {
+      transform: translateZ(0) scale(1);
+    }
+    50% {
+      transform: translateZ(38px) scale(1.02);
+    }
+  }
+}
