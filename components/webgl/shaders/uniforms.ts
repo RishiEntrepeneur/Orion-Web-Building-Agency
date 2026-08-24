@@ -22,6 +22,9 @@ export type SpatialUniforms = {
   uResolution: { value: THREE.Vector2 };
   /** 0..1 master fade. 0 renders nothing. */
   uIntensity: { value: number };
+  /** The current zone's Orion accent, blended across zone boundaries, so the
+      light in the scene matches the accent the interface is using. */
+  uAccent: { value: THREE.Color };
 };
 
 export function createSpatialUniforms(): SpatialUniforms {
@@ -33,5 +36,6 @@ export function createSpatialUniforms(): SpatialUniforms {
     uZone: { value: 0 },
     uResolution: { value: new THREE.Vector2(1, 1) },
     uIntensity: { value: 1 },
+    uAccent: { value: new THREE.Color(0.624, 0.769, 1.0) },
   };
 }

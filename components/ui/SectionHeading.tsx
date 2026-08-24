@@ -36,9 +36,9 @@ export default function SectionHeading({
       <Reveal>
         <span
           className={cn(
-            "inline-flex items-center gap-2 rounded-full border border-chrome/25 bg-chrome/[0.06] px-4 py-1.5",
-            "font-mono text-[11px] uppercase tracking-[0.22em] text-chrome",
-            "shadow-[0_0_24px_-6px_rgba(246,248,251,0.34)] backdrop-blur-sm",
+            "inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5",
+            "font-mono text-[11px] uppercase tracking-[0.22em] text-accent",
+            "shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_52%,transparent)] backdrop-blur-sm",
           )}
         >
           {eyebrowIcon ? (
@@ -48,7 +48,7 @@ export default function SectionHeading({
           ) : (
             <span
               aria-hidden="true"
-              className="size-1.5 rounded-full bg-chrome animate-breathe"
+              className="size-1.5 rounded-full bg-accent animate-breathe"
             />
           )}
           {eyebrow}

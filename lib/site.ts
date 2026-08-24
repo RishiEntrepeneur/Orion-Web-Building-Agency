@@ -4,19 +4,19 @@
  */
 
 export const site = {
-  name: "AUREX",
+  name: "ORION",
   tagline: "3D & AI Web Studio",
-  domain: "aurexstudio.co.uk",
-  url: "https://aurexstudio.co.uk",
+  domain: "orionstudio.co.uk",
+  url: "https://orionstudio.co.uk",
   description:
-    "AUREX builds cinematic 3D and AI-driven websites for premium brands and local businesses — prompt-to-3D scenes, scroll-driven depth and live deployment in 48 hours.",
-  email: "hello@aurexstudio.co.uk",
+    "ORION builds cinematic 3D and AI-driven websites for premium brands and local businesses — prompt-to-3D scenes, scroll-driven depth and live deployment in 48 hours.",
+  email: "hello@orionstudio.co.uk",
   phone: "+44 20 7946 0148",
   location: "London, United Kingdom",
   locationShort: "London, UK",
   /** UK legal compliance placeholders — replace with your registered details. */
   legal: {
-    entity: "Aurex Studio Ltd",
+    entity: "Orion Studio Ltd",
     companyNumber: "00000000",
     vatNumber: "GB 000 0000 00",
     registeredOffice:
@@ -62,4 +62,4 @@ export const footerColumns = [
   },
 ] as const;
 
-export const COOKIE_CONSENT_KEY = "aurex:cookie-consent:v1";
+export const COOKIE_CONSENT_KEY = "orion:cookie-consent:v1";

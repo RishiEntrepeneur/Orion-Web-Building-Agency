@@ -17,7 +17,7 @@ export default function CookiePreferencesButton({
       }
       className={
         className ??
-        "inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
+        "inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-accent"
       }
     >
       <SlidersHorizontal className="size-3.5" strokeWidth={2.2} aria-hidden="true" />

@@ -11,16 +11,19 @@ type SpotlightCardProps = {
   as?: "div" | "li" | "article";
 };
 
-const glowColors = {
-  cyan: "rgba(246,248,251,0.10)",
-  violet: "rgba(169,178,193,0.09)",
-  magenta: "rgba(130,139,154,0.08)",
+/* The spotlight is the zone's own star colour, so a card lights up in the hue
+   of the section it sits in. These keys survive only as intensity steps — the
+   hue itself is inherited from --accent, never chosen per card. */
+const glowStrength = {
+  cyan: "28%",
+  violet: "31%",
+  magenta: "24%",
 } as const;
 
 const borderGlow = {
-  cyan: "hover:border-chrome/45 hover:shadow-[0_28px_70px_-30px_rgba(246,248,251,0.46)]",
+  cyan: "hover:border-accent/45 hover:shadow-[0_28px_70px_-30px_color-mix(in_oklab,var(--accent)_64%,transparent)]",
   violet:
-    "hover:border-steel/45 hover:shadow-[0_28px_70px_-30px_rgba(169,178,193,0.38)]",
+    "hover:border-steel/45 hover:shadow-[0_28px_70px_-30px_color-mix(in_oklab,var(--accent)_60%,transparent)]",
   magenta:
     "hover:border-steel/45 hover:shadow-[0_28px_70px_-30px_rgba(130,139,154,0.38)]",
 } as const;
@@ -68,7 +71,7 @@ export default function SpotlightCard({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 opacity-[var(--spot-opacity,0)] transition-opacity duration-500"
         style={{
-          background: `radial-gradient(340px circle at var(--spot-x, 50%) var(--spot-y, 50%), ${glowColors[glow]}, transparent 68%)`,
+          background: `radial-gradient(340px circle at var(--spot-x, 50%) var(--spot-y, 50%), color-mix(in oklab, var(--accent) ${glowStrength[glow]}, transparent), transparent 68%)`,
         }}
       />
 

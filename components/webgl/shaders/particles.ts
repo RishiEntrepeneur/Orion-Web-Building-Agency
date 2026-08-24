@@ -17,12 +17,15 @@ export const particlesVertex = /* glsl */ `
   uniform float uZone;
   uniform vec2  uResolution;
   uniform float uIntensity;
+  uniform vec3  uAccent;
 
   attribute float aSeed;
   attribute float aScale;
+  attribute float aTemp;   // 0 = cool amber .. 1 = hot blue-white
 
   varying float vFade;
   varying float vGlint;
+  varying vec3  vTint;
 
   void main() {
     vec3 p = position;
@@ -59,6 +62,17 @@ export const particlesVertex = /* glsl */ `
     // Particles near the cursor catch a specular glint.
     vGlint = smoothstep(0.42, 0.0, dist);
 
+    // Stellar colour by temperature: cool motes run amber, hot ones blue-white,
+    // with the nebula's rose sitting in the middle of the ramp. Near the
+    // pointer everything pulls toward the zone's own star colour.
+    vec3 amber = vec3(1.000, 0.616, 0.361);
+    vec3 rose  = vec3(0.878, 0.404, 0.561);
+    vec3 blue  = vec3(0.624, 0.769, 1.000);
+    vec3 star  = aTemp < 0.5
+      ? mix(amber, rose, aTemp * 2.0)
+      : mix(rose, blue, (aTemp - 0.5) * 2.0);
+    vTint = mix(star, uAccent, vGlint * 0.65);
+
     gl_Position = projectionMatrix * mv;
     gl_PointSize = aScale * (260.0 / max(-mv.z, 0.001)) * (0.75 + push * 0.9);
   }
@@ -69,6 +83,7 @@ export const particlesFragment = /* glsl */ `
 
   varying float vFade;
   varying float vGlint;
+  varying vec3  vTint;
 
   void main() {
     // Round, soft-edged point with a tight bright core.
@@ -79,12 +94,14 @@ export const particlesFragment = /* glsl */ `
     float core = smoothstep(0.5, 0.06, r);
     float halo = smoothstep(0.5, 0.22, r) * 0.35;
 
-    // Monochrome: cool steel body, white specular core near the pointer.
-    vec3 body   = vec3(0.62, 0.66, 0.73);
-    vec3 glint  = vec3(1.0);
-    vec3 colour = mix(body, glint, vGlint * 0.85);
+    // Body carries the star's own colour; the core burns out to white, which
+    // is what stops a coloured particle field from looking like confetti.
+    // Only the very centre burns to white; the surrounding disc keeps the
+    // star's own colour, which is what makes the field read as a sky rather
+    // than as grey dust.
+    vec3 colour = mix(vTint, vec3(1.0), smoothstep(0.62, 1.0, core) * 0.7 + vGlint * 0.25);
 
-    float alpha = (core * 0.85 + halo) * vFade;
+    float alpha = (core * 0.92 + halo * 1.15) * vFade;
     if (alpha < 0.004) discard;
 
     gl_FragColor = vec4(colour, alpha);

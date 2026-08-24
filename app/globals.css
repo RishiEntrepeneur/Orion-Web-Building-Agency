@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==================================================================
-   AUREX — MONOCHROME SPATIAL SYSTEM
+   ORION — MONOCHROME SPATIAL SYSTEM
    ------------------------------------------------------------------
    No chromatic accent. The accent is luminance and specular metal.
 
@@ -30,10 +30,27 @@
   --color-ink-muted: #a9b2c1;
   --color-ink-dim: #828b9a;
 
-  /* The single chromatic note, reserved for live status. In a fully
-     monochrome system a grey status dot conveys nothing, so availability
-     gets one restrained hue and nothing else does. */
-  --color-live: #8fe3b0;
+  /* ----------------------------------------------------------------
+     THE ORION PALETTE
+     The accents are not chosen for decoration — they are the real
+     colours of the object the studio is named after. M42's emission
+     spectrum and its two brightest neighbours:
+       rigel   B8 supergiant, blue-white — the cold arrival
+       oxygen  doubly ionised oxygen, O-III teal — the nebula's green
+       nebula  ionised hydrogen, H-alpha rose — M42's dominant colour
+       ember   Betelgeuse, red supergiant amber — the warm human note
+     Each clears WCAG AA for text on every surface in this system
+     (worst case 5.23:1), and dark ink clears AA on top of each, so any
+     of them can carry type or fill a control.
+     ---------------------------------------------------------------- */
+  --color-rigel: #9fc4ff;
+  --color-oxygen: #4fd8c4;
+  --color-nebula: #e0678f;
+  --color-ember: #ff9d5c;
+
+  /* Live status reads as the nebula's oxygen line rather than a generic
+     interface green, so nothing on the page is off-palette. */
+  --color-live: #4fd8c4;
 
   /* Typefaces.
      Syne for display: geometric, unusual proportions, built for art-
@@ -346,6 +363,87 @@
     rgba(11, 13, 18, 0.66);
   backdrop-filter: blur(20px) saturate(118%);
   -webkit-backdrop-filter: blur(20px) saturate(118%);
+}
+
+/* ==================================================================
+   ZONE ACCENTS
+   Each section owns one Orion colour. Setting a single custom property
+   on the section lets every child pick it up by inheritance, so a
+   section can be re-tuned by changing one class rather than hunting
+   through its descendants. The camera and the WebGL scene read the
+   same zone index, so the light in the 3D layer and the accent in the
+   DOM always agree.
+   ================================================================== */
+@theme {
+  /* Exposed as a Tailwind colour so every opacity modifier works:
+     text-accent, bg-accent/12, border-accent/45.
+     NOTE: this must resolve to a LITERAL, not to var(--accent).
+     A custom property's value is substituted where it is DECLARED, not where
+     it is used — so `--color-accent: var(--accent)` declared on :root would
+     bake in the root accent and never see a zone override further down the
+     tree. Each zone utility therefore redeclares both properties with its own
+     literal. */
+  --color-accent: #f4f2ec;
+}
+
+@layer base {
+  :root {
+    /* Outside any zone the accent falls back to the metal highlight,
+       so a component used standalone is never unstyled. */
+    --accent: #f4f2ec;
+    --accent-ink: var(--color-void);
+  }
+}
+
+@utility zone-rigel {
+  --accent: #9fc4ff;
+  --color-accent: #9fc4ff;
+  --accent-ink: var(--color-void);
+}
+@utility zone-oxygen {
+  --accent: #4fd8c4;
+  --color-accent: #4fd8c4;
+  --accent-ink: var(--color-void);
+}
+@utility zone-nebula {
+  --accent: #e0678f;
+  --color-accent: #e0678f;
+  --accent-ink: var(--color-void);
+}
+@utility zone-ember {
+  --accent: #ff9d5c;
+  --color-accent: #ff9d5c;
+  --accent-ink: var(--color-void);
+}
+
+/** Accent-tinted glass: the panel picks up a breath of the zone colour. */
+@utility glass-accent {
+  background:
+    linear-gradient(
+      158deg,
+      color-mix(in oklab, var(--accent) 9%, transparent) 0%,
+      rgba(255, 255, 255, 0.012) 46%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    rgba(11, 13, 18, 0.66);
+  backdrop-filter: blur(20px) saturate(122%);
+  -webkit-backdrop-filter: blur(20px) saturate(122%);
+}
+
+/** Display type lit by the zone colour instead of neutral chrome. */
+@utility accent-text {
+  background-image: linear-gradient(
+    104deg,
+    color-mix(in oklab, var(--accent) 55%, #6f7889) 0%,
+    #ffffff 34%,
+    color-mix(in oklab, var(--accent) 85%, #ffffff) 52%,
+    #e9edf4 68%,
+    color-mix(in oklab, var(--accent) 50%, #6f7889) 100%
+  );
+  background-size: 240% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ==================================================================

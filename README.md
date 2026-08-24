@@ -1,4 +1,4 @@
-# AUREX — 3D & AI Agency Landing Page
+# ORION — 3D & AI Agency Landing Page
 
 A production-ready, dark-themed, cinematic landing page for an agency selling
 next-generation 3D and AI-driven websites to premium brands and local

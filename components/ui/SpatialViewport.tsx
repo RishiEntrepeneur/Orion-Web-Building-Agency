@@ -157,7 +157,7 @@ export default function SpatialViewport({ className }: { className?: string }) {
           </div>
           <div className="flex flex-1 items-center gap-3">
             <div className="h-px min-w-16 flex-1 bg-edge">
-              <div className="h-px w-[86%] bg-linear-to-r from-steel to-chrome" />
+              <div className="h-px w-[86%] bg-linear-to-r from-steel to-accent" />
             </div>
             <span className="font-mono text-micro uppercase text-ink-dim">86%</span>
           </div>

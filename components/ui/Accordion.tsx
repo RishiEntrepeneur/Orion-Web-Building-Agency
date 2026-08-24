@@ -28,15 +28,15 @@ export default function Accordion({ items }: { items: readonly Faq[] }) {
             className={cn(
               "group/faq relative overflow-hidden rounded-2xl border transition-all duration-500 ease-out",
               isOpen
-                ? "border-chrome/40 bg-white/[0.045] shadow-[0_24px_70px_-40px_rgba(246,248,251,0.56)]"
-                : "border-edge bg-white/[0.02] hover:border-chrome/25 hover:bg-white/[0.035]",
+                ? "border-accent/45 bg-white/[0.045] shadow-[0_24px_70px_-40px_color-mix(in_oklab,var(--accent)_74%,transparent)]"
+                : "border-edge bg-white/[0.02] hover:border-accent/30 hover:bg-white/[0.035]",
             )}
           >
             {/* Left accent rail */}
             <span
               aria-hidden="true"
               className={cn(
-                "pointer-events-none absolute inset-y-0 left-0 w-px bg-linear-to-b from-chrome via-steel to-transparent transition-opacity duration-500",
+                "pointer-events-none absolute inset-y-0 left-0 w-px bg-linear-to-b from-accent via-steel to-transparent transition-opacity duration-500",
                 isOpen ? "opacity-100" : "opacity-0 group-hover/faq:opacity-50",
               )}
             />
@@ -64,8 +64,8 @@ export default function Accordion({ items }: { items: readonly Faq[] }) {
                   className={cn(
                     "flex size-9 shrink-0 items-center justify-center rounded-full border transition-all duration-500",
                     isOpen
-                      ? "rotate-180 border-chrome/50 bg-chrome/12 text-chrome shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)]"
-                      : "border-edge bg-white/[0.04] text-ink-dim group-hover/faq:border-chrome/35 group-hover/faq:text-chrome",
+                      ? "rotate-180 border-accent/55 bg-accent/14 text-accent shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)]"
+                      : "border-edge bg-white/[0.04] text-ink-dim group-hover/faq:border-accent/40 group-hover/faq:text-accent",
                   )}
                 >
                   {isOpen ? (

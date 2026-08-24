@@ -14,18 +14,18 @@ export default function Hero() {
     <section
       id="top"
       aria-labelledby="hero-heading"
-      className="relative isolate overflow-hidden px-5 pb-20 pt-28 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10 lg:pb-36 lg:pt-44"
+      className="zone-rigel relative isolate overflow-hidden px-5 pb-20 pt-28 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10 lg:pb-36 lg:pt-44"
     >
       {/* Sectional glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[42rem] w-[80rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_30%,rgba(246,248,251,0.10),transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[42rem] w-[80rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_30%,color-mix(in_oklab,var(--accent)_28%,transparent),transparent_70%)]"
       />
 
       <div className="mx-auto w-full max-w-7xl">
         {/* Availability chip — scarcity signal */}
         <Reveal className="flex justify-center">
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-edge bg-white/[0.035] px-4 py-2 text-[12px] font-medium text-ink-muted backdrop-blur-md transition-colors duration-300 hover:border-chrome/40 hover:text-ink sm:text-[13px]">
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-edge bg-white/[0.035] px-4 py-2 text-[12px] font-medium text-ink-muted backdrop-blur-md transition-colors duration-300 hover:border-accent/45 hover:text-ink sm:text-[13px]">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
@@ -33,7 +33,7 @@ export default function Hero() {
             Taking <strong className="font-semibold text-ink">2 new builds</strong>{" "}
             this month
             <span aria-hidden="true" className="hidden h-3 w-px bg-edge sm:block" />
-            <span className="hidden font-mono text-[11px] uppercase tracking-[0.16em] text-chrome sm:inline">
+            <span className="hidden font-mono text-[11px] uppercase tracking-[0.16em] text-accent sm:inline">
               UK Studio
             </span>
           </span>
@@ -49,10 +49,10 @@ export default function Hero() {
             <span className="block text-ink">
               Websites That{" "}
               <span className="relative inline-block">
-                <span className="metal-text animate-sheen">Captivate.</span>
+                <span className="accent-text animate-sheen">Captivate.</span>
                 <span
                   aria-hidden="true"
-                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-linear-to-r from-transparent via-chrome to-transparent opacity-80 blur-[2px]"
+                  className="absolute -bottom-1 left-0 h-[3px] w-full rounded-full bg-linear-to-r from-transparent via-accent to-transparent opacity-80 blur-[2px]"
                 />
               </span>
             </span>
@@ -109,7 +109,7 @@ export default function Hero() {
                 className="flex items-center gap-2.5 text-[13px] text-ink-dim transition-colors duration-300 hover:text-ink-muted sm:text-sm"
               >
                 <Icon
-                  className="size-4 shrink-0 text-chrome"
+                  className="size-4 shrink-0 text-accent"
                   strokeWidth={2.2}
                   aria-hidden="true"
                 />

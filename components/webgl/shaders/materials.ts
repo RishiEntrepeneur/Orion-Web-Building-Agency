@@ -16,7 +16,7 @@ import { createSpatialUniforms, type SpatialUniforms } from "./uniforms";
 
 export const GRID_VERTEX_SHADER = /* glsl */ `
 // ---------------------------------------------------------------------------
-// AUREX / grid-mesh — vertex
+// ORION / grid-mesh — vertex
 // GLSL ES 3.00 (three.js ShaderMaterial with glslVersion: THREE.GLSL3)
 // ---------------------------------------------------------------------------
 precision highp float;
@@ -28,6 +28,7 @@ uniform float uScroll;
 uniform float uZone;
 uniform vec2  uResolution;
 uniform float uIntensity;
+uniform vec3  uAccent;
 
 out vec2  vUv;        // 0..1 across the plane, used for the soft circular edge fade
 out vec2  vPlane;     // plane-local coordinates in world units (metres)
@@ -48,7 +49,7 @@ void main() {
 
 export const GRID_FRAGMENT_SHADER = /* glsl */ `
 // ---------------------------------------------------------------------------
-// AUREX / grid-mesh — fragment
+// ORION / grid-mesh — fragment
 // GLSL ES 3.00 (three.js ShaderMaterial with glslVersion: THREE.GLSL3)
 // Monochrome infinite perspective grid: derivative-antialiased lines, distance
 // + horizon falloff, scroll-driven travel, pointer light pool, circular edge fade.
@@ -62,6 +63,7 @@ uniform float uScroll;
 uniform float uZone;
 uniform vec2  uResolution;
 uniform float uIntensity;
+uniform vec3  uAccent;
 
 in vec2  vUv;
 in vec2  vPlane;
@@ -143,7 +145,12 @@ void main() {
   // spec-white only in the very centre of the pool, on major lines
   float spec = majorI * major.y * pow(clamp(pool, 0.0, 1.0), 2.0) * 1.1;
 
-  vec3 col = mix(C_STEEL, C_CHROME, clamp(pool * 0.70, 0.0, 1.0)) * lit;
+  // The light pool is the zone's colour: the grid is lit by whatever star
+  // the current section belongs to, so the floor and the UI agree.
+  vec3 poolCol = mix(C_CHROME, uAccent, 0.72);
+  vec3 col = mix(C_STEEL, poolCol, clamp(pool * 0.70, 0.0, 1.0)) * lit;
+  // A faint accent wash along the major lines, strongest near the pointer.
+  col += uAccent * majorI * major.y * (0.05 + pool * 0.22);
   col += C_SPEC * spec * 0.38;
 
   // faint ground sheen so the plane is not pure void between the lines
@@ -169,7 +176,7 @@ void main() {
 
 export const LIQUID_VERTEX_SHADER = /* glsl */ `
 // ---------------------------------------------------------------------------
-// AUREX / liquid-metal — vertex
+// ORION / liquid-metal — vertex
 // GLSL ES 3.00 (three.js ShaderMaterial with glslVersion: THREE.GLSL3)
 // Works on a camera-facing PlaneGeometry(w, h, 1, 1) or an ortho fullscreen quad.
 // ---------------------------------------------------------------------------
@@ -182,6 +189,7 @@ uniform float uScroll;
 uniform float uZone;
 uniform vec2  uResolution;
 uniform float uIntensity;
+uniform vec3  uAccent;
 
 out vec2 vUv;
 out vec4 vClip;
@@ -195,7 +203,7 @@ void main() {
 
 export const LIQUID_FRAGMENT_SHADER = /* glsl */ `
 // ---------------------------------------------------------------------------
-// AUREX / liquid-metal — fragment
+// ORION / liquid-metal — fragment
 // GLSL ES 3.00 (three.js ShaderMaterial with glslVersion: THREE.GLSL3)
 // Domain-warped metaball field shaded with a procedural studio environment and
 // a Kajiya-Kay anisotropic streak. Monochrome: dark body, sharp silver highlight.
@@ -209,6 +217,7 @@ uniform float uScroll;
 uniform float uZone;
 uniform vec2  uResolution;
 uniform float uIntensity;
+uniform vec3  uAccent;
 
 in vec2 vUv;
 in vec4 vClip;
@@ -366,7 +375,7 @@ void main() {
            + pow(max(dot(n, hv2), 0.0), 320.0) * 0.9;
 
   vec3 BODY   = vec3(0.052, 0.056, 0.064);
-  vec3 CHROME = vec3(0.965, 0.973, 0.984); // --color-chrome #f6f8fb
+  vec3 CHROME = mix(vec3(0.965, 0.973, 0.984), uAccent, 0.28); // chrome, tinted by the zone star
   vec3 SPEC   = vec3(1.000, 0.992, 0.976);
 
   vec3 col = BODY;

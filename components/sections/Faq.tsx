@@ -21,7 +21,7 @@ export default function Faq() {
     <section
       id="faq"
       aria-labelledby="faq-heading"
-      className="relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
+      className="zone-oxygen relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
     >
       <div
         aria-hidden="true"
@@ -35,7 +35,7 @@ export default function Faq() {
           title={
             <>
               The questions every client asks{" "}
-              <span className="metal-text">before they commit.</span>
+              <span className="accent-text">before they commit.</span>
             </>
           }
           description="Straight answers on performance, mobile, ownership and whether the 48-hour promise is real."
@@ -51,7 +51,7 @@ export default function Faq() {
             <aside className="flex flex-col gap-5 rounded-2xl border border-edge glass-panel p-6 sm:p-7">
               <span
                 aria-hidden="true"
-                className="flex size-11 items-center justify-center rounded-xl border border-steel/40 bg-steel/10 text-steel shadow-[0_0_28px_-8px_rgba(169,178,193,0.50)]"
+                className="flex size-11 items-center justify-center rounded-xl border border-steel/40 bg-steel/10 text-steel shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--accent)_72%,transparent)]"
               >
                 <MessageSquareText className="size-5" strokeWidth={1.9} />
               </span>
@@ -79,7 +79,7 @@ export default function Faq() {
               <dl className="flex flex-col gap-3 border-t border-edge pt-5 font-mono text-[11px] uppercase tracking-[0.16em]">
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-ink-dim">Reply time</dt>
-                  <dd className="text-chrome">Same working day</dd>
+                  <dd className="text-accent">Same working day</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-ink-dim">Based in</dt>

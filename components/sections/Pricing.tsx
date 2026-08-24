@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowRight,
   BadgeCheck,
@@ -8,6 +10,7 @@ import {
 } from "lucide-react";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { useTilt } from "@/lib/use-tilt";
 import CtaLink from "@/components/ui/CtaLink";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -101,11 +104,11 @@ export default function Pricing() {
     <section
       id="packages"
       aria-labelledby="packages-heading"
-      className="relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
+      className="zone-nebula relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[34rem] w-[70rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(169,178,193,0.07),transparent_70%)]"
+        className="pointer-events-none absolute left-1/2 top-1/4 -z-10 h-[34rem] w-[70rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_50%,color-mix(in_oklab,var(--accent)_29%,transparent),transparent_70%)]"
       />
 
       <div className="mx-auto w-full max-w-7xl">
@@ -114,7 +117,7 @@ export default function Pricing() {
           title={
             <>
               Fixed scope. Fixed price.{" "}
-              <span className="metal-text">Zero surprises.</span>
+              <span className="accent-text">Zero surprises.</span>
             </>
           }
           description="No day rates, no discovery-phase invoices, no six-week Gantt chart. Choose a package, complete a short brief, and your environment goes live inside 48 hours."
@@ -141,7 +144,7 @@ export default function Pricing() {
         <Reveal delay={140}>
           <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-edge glass-panel px-6 py-6 text-center sm:mt-14 sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
             <BadgeCheck
-              className="size-8 shrink-0 text-chrome"
+              className="size-8 shrink-0 text-accent"
               strokeWidth={1.8}
               aria-hidden="true"
             />
@@ -164,31 +167,45 @@ export default function Pricing() {
 
 function PricingCard({ tier }: { tier: Tier }) {
   const Icon = tier.icon;
+  /* The card leans away from the cursor like a pressed panel, and a specular
+     highlight tracks the same point — a tier you are considering should feel
+     like something you are physically handling. */
+  const tiltRef = useTilt<HTMLElement>({ max: tier.featured ? 5 : 4, scale: 1.015 });
 
   return (
     <article
+      ref={tiltRef}
       aria-labelledby={`${tier.id}-name`}
       className={cn(
-        "group/tier relative flex h-full flex-col overflow-hidden rounded-3xl p-[1.5px] transition-transform duration-500 ease-out",
-        tier.featured ? "hover:-translate-y-1.5" : "hover:-translate-y-1",
+        "group/tier relative flex h-full flex-col overflow-hidden rounded-3xl p-[1.5px] will-change-transform",
       )}
+      style={{ transformStyle: "preserve-3d" }}
     >
+      {/* Specular that follows the cursor across the card face. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-20 rounded-3xl opacity-0 transition-opacity duration-500 group-hover/tier:opacity-100"
+        style={{
+          background:
+            "radial-gradient(420px circle at var(--tilt-x, 50%) var(--tilt-y, 50%), color-mix(in oklab, var(--accent) 18%, transparent), transparent 62%)",
+        }}
+      />
       {/* Border treatment: pulsing neon beam for the featured tier */}
       {tier.featured ? (
         <>
           <span
             aria-hidden="true"
-            className="absolute inset-0 rounded-3xl bg-[linear-gradient(140deg,#f6f8fb,#a9b2c1_45%,#828b9a_100%)] animate-breathe"
+            className="absolute inset-0 rounded-3xl bg-[linear-gradient(140deg,var(--accent),#ffffff_38%,var(--accent)_62%,#6f7889_100%)] animate-breathe"
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(169,178,193,0.20),transparent_70%)] blur-2xl animate-breathe"
+            className="pointer-events-none absolute -inset-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(50%_50%_at_50%_50%,color-mix(in_oklab,var(--accent)_42%,transparent),transparent_70%)] blur-2xl animate-breathe"
           />
         </>
       ) : (
         <span
           aria-hidden="true"
-          className="absolute inset-0 rounded-3xl border border-edge transition-colors duration-500 group-hover/tier:border-chrome/40"
+          className="absolute inset-0 rounded-3xl border border-edge transition-colors duration-500 group-hover/tier:border-accent/45"
         />
       )}
 
@@ -210,8 +227,8 @@ function PricingCard({ tier }: { tier: Tier }) {
 
         {/* Badge */}
         {tier.badge ? (
-          <span className="absolute right-6 top-7 inline-flex items-center gap-1.5 rounded-full border border-chrome/50 bg-chrome/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-chrome shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)] backdrop-blur-sm">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-chrome animate-breathe" />
+          <span className="absolute right-6 top-7 inline-flex items-center gap-1.5 rounded-full border border-accent/55 bg-accent/12 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-accent shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)] backdrop-blur-sm">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-accent animate-breathe" />
             {tier.badge}
           </span>
         ) : null}
@@ -223,8 +240,8 @@ function PricingCard({ tier }: { tier: Tier }) {
             className={cn(
               "flex size-12 items-center justify-center rounded-xl border transition-all duration-500 group-hover/tier:scale-110",
               tier.featured
-                ? "border-steel/50 bg-steel/10 text-steel shadow-[0_0_30px_-8px_rgba(169,178,193,0.50)]"
-                : "border-edge bg-white/[0.04] text-chrome group-hover/tier:border-chrome/50",
+                ? "border-steel/50 bg-steel/10 text-steel shadow-[0_0_30px_-8px_color-mix(in_oklab,var(--accent)_72%,transparent)]"
+                : "border-edge bg-white/[0.04] text-accent group-hover/tier:border-accent/55",
             )}
           >
             <Icon className="size-6" strokeWidth={1.8} />
@@ -248,7 +265,7 @@ function PricingCard({ tier }: { tier: Tier }) {
             <span
               className={cn(
                 "font-display text-5xl font-bold leading-none tracking-tight sm:text-[3.25rem]",
-                tier.featured ? "metal-text" : "text-ink",
+                tier.featured ? "accent-text" : "text-ink",
               )}
             >
               {tier.price}
@@ -273,8 +290,8 @@ function PricingCard({ tier }: { tier: Tier }) {
                 className={cn(
                   "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-500",
                   tier.featured
-                    ? "border-chrome/50 bg-chrome/12 text-chrome"
-                    : "border-edge bg-white/[0.04] text-chrome/80 group-hover/tier:border-chrome/40",
+                    ? "border-accent/55 bg-accent/14 text-accent"
+                    : "border-edge bg-white/[0.04] text-accent/80 group-hover/tier:border-accent/45",
                 )}
               >
                 <Check className="size-3" strokeWidth={3} />

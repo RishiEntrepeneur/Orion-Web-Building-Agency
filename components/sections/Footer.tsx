@@ -10,7 +10,7 @@ export default function Footer() {
     <footer
       id="site-footer"
       aria-labelledby="footer-heading"
-      className="relative overflow-hidden border-t border-edge bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
+      className="zone-rigel relative overflow-hidden border-t border-edge bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
     >
       <h2 id="footer-heading" className="sr-only">
         Site footer, contact details and legal information
@@ -19,11 +19,11 @@ export default function Footer() {
       {/* Ambient wash */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-chrome/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/40 to-transparent"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-1/2 h-72 w-[60rem] max-w-none -translate-x-1/2 translate-y-1/3 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(246,248,251,0.06),transparent_70%)] blur-2xl"
+        className="pointer-events-none absolute bottom-0 left-1/2 h-72 w-[60rem] max-w-none -translate-x-1/2 translate-y-1/3 bg-[radial-gradient(50%_50%_at_50%_50%,color-mix(in_oklab,var(--accent)_24%,transparent),transparent_70%)] blur-2xl"
       />
 
       <div className="relative mx-auto w-full max-w-7xl">
@@ -53,7 +53,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`mailto:${site.email}`}
-                  className="group/link inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-chrome"
+                  className="group/link inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-accent"
                 >
                   <Mail className="size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
                   {site.email}
@@ -62,7 +62,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`tel:${site.phone.replace(/\s+/g, "")}`}
-                  className="inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-chrome"
+                  className="inline-flex items-center gap-2.5 text-ink-muted transition-colors duration-300 hover:text-accent"
                 >
                   <Phone className="size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
                   {site.phone}
@@ -78,7 +78,7 @@ export default function Footer() {
           {/* Link columns */}
           {footerColumns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
-              <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-chrome">
+              <h3 className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
                 {column.title}
               </h3>
               <ul className="mt-5 flex flex-col gap-3.5">
@@ -91,7 +91,7 @@ export default function Footer() {
                       {link.label}
                       <span
                         aria-hidden="true"
-                        className="absolute -bottom-0.5 left-0 h-px w-0 bg-linear-to-r from-chrome to-steel transition-all duration-300 group-hover/foot:w-full"
+                        className="absolute -bottom-0.5 left-0 h-px w-0 bg-linear-to-r from-accent to-steel transition-all duration-300 group-hover/foot:w-full"
                       />
                     </a>
                   </li>
@@ -162,7 +162,7 @@ export default function Footer() {
             <li>
               <a
                 href="/legal/privacy"
-                className="text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
+                className="text-sm text-ink-muted transition-colors duration-300 hover:text-accent"
               >
                 Privacy
               </a>
@@ -170,7 +170,7 @@ export default function Footer() {
             <li>
               <a
                 href="/legal/terms"
-                className="text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
+                className="text-sm text-ink-muted transition-colors duration-300 hover:text-accent"
               >
                 Terms
               </a>
@@ -179,7 +179,7 @@ export default function Footer() {
 
           <a
             href="#top"
-            className="group/top inline-flex items-center gap-2 self-start rounded-full border border-edge bg-white/[0.03] px-4 py-2 text-xs font-medium text-ink-muted transition-all duration-300 hover:-translate-y-0.5 hover:border-chrome/50 hover:text-chrome hover:shadow-[0_0_28px_-8px_rgba(246,248,251,0.56)] lg:self-auto"
+            className="group/top inline-flex items-center gap-2 self-start rounded-full border border-edge bg-white/[0.03] px-4 py-2 text-xs font-medium text-ink-muted transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/55 hover:text-accent hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--accent)_74%,transparent)] lg:self-auto"
           >
             Back to top
             <ArrowUp

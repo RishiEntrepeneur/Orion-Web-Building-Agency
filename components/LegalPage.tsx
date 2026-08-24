@@ -27,7 +27,7 @@ export default function LegalPage({
       <div className="mx-auto w-full max-w-3xl">
         <a
           href="/"
-          className="group/back inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-chrome"
+          className="group/back inline-flex items-center gap-2 text-sm text-ink-muted transition-colors duration-300 hover:text-accent"
         >
           <ArrowLeft
             className="size-4 transition-transform duration-300 group-hover/back:-translate-x-1"
@@ -37,7 +37,7 @@ export default function LegalPage({
           Back to {site.name}
         </a>
 
-        <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-chrome/25 bg-chrome/[0.06] px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-chrome">
+        <span className="mt-8 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
           <ScrollText className="size-3.5" strokeWidth={2.2} aria-hidden="true" />
           Legal
         </span>
@@ -93,7 +93,7 @@ export default function LegalPage({
             <span>{site.legal.registeredOffice}</span>
             <a
               href={`mailto:${site.email}`}
-              className="w-fit text-chrome transition-opacity duration-300 hover:opacity-80"
+              className="w-fit text-accent transition-opacity duration-300 hover:opacity-80"
             >
               {site.email}
             </a>

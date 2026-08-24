@@ -9,7 +9,7 @@ const LAYERS = [
     id: "ui",
     label: "UI Layer",
     depth: 88,
-    accent: "from-chrome/30 to-chrome/[0.04]",
+    accent: "from-accent/30 to-accent/[0.04]",
     border: "border-chrome/45",
   },
   {
@@ -88,7 +88,7 @@ export default function DepthStack() {
         className={cn(
           "absolute left-0 top-0 z-20 flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em] transition-all duration-500",
           exploded
-            ? "border-chrome/50 bg-chrome/10 text-chrome shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)]"
+            ? "border-accent/55 bg-accent/12 text-accent shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)]"
             : "border-edge bg-white/[0.04] text-ink-dim",
         )}
       >

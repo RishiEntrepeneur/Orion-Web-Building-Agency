@@ -61,20 +61,24 @@ export default function PinnedPanel({
             },
           });
 
+          /* Timing is weighted toward the settled hold rather than the travel.
+             The approach and departure are what make the panel feel physical,
+             but they are also the only moments its text is hard to read, so
+             they are kept short and never fade far enough to be illegible. */
           timeline
             .fromTo(
               panel,
-              { z: -depth, scale: 0.86, opacity: 0.35, rotateX: 7 },
-              { z: 0, scale: 1, opacity: 1, rotateX: 0, ease: "power2.out", duration: 0.55 },
+              { z: -depth, scale: 0.9, opacity: 0.55, rotateX: 6 },
+              { z: 0, scale: 1, opacity: 1, rotateX: 0, ease: "power2.out", duration: 0.34 },
             )
-            .to(panel, { duration: 0.15 })
+            .to(panel, { duration: 0.42 })
             .to(panel, {
-              z: depth * 0.55,
-              scale: 1.1,
-              opacity: 0,
-              rotateX: -5,
+              z: depth * 0.5,
+              scale: 1.08,
+              opacity: 0.2,
+              rotateX: -4,
               ease: "power2.in",
-              duration: 0.4,
+              duration: 0.24,
             });
         },
       });

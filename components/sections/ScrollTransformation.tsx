@@ -53,7 +53,7 @@ export default function ScrollTransformation() {
     <section
       id="capabilities"
       aria-labelledby="capabilities-heading"
-      className="relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
+      className="zone-oxygen relative scroll-mt-24 overflow-x-clip px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
     >
       {/* Section divider glow */}
       <div
@@ -67,7 +67,7 @@ export default function ScrollTransformation() {
           title={
             <>
               Ordinary pages are flat.{" "}
-              <span className="metal-text">Yours will have depth.</span>
+              <span className="accent-text">Yours will have depth.</span>
             </>
           }
           description="We take the same content a traditional agency would drop into a template and rebuild it as a navigable environment — layered, lit and reactive to every scroll and cursor movement."
@@ -82,7 +82,7 @@ export default function ScrollTransformation() {
               className="flex h-full flex-col justify-between gap-8 p-6 sm:p-8 lg:p-10"
             >
               <div className="max-w-xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-chrome/25 bg-chrome/[0.06] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-chrome">
+                <span className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
                   Live demonstration
                 </span>
                 <h3 className="mt-5 text-2xl font-semibold leading-tight text-ink sm:text-3xl lg:text-[2rem]">
@@ -117,7 +117,7 @@ export default function ScrollTransformation() {
               >
                 <span
                   aria-hidden="true"
-                  className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-chrome transition-all duration-500 group-hover/card:scale-110 group-hover/card:border-chrome/50 group-hover/card:shadow-[0_0_28px_-6px_rgba(246,248,251,0.56)]"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-accent transition-all duration-500 group-hover/card:scale-110 group-hover/card:border-accent/55 group-hover/card:shadow-[0_0_28px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)]"
                 >
                   <feature.icon className="size-5" strokeWidth={1.9} />
                 </span>
@@ -129,7 +129,7 @@ export default function ScrollTransformation() {
                   {feature.body}
                 </p>
 
-                <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-edge bg-void/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim transition-colors duration-500 group-hover/card:border-chrome/35 group-hover/card:text-chrome">
+                <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-edge bg-void/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim transition-colors duration-500 group-hover/card:border-accent/40 group-hover/card:text-accent">
                   <span aria-hidden="true" className="size-1 rounded-full bg-current" />
                   {feature.metric}
                 </span>

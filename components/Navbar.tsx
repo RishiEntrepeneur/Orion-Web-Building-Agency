@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { navLinks, site } from "@/lib/site";
+import { ZONE_ACCENT_CLASS } from "@/lib/zone-accents";
 import { cn } from "@/lib/utils";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
 import CtaLink from "@/components/ui/CtaLink";
@@ -12,6 +13,11 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [activeId, setActiveId] = useState<string>("");
+  /* The bar is fixed, so it sits outside every section and inherits no zone
+     accent of its own. Adopting the active section's colour keeps it part of
+     the same light as the content scrolling beneath it. */
+  const accentClass =
+    ZONE_ACCENT_CLASS[activeId.replace("#", "")] ?? "zone-rigel";
   const [menuOpen, setMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -119,14 +125,14 @@ export default function Navbar() {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-700", accentClass)}>
       {/* Reading progress rail */}
       <div
         aria-hidden="true"
         className="h-px w-full bg-transparent"
       >
         <div
-          className="h-px bg-linear-to-r from-chrome via-steel to-steel shadow-[0_0_12px_rgba(246,248,251,0.56)] transition-[width] duration-150 ease-out"
+          className="h-px bg-linear-to-r from-accent via-steel to-steel shadow-[0_0_12px_color-mix(in_oklab,var(--accent)_74%,transparent)] transition-[width] duration-150 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -135,7 +141,7 @@ export default function Navbar() {
         className={cn(
           "relative transition-all duration-500 ease-out",
           scrolled
-            ? "border-b border-edge/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-30px_rgba(246,248,251,0.31)]"
+            ? "border-b border-edge/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-30px_color-mix(in_oklab,var(--accent)_49%,transparent)]"
             : "border-b border-transparent bg-transparent",
         )}
       >
@@ -147,7 +153,7 @@ export default function Navbar() {
             scrolled ? "opacity-100" : "opacity-0",
           )}
         >
-          <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-chrome/90 to-transparent animate-sheen" />
+          <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-accent/90 to-transparent animate-sheen" />
         </span>
 
         <nav
@@ -161,7 +167,7 @@ export default function Navbar() {
           >
             <LogoMark instanceId="nav" />
             <span className="flex flex-col leading-none">
-              <span className="font-display text-[17px] font-bold tracking-[0.24em] text-ink transition-colors duration-300 group-hover/logo:text-chrome sm:text-lg">
+              <span className="font-display text-[17px] font-bold tracking-[0.24em] text-ink transition-colors duration-300 group-hover/logo:text-accent sm:text-lg">
                 {site.name}
               </span>
               <span className="mt-1 hidden font-mono text-[9px] uppercase tracking-[0.3em] text-ink-dim sm:block">
@@ -191,7 +197,7 @@ export default function Navbar() {
                       className={cn(
                         "absolute inset-0 rounded-full border transition-all duration-300",
                         isActive
-                          ? "border-chrome/35 bg-chrome/[0.07] shadow-[0_0_22px_-6px_rgba(246,248,251,0.50)]"
+                          ? "border-accent/40 bg-accent/[0.07] shadow-[0_0_22px_-6px_color-mix(in_oklab,var(--accent)_68%,transparent)]"
                           : "border-transparent group-hover/nav:border-edge group-hover/nav:bg-white/[0.04]",
                       )}
                     />
@@ -199,7 +205,7 @@ export default function Navbar() {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-linear-to-r from-transparent via-chrome to-transparent transition-all duration-300",
+                        "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-linear-to-r from-transparent via-accent to-transparent transition-all duration-300",
                         isActive ? "w-3/5" : "w-0 group-hover/nav:w-2/5",
                       )}
                     />
@@ -213,7 +219,7 @@ export default function Navbar() {
           <div className="hidden items-center gap-3 lg:flex">
             <a
               href={`mailto:${site.email}`}
-              className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-chrome"
+              className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-accent"
             >
               {site.email}
             </a>
@@ -233,7 +239,7 @@ export default function Navbar() {
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            className="flex size-11 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-chrome/60 hover:text-chrome hover:shadow-[0_0_24px_-6px_rgba(246,248,251,0.56)] lg:hidden"
+            className="flex size-11 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:text-accent hover:shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)] lg:hidden"
           >
             {menuOpen ? (
               <X className="size-5" strokeWidth={2} />
@@ -266,7 +272,7 @@ export default function Navbar() {
                   href={link.href}
                   onClick={closeMenu}
                   style={{ animationDelay: `${index * 55}ms` }}
-                  className="flex items-center justify-between rounded-xl border border-transparent px-4 py-4 text-lg font-medium text-ink-muted transition-all duration-300 animate-rise hover:border-chrome/30 hover:bg-white/[0.04] hover:text-ink"
+                  className="flex items-center justify-between rounded-xl border border-transparent px-4 py-4 text-lg font-medium text-ink-muted transition-all duration-300 animate-rise hover:border-accent/30 hover:bg-white/[0.04] hover:text-ink"
                 >
                   <span>{link.label}</span>
                   <span className="font-mono text-xs text-ink-dim">

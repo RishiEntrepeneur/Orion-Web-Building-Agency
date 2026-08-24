@@ -14,8 +14,8 @@ type LogoMarkProps = {
  * system, so the highlight direction is consistent across the page.
  */
 export default function LogoMark({ className, instanceId }: LogoMarkProps) {
-  const edge = `aurex-edge-${instanceId}`;
-  const face = `aurex-face-${instanceId}`;
+  const edge = `orion-edge-${instanceId}`;
+  const face = `orion-face-${instanceId}`;
 
   return (
     <span

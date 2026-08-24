@@ -6,6 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
+import { accentAt } from "@/lib/zone-accents";
 import { createSpatialUniforms } from "./shaders/uniforms";
 import { particlesFragment, particlesVertex } from "./shaders/particles";
 
@@ -27,6 +28,7 @@ export default function ParticleField({ count }: { count?: number }) {
     const positions = new Float32Array(resolvedCount * 3);
     const seeds = new Float32Array(resolvedCount);
     const scales = new Float32Array(resolvedCount);
+    const temps = new Float32Array(resolvedCount);
 
     for (let i = 0; i < resolvedCount; i++) {
       // Distribute across a wide, deep slab rather than a sphere so the field
@@ -37,11 +39,15 @@ export default function ParticleField({ count }: { count?: number }) {
       seeds[i] = Math.random();
       // Cubed distribution: mostly fine dust, a few larger motes to catch light.
       scales[i] = 0.6 + Math.pow(Math.random(), 3) * 3.4;
+      // Skewed hot: a real field is mostly blue-white with a scattering of
+      // cool giants. An even spread would read as a colour wheel, not a sky.
+      temps[i] = Math.pow(Math.random(), 0.55);
     }
 
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     geo.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
     geo.setAttribute("aScale", new THREE.BufferAttribute(scales, 1));
+    geo.setAttribute("aTemp", new THREE.BufferAttribute(temps, 1));
     return geo;
   }, [resolvedCount]);
 
@@ -74,6 +80,8 @@ export default function ParticleField({ count }: { count?: number }) {
       size.height * viewport.dpr,
     );
     uniforms.uIntensity.value = qualityState.intensity;
+    const [ar, ag, ab] = accentAt(scrollState.zone);
+    uniforms.uAccent.value.setRGB(ar, ag, ab);
     void state;
   });
 

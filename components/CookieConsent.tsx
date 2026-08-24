@@ -5,7 +5,7 @@ import { Cookie, ShieldCheck, X } from "lucide-react";
 import { COOKIE_CONSENT_KEY } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export const COOKIE_PREFERENCES_EVENT = "aurex:open-cookie-preferences";
+export const COOKIE_PREFERENCES_EVENT = "orion:open-cookie-preferences";
 
 type Consent = {
   essential: true;
@@ -90,7 +90,7 @@ export default function CookieConsent() {
       <div className="relative overflow-hidden rounded-2xl border border-edge bg-abyss/95 p-5 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl sm:p-6">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-chrome/70 to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/70 to-transparent"
         />
 
         <button
@@ -105,7 +105,7 @@ export default function CookieConsent() {
         <div className="flex items-start gap-3">
           <span
             aria-hidden="true"
-            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-chrome/35 bg-chrome/10 text-chrome"
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-accent/40 bg-accent/12 text-accent"
           >
             <Cookie className="size-5" strokeWidth={1.9} />
           </span>
@@ -153,14 +153,14 @@ export default function CookieConsent() {
           <button
             type="button"
             onClick={() => decide({ analytics: true, marketing: true })}
-            className="h-11 flex-1 rounded-xl bg-linear-to-r from-chrome to-steel text-sm font-semibold text-void transition-all duration-300 hover:brightness-110 hover:shadow-[0_10px_36px_-10px_rgba(246,248,251,0.56)]"
+            className="h-11 flex-1 rounded-xl bg-linear-to-r from-accent to-steel text-sm font-semibold text-void transition-all duration-300 hover:brightness-110 hover:shadow-[0_10px_36px_-10px_color-mix(in_oklab,var(--accent)_74%,transparent)]"
           >
             Accept all
           </button>
           <button
             type="button"
             onClick={() => decide({ analytics: false, marketing: false })}
-            className="h-11 flex-1 rounded-xl border border-edge bg-white/[0.04] text-sm font-semibold text-ink transition-all duration-300 hover:border-chrome/45 hover:bg-white/[0.08]"
+            className="h-11 flex-1 rounded-xl border border-edge bg-white/[0.04] text-sm font-semibold text-ink transition-all duration-300 hover:border-accent/45 hover:bg-white/[0.08]"
           >
             Reject non-essential
           </button>
@@ -169,7 +169,7 @@ export default function CookieConsent() {
         <button
           type="button"
           onClick={() => decide({ analytics, marketing })}
-          className="mt-2.5 h-11 w-full rounded-xl border border-transparent text-[13px] font-medium text-ink-muted transition-colors duration-300 hover:text-chrome"
+          className="mt-2.5 h-11 w-full rounded-xl border border-transparent text-[13px] font-medium text-ink-muted transition-colors duration-300 hover:text-accent"
         >
           Save my selection
         </button>
@@ -202,7 +202,7 @@ function ConsentRow({
     <label
       className={cn(
         "flex items-start gap-3 rounded-xl border border-edge/70 bg-white/[0.02] px-3.5 py-3 transition-colors duration-300",
-        locked ? "cursor-default opacity-80" : "cursor-pointer hover:border-chrome/30",
+        locked ? "cursor-default opacity-80" : "cursor-pointer hover:border-accent/30",
       )}
     >
       <input
@@ -220,7 +220,7 @@ function ConsentRow({
              on this proxy or the control is invisible to keyboard users. */
           "peer-focus-visible:shadow-[0_0_0_2px_var(--color-void),0_0_0_4px_var(--color-chrome)]",
           checked
-            ? "border-chrome/60 bg-chrome/25"
+            ? "border-accent/60 bg-accent/25"
             : "border-edge bg-white/[0.05]",
         )}
       >
@@ -228,7 +228,7 @@ function ConsentRow({
           className={cn(
             "absolute top-1/2 size-3.5 -translate-y-1/2 rounded-full transition-all duration-300",
             checked
-              ? "left-[1.15rem] bg-chrome shadow-[0_0_12px_rgba(246,248,251,0.62)]"
+              ? "left-[1.15rem] bg-accent shadow-[0_0_12px_color-mix(in_oklab,var(--accent)_80%,transparent)]"
               : "left-0.5 bg-ink-dim",
           )}
         />

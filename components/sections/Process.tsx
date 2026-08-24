@@ -37,7 +37,7 @@ export default function Process() {
     <section
       id="process"
       aria-labelledby="process-heading"
-      className="relative scroll-mt-24 overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
+      className="zone-ember relative scroll-mt-24 overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
     >
       <div
         aria-hidden="true"
@@ -50,7 +50,7 @@ export default function Process() {
           title={
             <>
               Three steps.{" "}
-              <span className="metal-text">Forty-eight hours.</span>
+              <span className="accent-text">Forty-eight hours.</span>
             </>
           }
           description="A frictionless pipeline built to remove every stage where traditional agency projects stall — approvals, revisions ping-pong and handover limbo."
@@ -62,12 +62,12 @@ export default function Process() {
           {/* Desktop connector rail */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 right-0 top-8 hidden h-px bg-linear-to-r from-chrome/0 via-steel/60 to-steel/0 md:block"
+            className="pointer-events-none absolute left-0 right-0 top-8 hidden h-px bg-linear-to-r from-accent/0 via-steel/60 to-steel/0 md:block"
           />
           {/* Mobile connector rail */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-10 left-8 top-8 w-px bg-linear-to-b from-chrome/60 via-steel/45 to-transparent md:hidden"
+            className="pointer-events-none absolute bottom-10 left-8 top-8 w-px bg-linear-to-b from-accent/60 via-steel/45 to-transparent md:hidden"
           />
 
           {steps.map((step, index) => (
@@ -82,9 +82,9 @@ export default function Process() {
                 <div className="relative shrink-0">
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-2xl bg-chrome/25 blur-lg"
+                    className="absolute inset-0 rounded-2xl bg-accent/25 blur-lg"
                   />
-                  <span className="relative flex size-16 items-center justify-center rounded-2xl border border-chrome/35 bg-abyss text-chrome shadow-[0_0_40px_-12px_rgba(246,248,251,0.59)] transition-all duration-500 hover:scale-105 hover:border-chrome/70">
+                  <span className="relative flex size-16 items-center justify-center rounded-2xl border border-accent/40 bg-abyss text-accent shadow-[0_0_40px_-12px_color-mix(in_oklab,var(--accent)_77%,transparent)] transition-all duration-500 hover:scale-105 hover:border-accent/70">
                     <step.icon className="size-7" strokeWidth={1.7} aria-hidden="true" />
                     <span className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full border border-edge bg-raised font-mono text-[10px] font-semibold text-ink">
                       {step.index}
@@ -94,7 +94,7 @@ export default function Process() {
 
                 {/* Copy */}
                 <div className="pb-2 md:mt-8">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-edge bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-chrome">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-edge bg-white/[0.04] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-accent">
                     {step.duration}
                   </span>
                   <h3 className="mt-4 text-xl font-semibold leading-snug text-ink sm:text-2xl">
