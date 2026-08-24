@@ -81,7 +81,7 @@ export default function DepthStack() {
       tabIndex={0}
       role="img"
       aria-label="Diagram: a flat two-dimensional web page separating into three parallax depth layers — UI layer, content plane and 3D environment."
-      className="relative flex h-full min-h-[19rem] w-full cursor-crosshair items-center justify-center rounded-xl outline-none sm:min-h-[23rem]"
+      className="relative flex h-full min-h-[19rem] w-full cursor-crosshair items-center justify-center rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neon-cyan sm:min-h-[23rem]"
     >
       {/* Mode label */}
       <span

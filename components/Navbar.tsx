@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ export default function Navbar() {
   const [progress, setProgress] = useState(0);
   const [activeId, setActiveId] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   /* Condensed chrome + reading-progress rail --------------------------- */
   useEffect(() => {
@@ -66,21 +67,66 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
-  /* Mobile drawer: lock scroll + close on Escape ----------------------- */
+  /* Mobile drawer: lock scroll, trap focus, close on Escape ------------- */
   useEffect(() => {
     if (!menuOpen) return;
 
-    const { overflow } = document.body.style;
-    document.body.style.overflow = "hidden";
+    const root = document.documentElement;
+    const body = document.body;
+    /* <html> is the scrolling element here, so locking <body> alone does
+       nothing — both have to be pinned, and the scrollbar width compensated
+       so the page does not visibly shift as it locks. */
+    const previous = {
+      rootOverflow: root.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyPadding: body.style.paddingRight,
+    };
+    const scrollbar = window.innerWidth - root.clientWidth;
+    root.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+
+    const panel = panelRef.current;
+    const opener = document.activeElement as HTMLElement | null;
+    const focusables = () =>
+      Array.from(
+        panel?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((node) => node.offsetParent !== null);
+
+    focusables()[0]?.focus();
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const nodes = focusables();
+      if (nodes.length === 0) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && (active === first || !panel?.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = overflow;
+      root.style.overflow = previous.rootOverflow;
+      body.style.overflow = previous.bodyOverflow;
+      body.style.paddingRight = previous.bodyPadding;
       window.removeEventListener("keydown", onKeyDown);
+      opener?.focus?.();
     };
   }, [menuOpen]);
 
@@ -223,7 +269,9 @@ export default function Navbar() {
           onClick={closeMenu}
           aria-hidden="true"
         />
-        <div className="fixed inset-x-0 top-16 z-50 origin-top border-b border-hairline bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:px-8">
+        <div
+          ref={panelRef}
+          className="fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto overscroll-contain border-b border-hairline bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:max-h-[calc(100dvh-5rem)] sm:px-8">
           <div aria-hidden="true" className="absolute inset-0 grid-mesh-fine opacity-40" />
           <ul className="relative flex flex-col gap-1">
             {navLinks.map((link, index) => (

@@ -14,6 +14,8 @@ import SectionHeading from "@/components/ui/SectionHeading";
 
 type Tier = {
   id: string;
+  /** Small print under the CTA — differs for one-off builds vs the retainer. */
+  ctaNote: string;
   name: string;
   icon: typeof Rocket;
   price: string;
@@ -44,6 +46,7 @@ const tiers: readonly Tier[] = [
       "Contact form with spam protection",
       "Deployed to global edge hosting",
     ],
+    ctaNote: "No deposit until the brief is approved",
     ctaLabel: "Start Your Concept",
     ctaHref: `mailto:${site.email}?subject=Starter%20Concept%20(%C2%A3299)%20enquiry`,
   },
@@ -64,6 +67,7 @@ const tiers: readonly Tier[] = [
       "Analytics, event tracking & conversion goals",
       "Two rounds of revisions inside the build window",
     ],
+    ctaNote: "No deposit until the brief is approved",
     ctaLabel: "Book Your Cinematic Build",
     ctaHref: `mailto:${site.email}?subject=Cinematic%20Experience%20(%C2%A3699)%20enquiry`,
     featured: true,
@@ -86,6 +90,7 @@ const tiers: readonly Tier[] = [
       "Uptime monitoring with incident alerts",
       "Monthly performance & conversion report",
     ],
+    ctaNote: "Rolling monthly — cancel any time",
     ctaLabel: "Add The Retainer",
     ctaHref: `mailto:${site.email}?subject=Infinite%20Horizon%20Retainer%20(%C2%A349%2Fmonth)%20enquiry`,
   },
@@ -294,7 +299,7 @@ function PricingCard({ tier }: { tier: Tier }) {
             {tier.ctaLabel}
           </CtaLink>
           <p className="mt-3.5 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim">
-            No deposit until the brief is approved
+            {tier.ctaNote}
           </p>
         </div>
       </div>

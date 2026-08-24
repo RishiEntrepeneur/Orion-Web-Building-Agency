@@ -89,10 +89,11 @@ export default function ScrollTransformation() {
                   From a flat 2D layout to a fully spatial environment
                 </h3>
                 <p className="mt-4 text-pretty text-sm leading-relaxed text-ink-muted sm:text-base">
-                  Hover the panel below. The single flat plane a normal website
-                  lives on separates into independently animated depth layers —
-                  the same technique that drives your hero, product showcases and
-                  case studies once we rebuild them.
+                  Point at the panel below — or just scroll to it on a touch
+                  screen. The single flat plane a normal website lives on
+                  separates into independently animated depth layers: the same
+                  technique that drives your hero, product showcases and case
+                  studies once we rebuild them.
                 </p>
               </div>
 

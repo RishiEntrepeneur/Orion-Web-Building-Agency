@@ -81,6 +81,10 @@ export default function Accordion({ items }: { items: readonly Faq[] }) {
               id={panelId}
               role="region"
               aria-labelledby={buttonId}
+              /* A collapsed panel is only visually clipped, so without `inert`
+                 its text stays in the accessibility tree and reachable by
+                 keyboard — directly contradicting aria-expanded="false". */
+              inert={!isOpen}
               className={cn(
                 "grid transition-[grid-template-rows,opacity] duration-500 ease-out",
                 isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",

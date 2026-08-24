@@ -85,7 +85,7 @@ export default function CookieConsent() {
       aria-modal="false"
       aria-labelledby="cookie-consent-title"
       aria-describedby="cookie-consent-description"
-      className="fixed inset-x-3 bottom-3 z-[60] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:max-w-md"
+      className="fixed inset-x-3 bottom-3 z-[60] max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain sm:inset-x-auto sm:bottom-6 sm:left-6 sm:max-h-[calc(100dvh-3rem)] sm:max-w-md"
     >
       <div className="relative overflow-hidden rounded-2xl border border-hairline bg-abyss/95 p-5 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl sm:p-6">
         <div
@@ -216,6 +216,9 @@ function ConsentRow({
         aria-hidden="true"
         className={cn(
           "relative mt-0.5 h-5 w-9 shrink-0 rounded-full border transition-all duration-300",
+          /* The real <input> is sr-only, so keyboard focus has to be painted
+             on this proxy or the control is invisible to keyboard users. */
+          "peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-neon-cyan",
           checked
             ? "border-neon-cyan/60 bg-neon-cyan/25"
             : "border-hairline bg-white/[0.05]",

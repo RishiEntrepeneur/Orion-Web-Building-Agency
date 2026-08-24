@@ -33,12 +33,12 @@ export const faqs: readonly Faq[] = [
   {
     question: "I run a local business — is this overkill for me?",
     answer:
-      "It is usually the opposite. Local competitors almost all use the same handful of templates, so an immersive site is the fastest way to look like the established, premium option in your area. The Starter Concept at £299 gives a single-page spatial layout with booking or enquiry capture, which is all most local businesses need to out-position their market.",
+      "It is usually the opposite. Local competitors almost all use the same handful of templates, so an immersive site is the fastest way to look like the established, premium option in your area. The Starter Concept at £299 gives a single-page spatial layout with an enquiry form, which is all most local businesses need to out-position their market. Automated booking workflows sit in the £699 Cinematic Experience if you need them.",
   },
   {
     question: "What happens if I need changes after launch?",
     answer:
-      "Every package includes revisions during the build window. Afterwards you can either request ad-hoc changes at a fixed rate, or take the Infinite Horizon Retainer at £49 per month, which covers continuous 3D asset optimisation, hosting, security patches and structural updates with no long-term contract.",
+      "The Cinematic Experience includes two rounds of revisions inside the build window; the Starter Concept is a fixed single-page scope. Afterwards you can either request ad-hoc changes at a fixed rate, or take the Infinite Horizon Retainer at £49 per month, which covers continuous 3D asset optimisation, hosting, security patches and structural updates with no long-term contract.",
   },
   {
     question: "Do I own the website and the 3D assets?",
