@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Find us — Fairweather Barbers</title>
+<meta name="description" content="42 Cross Street, Marbury. Opening hours, how to get here, and a booking request form." />
+<meta name="robots" content="noindex, follow" />
+<meta name="theme-color" content="#14110f" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M-6 26 L10 -2 M2 26 L18 -2 M10 26 L26 -2 M18 26 L34 -2' stroke='%23e0761f' stroke-width='5'/%3E%3C/svg%3E" />
+<link rel="preload" href="../../assets/fonts/bebas-normal-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<a class="demobar" href="../../work.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> This is a <b>Business Growth</b> demo — five pages, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="pole" aria-hidden="true"></div>
+  <div class="top__in">
+    <a class="mark" href="index.html">
+      <span class="mark__n">Fairweather</span>
+      <span class="mark__s">Barbers &middot; est. 2011</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="about.html">The shop</a>
+      <a href="services.html">Cuts &amp; prices</a>
+      <a href="gallery.html">Work</a>
+      <a href="contact.html" aria-current="page">Find us</a>
+    </nav>
+    <a class="cta" href="contact.html">Book a chair</a>
+    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
+    <a href="index.html">Home</a>
+      <a href="about.html">The shop</a>
+      <a href="services.html">Cuts &amp; prices</a>
+      <a href="gallery.html">Work</a>
+      <a href="contact.html" aria-current="page">Find us</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="phead">
+    <div class="wrap">
+      <p class="kick">Find us</p>
+      <h1 class="phead__h">42 Cross Street,<br />Marbury</h1>
+      <p class="lede">
+        Between the chemist and the old post office. The blue door, not the black one.
+      </p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap split">
+      <div>
+        <div class="mapwrap">
+          <canvas id="map" width="900" height="620" role="img"
+            aria-label="Drawn map: Fairweather Barbers sits on Cross Street, between Mill Road and the market square."></canvas>
+        </div>
+        <p class="note note--tight">
+          This map is drawn by code so the page loads without calling anyone else's server. On a
+          live build this is where the embedded map and directions go — that is the part of the
+          package this demo cannot show without a third-party script.
+        </p>
+      </div>
+      <div>
+        <h2 class="h2">Getting here</h2>
+        <dl class="deets">
+          <div><dt>Address</dt><dd>42 Cross Street<br />Marbury, CH3 8QP</dd></div>
+          <div><dt>Hours</dt><dd>Tue&ndash;Fri 9:00&ndash;18:00<br />Sat 8:00&ndash;16:00<br />Sun &amp; Mon closed</dd></div>
+          <div><dt>Parking</dt><dd>Market square, two minutes. Free after 3pm and all day Saturday.</dd></div>
+          <div><dt>Step-free</dt><dd>Yes, from the street. The blue door is level.</dd></div>
+          <div><dt>Bus</dt><dd>7, 7A and 31 stop on Mill Road, one minute away.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--dark">
+    <div class="wrap split">
+      <div>
+        <p class="kick">Booking</p>
+        <h2 class="h2">Ask for a chair</h2>
+        <p class="body">
+          Tell us roughly when suits and we will come back with the nearest slot. If you are
+          flexible, say so — it usually gets you in the same week.
+        </p>
+        <p class="body">
+          Walk-ins are always welcome. The quiet hours are before ten and after four, every day
+          except Saturday.
+        </p>
+      </div>
+      <div>
+        <form id="bk" novalidate>
+          <p class="alert" id="alert" role="alert" hidden></p>
+          <label class="fld"><span>Your name</span>
+            <input type="text" name="name" id="bk-name" autocomplete="name" required />
+            <em class="err" aria-live="polite"></em></label>
+          <label class="fld"><span>Phone or email</span>
+            <input type="text" name="reach" id="bk-reach" required />
+            <em class="err" aria-live="polite"></em></label>
+          <label class="fld"><span>What are you after?</span>
+            <select name="svc" id="bk-svc" required>
+              <option value="" selected disabled>Pick one</option>
+              <option>Cut — £24</option>
+              <option>Cut &amp; beard — £34</option>
+              <option>Skin fade — £26</option>
+              <option>Beard trim — £14</option>
+              <option>Wet shave — £32</option>
+              <option>Something else</option>
+            </select>
+            <em class="err" aria-live="polite"></em></label>
+          <label class="fld"><span>When suits?</span>
+            <input type="text" name="when" id="bk-when" placeholder="e.g. Thursday afternoon, or any morning" required />
+            <em class="err" aria-live="polite"></em></label>
+          <button class="btn btn--fill" type="submit">Send the request</button>
+        </form>
+        <div id="done" hidden tabindex="-1">
+          <p class="done__h">Ready to send.</p>
+          <pre class="out" id="out"></pre>
+          <p class="note note--tight">
+            A demo has no server behind it, so nothing was transmitted. On a live build this
+            posts straight to the shop.
+          </p>
+          <div class="row">
+            <button class="btn btn--fill" type="button" id="copy">Copy it</button>
+            <button class="btn btn--ghostdark" type="button" id="again">Change something</button>
+          </div>
+          <p class="note note--tight" id="copied" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="pole" aria-hidden="true"></div>
+  <div class="foot__in">
+    <div>
+      <p class="foot__n">Fairweather</p>
+      <p class="foot__d">42 Cross Street<br />Marbury, CH3 8QP</p>
+    </div>
+    <div>
+      <p class="foot__k">Hours</p>
+      <p class="foot__d">Tue&ndash;Fri 9&ndash;6<br />Sat 8&ndash;4 &middot; Sun&ndash;Mon closed</p>
+    </div>
+    <div>
+      <p class="foot__k">Pages</p>
+      <p class="foot__d"><a href="index.html">Home</a><br /><a href="about.html">The shop</a><br /><a href="services.html">Cuts &amp; prices</a><br /><a href="gallery.html">Work</a><br /><a href="contact.html">Find us</a></p>
+    </div>
+    <div>
+      <p class="foot__k">About this page</p>
+      <p class="foot__d foot__d--dim">A fictional shop, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>

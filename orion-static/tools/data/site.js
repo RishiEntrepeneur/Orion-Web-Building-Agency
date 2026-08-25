@@ -18,7 +18,7 @@ module.exports = {
   /* Set this to a real address before publishing. While it is empty
      the contact form offers "copy the brief" instead of a mailto:
      link, and no address is printed anywhere on the site. */
-  email: "",
+  email: "rishvinoth@gmail.com",
 
   /* Country only. Nothing narrower than this goes on a public page. */
   location: "England, United Kingdom",

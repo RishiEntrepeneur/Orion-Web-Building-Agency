@@ -38,6 +38,12 @@ write("services.html", {
   slug: "services", current: "services.html", crumb: "What I build"
 }, servicesBody);
 
+write("demos.html", {
+  title: "Demos — Orion",
+  desc: "One finished demo site per package: a chess club, a barbershop and a restaurant with a working booking system.",
+  slug: "demos", current: "demos.html", crumb: "Demos"
+}, body("demos.html"));
+
 write("work.html", {
   title: "This site — Orion",
   desc: "No client list yet, so here is this website taken apart: six problems it posed, how each was solved, and every number measured.",
@@ -46,7 +52,7 @@ write("work.html", {
 
 write("about.html", {
   title: "About — Orion",
-  desc: "Orion is one person: a twelve-year-old developer in England, of Indian family, who writes every line by hand.",
+  desc: "Orion is one person in England, of Indian family, who writes every line by hand — no framework, no template, no tracker.",
   slug: "about", current: "about.html", crumb: "About"
 }, body("about.html"));
 
@@ -158,7 +164,13 @@ const BANNED = [
   "Arden Capital", "Kestrel Manufacturing", "Meridian Care", "Founded 2024",
   "\u00a325k", "\u00a3100k+", "\u00a34k / month", "\u00a36k fixed", "\u00a3950", "From \u00a31,800",
   "4,120,000,000", "one business day", "Sample project", "sample set",
-  "3 people per project", "Concurrent projects"
+  "3 people per project", "Concurrent projects",
+  /* Personal details that were removed on request and must not creep back in.
+     Note "twelve months" in the privacy notice is fine — these are phrases,
+     not the bare word. */
+  "twelve-year-old", "twelve years old", "I am twelve", "being twelve",
+  "Years old", "under eighteen", "my parents", "around school",
+  "I am at school"
 ];
 const hits = [];
 [...PAGES, "404.html", "robots.txt"].forEach((f) => {

@@ -2690,6 +2690,126 @@
     });
   }
 
+
+  /* ============================================================
+     35. DEMO LAB — pushing the camera into the machine
+     ============================================================ */
+  function initLab() {
+    var mach = $("#mach");
+    var rig = $("#mach-rig");
+    var lid = $("#mach-lid");
+    var track = $("#lab-track");
+    var frame = $("#mach-frame");
+    var hud = $(".lab__hud");
+    var stateEl = $("#lab-state");
+    var openLink = $("#lab-open");
+    var tabs = $$(".lab__tab");
+
+    if (!tabs.length) return;
+
+    /* Swapping which demo is on the screen. Works with or without the rig,
+       because the small-screen layout drops the machine entirely. */
+    function pick(btn) {
+      tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t === btn)); });
+      var src = btn.getAttribute("data-demo");
+      var name = btn.getAttribute("data-name");
+      var tier = btn.getAttribute("data-tier");
+      if (frame && frame.getAttribute("src") !== src) {
+        frame.setAttribute("src", src);
+        frame.setAttribute("title", name + " — a " + tier + " demo");
+      }
+      if (openLink) {
+        openLink.setAttribute("href", src);
+        openLink.textContent = "Open " + name + " full size →";
+      }
+    }
+    tabs.forEach(function (t) { on(t, "click", function () { pick(t); }); });
+    pick(tabs[0]);
+
+    if (!mach || !rig || !lid || !track) return;
+
+    /* The machine is built at these logical sizes in CSS; the camera maths
+       needs the same numbers, so they are read from the element rather than
+       written down twice. */
+    var cs = getComputedStyle(mach);
+    var SCR_W = parseFloat(cs.getPropertyValue("--scr-w")) || 1200;
+    var SCR_H = parseFloat(cs.getPropertyValue("--scr-h")) || 750;
+    var PERSP = parseFloat(cs.perspective) || 1700;
+
+    var small = function () { return S.vw < 901; };
+
+    if (REDUCED || small()) {
+      /* No flight: sit it open and mid-distance, and let the list below do
+         the work. The track collapses in CSS. */
+      lid.style.transform = "rotateX(0deg)";
+      rig.style.transform = "translate3d(0,0,-980px) rotateX(9deg) rotateY(-12deg)";
+      if (mach) mach.setAttribute("data-live", "true");
+      return;
+    }
+
+    track.style.height = "340svh";
+
+    var progress = 0, live = false;
+    var cam = { p: 0 };
+
+    addReader(function () {
+      var r = track.getBoundingClientRect();
+      live = !(r.bottom < -200 || r.top > S.vh + 200);
+      if (!live) return;
+      progress = clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1);
+    });
+
+    var wasLive = false;
+
+    addWriter(function (dt) {
+      if (!live) return;
+      cam.p = damp(cam.p, progress, 90, dt);
+      var p = cam.p;
+
+      /* Two beats: the lid comes up, then the camera goes in. */
+      var openT = clamp(p / 0.2, 0, 1);
+      var oe = 1 - Math.pow(1 - openT, 3);
+      lid.style.transform = "rotateX(" + (-88 * (1 - oe)).toFixed(2) + "deg)";
+
+      var q = clamp((p - 0.2) / 0.8, 0, 1);
+      var e = q < 0.5 ? 4 * q * q * q : 1 - Math.pow(-2 * q + 2, 3) / 2;
+
+      /* Scale is expressed as a dolly: solve the perspective divide for the
+         z that produces the scale we want, so this is a camera move rather
+         than a transform: scale(). */
+      var sStart = 0.52;
+      var sEnd = Math.max(S.vw / SCR_W, S.vh / SCR_H) * 1.02;
+      var sc = sStart + (sEnd - sStart) * e;
+      var z = PERSP * (1 - 1 / sc);
+
+      var rx = 13 * (1 - e);
+      var ry = -17 * (1 - e);
+      var ty = -70 * (1 - e);
+
+      rig.style.transform =
+        "translate3d(0," + ty.toFixed(1) + "px," + z.toFixed(1) + "px)" +
+        " rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
+
+      /* the glare and the ground shadow belong to a thing in a room; both go
+         as the screen becomes the whole view */
+      mach.style.setProperty("--glare", (1 - clamp((q - 0.55) / 0.4, 0, 1)).toFixed(3));
+      mach.style.setProperty("--shade", (1 - clamp((q - 0.4) / 0.45, 0, 1)).toFixed(3));
+
+      if (hud) hud.setAttribute("data-dim", String(q > 0.62));
+
+      var nowLive = q > 0.96;
+      if (nowLive !== wasLive) {
+        wasLive = nowLive;
+        mach.setAttribute("data-live", String(nowLive));
+        if (frame) frame.setAttribute("tabindex", nowLive ? "0" : "-1");
+        if (stateEl) stateEl.textContent = nowLive ? "Live — scroll inside it" : "Closed";
+      }
+      if (stateEl && !nowLive) {
+        stateEl.textContent = openT < 1 ? "Opening" : "Coming in";
+      }
+    });
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -2725,6 +2845,7 @@
     initToc();
     initIntro();
     initAssembly();
+    initLab();
     init3D();
     initCard3D();
     initOrbit();

@@ -1798,3 +1798,196 @@ a.work__card:hover .work__name { color: var(--accent); }
 /* work cards, stripped to a plate and a name */
 .work__card--min .work__body { display: grid; gap: 0.3rem; }
 .work__card--min .work__sector { font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); }
+
+/* ============================================================
+   47. DEMO LAB — the machine
+   A laptop built out of CSS 3D so the camera can push into the
+   screen with a real perspective divide rather than a scale.
+   Deliberately unbranded: it is an aluminium shape, not anyone's
+   product, and it carries no maker's mark.
+   ============================================================ */
+
+/* Logical size of the thing being built. The rig is laid out at these
+   numbers and then flown around; JS reads them from here. */
+.mach {
+  --scr-w: 1200px;
+  --scr-h: 750px;
+  --bez: 26px;
+  --chin: 46px;
+  --lid-h: calc(var(--scr-h) + var(--bez) + var(--chin));
+  --base-d: 540px;
+
+  /* the lid is the screen plus its bezel, so the screen fills the padding box
+     exactly and the iframe is never clipped */
+  --lid-w: calc(var(--scr-w) + var(--bez) * 2);
+
+  position: absolute; left: 50%; top: 50%;
+  width: var(--lid-w); height: var(--lid-h);
+  margin-left: calc(var(--lid-w) / -2);
+  margin-top: calc(var(--lid-h) / -2);
+  perspective: 1700px;
+  perspective-origin: 50% 50%;
+}
+
+.mach__rig {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ---------- lid ---------- */
+.mach__lid {
+  position: absolute; left: 0; top: 0; width: 100%; height: var(--lid-h);
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.mach__shell {
+  position: absolute; inset: 0; transform: translateZ(-9px);
+  background:
+    linear-gradient(158deg, #b3b8bf 0%, #8d9299 22%, #6b7076 48%, #7f858c 70%, #a4aab1 100%);
+  border-radius: 16px 16px 6px 6px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.16) inset;
+}
+.mach__bez {
+  position: absolute; inset: 0;
+  background: linear-gradient(170deg, #24262b, #131418 55%, #1b1d21);
+  border-radius: 16px 16px 6px 6px;
+  padding: var(--bez) var(--bez) var(--chin);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10) inset,
+    0 0 0 2px rgba(0,0,0,.55);
+}
+/* the chin carries no logo on purpose — this is not anyone's product */
+.mach__bez::after {
+  content: ""; position: absolute; left: 50%; bottom: calc(var(--chin) / 2 - 3px);
+  width: 74px; height: 5px; margin-left: -37px; border-radius: 3px;
+  background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.16), rgba(255,255,255,.05));
+}
+.mach__scr {
+  position: relative; width: 100%; height: 100%;
+  overflow: hidden; background: #08070e;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.9);
+}
+.mach__frame {
+  width: var(--scr-w); height: var(--scr-h);
+  border: 0; display: block; background: #08070e;
+  pointer-events: none;
+}
+.mach[data-live="true"] .mach__frame { pointer-events: auto; }
+.mach__glare {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(112deg,
+    rgba(255,255,255,.11) 0%, rgba(255,255,255,.04) 26%,
+    rgba(255,255,255,0) 46%, rgba(255,255,255,0) 100%);
+  opacity: var(--glare, 1);
+  transition: opacity .4s linear;
+}
+
+/* ---------- base ---------- */
+.mach__base {
+  position: absolute; left: 0; top: var(--lid-h); width: 100%; height: var(--base-d);
+  transform-origin: 50% 0%;
+  transform: rotateX(-90deg);
+  transform-style: preserve-3d;
+}
+.mach__deck {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, #9aa0a7 0%, #868c93 30%, #767c83 100%);
+  border-radius: 6px 6px 14px 14px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset;
+  padding: 42px 96px;
+}
+.mach__keys {
+  height: 300px;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(90deg, #2b2e33 0 62px, #7c828a 62px 70px),
+    repeating-linear-gradient(180deg, #2b2e33 0 40px, #7c828a 40px 48px);
+  background-blend-mode: lighten;
+  box-shadow: 0 2px 0 rgba(0,0,0,.25) inset;
+  opacity: .92;
+}
+.mach__pad {
+  width: 42%; height: 130px; margin: 26px auto 0;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #8d939a, #9aa0a7);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.22) inset;
+}
+.mach__edge {
+  position: absolute; left: 3%; right: 3%; bottom: -14px; height: 14px;
+  background: linear-gradient(180deg, #6d7278, #4e5257);
+  border-radius: 0 0 10px 10px;
+  transform: rotateX(-90deg); transform-origin: 50% 0%;
+}
+.mach__shadow {
+  position: absolute; left: -6%; width: 112%; top: calc(var(--lid-h) + var(--base-d) * 0.55);
+  height: 220px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.62), rgba(0,0,0,0) 72%);
+  transform: rotateX(-90deg) translateZ(-40px);
+  transform-origin: 50% 0%;
+  opacity: var(--shade, 1);
+}
+
+/* ---------- the stage the machine flies in ---------- */
+.lab__track { position: relative; }
+.lab__stage {
+  position: sticky; top: 0; height: 100svh; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.lab__view { position: absolute; inset: 0; }
+
+.lab__hud {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  width: min(var(--shell-w, 1240px), 100% - clamp(2rem, 6vw, 5rem));
+  margin-inline: auto;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding-block: clamp(1.5rem, 4vw, 2.6rem);
+  transition: opacity .45s var(--ease-out);
+}
+.lab__hud[data-dim="true"] { opacity: 0; }
+.lab__top { display: flex; justify-content: space-between; gap: 1rem; }
+.lab__pick { display: flex; flex-wrap: wrap; gap: .5rem; pointer-events: auto; margin-top: auto; }
+.lab__tab {
+  font: inherit; text-align: left; cursor: pointer;
+  background: rgba(8,7,14,.72); border: 1px solid var(--rule);
+  padding: .6rem .9rem; color: var(--ash);
+  backdrop-filter: blur(6px);
+  transition: border-color .25s, color .25s, background-color .25s;
+}
+.lab__tab:hover { border-color: var(--rule-hi); color: var(--bone); }
+.lab__tab[aria-selected="true"] { border-color: var(--accent); color: var(--bone); background: rgba(8,7,14,.9); }
+.lab__tabn { display: block; font-family: var(--f-mono); font-size: .5625rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+.lab__tabt { display: block; font-size: .875rem; margin-top: .2rem; }
+.lab__note { display: flex; gap: .5rem; align-items: baseline; margin-top: .9rem; pointer-events: auto; }
+.lab__note a { color: var(--accent); border-bottom: 1px solid var(--edge); }
+
+/* Under reduced motion, or on a screen too small for a 1200px machine to
+   mean anything, the stage stops flying and the cards below carry it. */
+@media (max-width: 900px) {
+  .lab__track { height: auto !important; }
+  .lab__stage { position: static; height: auto; padding-block: clamp(2rem, 6vw, 3rem); }
+  .lab__view { display: none; }
+  .lab__hud { position: static; opacity: 1 !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab__track { height: auto !important; }
+  .lab__stage { position: static; height: auto; min-height: 70svh; }
+  .lab__hud { opacity: 1 !important; }
+}
+
+/* ---------- the three, listed ---------- */
+.dmo { border-top: 1px solid var(--rule); margin-top: 2rem; }
+.dmo__row {
+  display: grid; gap: .8rem 2.5rem; padding-block: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 900px) { .dmo__row { grid-template-columns: 8rem minmax(0, 1fr); } }
+.dmo__idx { font-family: var(--f-mono); font-size: .6875rem; letter-spacing: .16em; color: var(--slate); }
+.dmo__t {
+  font-family: var(--f-display); font-weight: 600; line-height: 1;
+  font-size: clamp(1.7rem, 4vw, 2.8rem); margin-top: .6rem;
+  font-optical-sizing: none; font-variation-settings: "opsz" var(--opsz, 15);
+}
+.dmo__spec { font-size: .6875rem; letter-spacing: .13em; color: var(--slate); margin-top: 1.1rem; }

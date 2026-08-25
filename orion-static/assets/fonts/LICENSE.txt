@@ -1,8 +1,16 @@
 Fonts in this directory are licensed under the SIL Open Font License, Version 1.1.
 
-  Bodoni Moda     — Copyright (c) The Bodoni Moda Project Authors
-  Archivo         — Copyright (c) The Archivo Project Authors
-  IBM Plex Mono   — Copyright (c) The IBM Plex Project Authors
+Used by the Orion site itself:
+
+  Bodoni Moda        — Copyright (c) The Bodoni Moda Project Authors
+  Archivo            — Copyright (c) The Archivo Project Authors
+  IBM Plex Mono      — Copyright (c) The IBM Plex Project Authors
+
+Used by the demo sites in /demos, so each one has its own voice:
+
+  Fraunces           — Copyright (c) The Fraunces Project Authors
+  Bebas Neue         — Copyright (c) Ryoichi Tsunekawa, Dharma Type
+  Cormorant Garamond — Copyright (c) The Cormorant Project Authors
 
 Full licence text: https://openfontlicense.org/open-font-license-official-text/
 
