@@ -2379,6 +2379,244 @@
     });
   }
 
+
+  /* ============================================================
+     34. THE ASSEMBLY — scroll-driven exploded view
+     Five layers of a page, projected in true perspective, pulled
+     apart and inspected from a keyframed camera. Software 3D on a
+     2D canvas: no library, no WebGL.
+     ============================================================ */
+  function initAssembly() {
+    var canvas = $("#assembly");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    var track = $("#asm-track");
+    var host = canvas.parentElement;
+    var steps = $$("[data-asm-step]");
+    var ticks = $$("[data-asm-tick]");
+
+    /* --- the five layers, built procedurally in local [-1,1] space --------
+       Each is a plane of primitives; z separates them as the view explodes. */
+    function rect(x, y, w, h) { return { k: "r", x: x, y: y, w: w, h: h }; }
+    function line(x, y, w) { return { k: "l", x: x, y: y, w: w }; }
+    function dot(x, y, r) { return { k: "d", x: x, y: y, r: r || 1.4 }; }
+
+    function gridLayer() {
+      var p = [];
+      for (var gx = 0; gx <= 12; gx++) {
+        for (var gy = 0; gy <= 8; gy++) {
+          p.push(dot(-1 + (gx / 12) * 2, -0.68 + (gy / 8) * 1.36, 1.1));
+        }
+      }
+      return p;
+    }
+    function structureLayer() {
+      return [
+        rect(-1, -0.68, 2, 0.16),
+        rect(-1, -0.42, 1.18, 0.42),
+        rect(-1, 0.06, 0.78, 0.2),
+        rect(0.28, -0.42, 0.72, 0.68),
+        rect(-1, 0.42, 0.62, 0.26),
+        rect(-0.32, 0.42, 0.62, 0.26),
+        rect(0.36, 0.42, 0.64, 0.26)
+      ];
+    }
+    function typeLayer() {
+      var p = [line(-0.96, -0.6, 0.5)];
+      [[-0.3, 1.7], [-0.16, 1.45], [-0.02, 0.95]].forEach(function (r) { p.push(line(-0.96, r[0], r[1] * 0.62)); });
+      for (var i = 0; i < 4; i++) p.push(line(-0.96, 0.1 + i * 0.055, 0.62 - (i % 2) * 0.16));
+      for (var j = 0; j < 6; j++) p.push(line(0.34, -0.36 + j * 0.06, 0.5 - (j % 3) * 0.12));
+      [-0.94, -0.26, 0.42].forEach(function (x) { p.push(line(x, 0.53, 0.3)); });
+      return p;
+    }
+    function colourLayer() {
+      return [
+        rect(-1, -0.42, 1.18, 0.42),
+        rect(0.28, -0.42, 0.72, 0.68),
+        rect(-1, 0.42, 0.62, 0.26),
+        rect(-0.32, 0.42, 0.62, 0.26),
+        rect(0.36, 0.42, 0.64, 0.26)
+      ];
+    }
+    function motionLayer() {
+      var p = [];
+      for (var i = 0; i < 24; i++) {
+        var a = hash2(i * 3.7, i * 1.9);
+        var b = hash2(i * 5.1, i * 8.3);
+        p.push(line(-0.94 + a * 1.72, -0.6 + b * 1.2, 0.05 + hash2(i, 2.2) * 0.1));
+      }
+      return p;
+    }
+
+    var LAYERS = [
+      { name: "Grid",      hue: "--slate",   prims: gridLayer(),      fill: false },
+      { name: "Structure", hue: "--edge",    prims: structureLayer(), fill: false },
+      { name: "Type",      hue: "--bone",    prims: typeLayer(),      fill: false },
+      { name: "Colour",    hue: null,        prims: colourLayer(),    fill: true  },
+      { name: "Motion",    hue: "--accent",  prims: motionLayer(),    fill: false }
+    ];
+    var ZONE = ["--gold", "--violet", "--teal", "--blue", "--magenta"];
+
+    /* --- camera keyframes: position along the scroll, not along a clock --- */
+    var KEYS = [
+      { p: 0.00, yaw:  0.00, pitch:  0.00, dolly: 3.05, spread: 0.00 },
+      { p: 0.20, yaw:  0.62, pitch: -0.34, dolly: 4.60, spread: 1.00 },
+      { p: 0.42, yaw:  1.30, pitch: -0.10, dolly: 4.15, spread: 1.18 },
+      { p: 0.62, yaw:  0.40, pitch: -0.82, dolly: 5.10, spread: 1.05 },
+      { p: 0.80, yaw: -0.45, pitch: -0.22, dolly: 4.30, spread: 0.72 },
+      { p: 1.00, yaw:  0.00, pitch:  0.00, dolly: 2.45, spread: 0.00 }
+    ];
+    function sample(p) {
+      var i = 0;
+      while (i < KEYS.length - 2 && p > KEYS[i + 1].p) i++;
+      var a = KEYS[i], b = KEYS[i + 1];
+      var t = smoothstep(clamp((p - a.p) / Math.max(0.0001, b.p - a.p), 0, 1));
+      return {
+        yaw: lerp(a.yaw, b.yaw, t),
+        pitch: lerp(a.pitch, b.pitch, t),
+        dolly: lerp(a.dolly, b.dolly, t),
+        spread: lerp(a.spread, b.spread, t)
+      };
+    }
+
+    var cam = { yaw: 0, pitch: 0, dolly: 3.05, spread: 0 };
+    var target = { yaw: 0, pitch: 0, dolly: 3.05, spread: 0 };
+    var progress = 0, live = false, step = -1;
+    var W = 0, H = 0, dpr = 1;
+    var palette = {};
+
+    function readPalette() {
+      var cs = getComputedStyle(document.documentElement);
+      ["--slate", "--edge", "--bone", "--accent", "--gold", "--violet", "--teal", "--blue", "--magenta"].forEach(function (k) {
+        palette[k] = cs.getPropertyValue(k).trim() || "#888";
+      });
+    }
+    function rgba(hex, a) {
+      var m = String(hex).match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return "rgba(150,150,150," + a + ")";
+      var n = parseInt(m[1], 16);
+      return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+    }
+
+    function resize() {
+      var r = host.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      dpr = Math.min(window.devicePixelRatio || 1, LOWTIER ? 1 : 1.75);
+      W = Math.round(r.width); H = Math.round(r.height);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    /* rotate about Y then X, then project with the eye at `dolly` */
+    function project(x, y, z) {
+      var cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw);
+      var cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+      var x1 = x * cy - z * sy;
+      var z1 = x * sy + z * cy;
+      var y1 = y * cp - z1 * sp;
+      var z2 = y * sp + z1 * cp;
+      var f = cam.dolly / (cam.dolly + z2);
+      /* Sized and offset so the object reads as an object — contained, with
+         air around it, and clear of the caption in the lower left. */
+      var scale = Math.min(W, H) * 0.38;
+      return [W * 0.56 + x1 * f * scale, H * 0.44 + y1 * f * scale, z2, f];
+    }
+
+    function draw() {
+      if (!W) { resize(); if (!W) return; }
+      ctx.clearRect(0, 0, W, H);
+
+      var order = LAYERS.map(function (L, i) {
+        var z = (i - 2) * 0.34 * cam.spread;
+        return { L: L, i: i, z: z, depth: project(0, 0, z)[2] };
+      }).sort(function (a, b) { return b.depth - a.depth; });
+
+      for (var o = 0; o < order.length; o++) {
+        var L = order[o].L, li = order[o].i, z = order[o].z;
+        /* the layer nearest the current step reads brightest */
+        var focus = step < 0 ? 1 : 1 - Math.min(1, Math.abs(li - step)) * 0.66;
+        var base = cam.spread > 0.05 ? focus : 1;
+        var col = L.hue ? palette[L.hue] : palette[ZONE[0]];
+
+        ctx.lineWidth = li === 2 ? 1.15 : 1;
+        for (var k = 0; k < L.prims.length; k++) {
+          var pr = L.prims[k];
+          if (pr.k === "d") {
+            var q = project(pr.x, pr.y, z);
+            ctx.fillStyle = rgba(col, 0.46 * base);
+            ctx.beginPath(); ctx.arc(q[0], q[1], Math.max(0.5, pr.r * q[3]), 0, Math.PI * 2); ctx.fill();
+          } else if (pr.k === "l") {
+            var a = project(pr.x, pr.y, z), b = project(pr.x + pr.w, pr.y, z);
+            ctx.strokeStyle = rgba(col, 0.8 * base);
+            ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+          } else {
+            var c0 = project(pr.x, pr.y, z), c1 = project(pr.x + pr.w, pr.y, z);
+            var c2 = project(pr.x + pr.w, pr.y + pr.h, z), c3 = project(pr.x, pr.y + pr.h, z);
+            ctx.beginPath();
+            ctx.moveTo(c0[0], c0[1]); ctx.lineTo(c1[0], c1[1]);
+            ctx.lineTo(c2[0], c2[1]); ctx.lineTo(c3[0], c3[1]); ctx.closePath();
+            if (L.fill) {
+              var zc = palette[ZONE[k % ZONE.length]];
+              ctx.fillStyle = rgba(zc, 0.34 * base);
+              ctx.fill();
+              ctx.strokeStyle = rgba(zc, 0.85 * base);
+              ctx.stroke();
+            } else {
+              ctx.strokeStyle = rgba(col, 0.72 * base);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+    }
+
+    resize();
+    readPalette();
+    window.addEventListener("resize", resize, { passive: true });
+
+    if (REDUCED) {
+      cam = { yaw: 0.62, pitch: -0.34, dolly: 4.6, spread: 1 };
+      step = -1;
+      draw();
+      steps.forEach(function (el) { el.setAttribute("data-on", "true"); });
+      ticks.forEach(function (el) { el.setAttribute("data-on", "true"); });
+      return;
+    }
+
+    addReader(function () {
+      if (!track) return;
+      var r = track.getBoundingClientRect();
+      live = !(r.bottom < -100 || r.top > S.vh + 100);
+      if (!live) return;
+      progress = clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1);
+    });
+
+    var paletteTick = 0;
+    addWriter(function (dt, t) {
+      if (!live) return;
+      target = sample(progress);
+      cam.yaw = damp(cam.yaw, target.yaw, 110, dt);
+      cam.pitch = damp(cam.pitch, target.pitch, 110, dt);
+      cam.dolly = damp(cam.dolly, target.dolly, 110, dt);
+      cam.spread = damp(cam.spread, target.spread, 110, dt);
+
+      /* which layer is being talked about right now */
+      var want = clamp(Math.floor(progress * LAYERS.length), 0, LAYERS.length - 1);
+      if (progress > 0.9) want = -1;
+      if (want !== step) {
+        step = want;
+        steps.forEach(function (el, i) { el.setAttribute("data-on", String(i === (step < 0 ? steps.length - 1 : step))); });
+        ticks.forEach(function (el, i) { el.setAttribute("data-on", String(i === step)); });
+      }
+
+      paletteTick += dt;
+      if (paletteTick > 500) { paletteTick = 0; readPalette(); }
+      draw();
+    });
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -2413,6 +2651,7 @@
     initAudio();
     initToc();
     initIntro();
+    initAssembly();
     init3D();
     initCard3D();
     initOrbit();

@@ -1709,3 +1709,102 @@ a.wx__item { transition: none; }
   transition: opacity 0.45s var(--ease-out);
 }
 .ask[data-done="true"] { visibility: hidden; transition: opacity 0.45s var(--ease-out), visibility 0s linear 0.45s; }
+
+/* ============================================================
+   49. THE ASSEMBLY
+   A scroll-driven exploded view: five layers of a page, pulled
+   apart and inspected from changing camera positions.
+   ============================================================ */
+.asm { position: relative; }
+.asm__track { height: 460svh; }
+.asm__stage {
+  position: sticky; top: 0; height: 100svh;
+  display: grid; place-items: center; overflow: hidden;
+}
+.asm__canvas { position: absolute; inset: 0; }
+.asm__canvas canvas { width: 100%; height: 100%; }
+
+.asm__hud {
+  position: relative; z-index: 2; width: 100%;
+  height: 100%; display: grid; align-content: space-between;
+  padding-block: clamp(5.5rem, 12vh, 8rem) clamp(2rem, 5vh, 3.5rem);
+  pointer-events: none;
+}
+.asm__top { display: flex; justify-content: space-between; gap: 1rem; }
+
+.asm__cap { position: relative; min-height: clamp(6rem, 14vh, 9rem); }
+.asm__step {
+  position: absolute; inset: auto 0 0 0;
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.5s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.asm__step[data-on="true"] { opacity: 1; transform: none; }
+.asm__n {
+  font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent);
+}
+.asm__t {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 26; font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 5.5rem); line-height: 0.98;
+  letter-spacing: -0.02em; margin-top: 0.35rem;
+}
+.asm__d { margin-top: 0.6rem; color: var(--ash); font-size: clamp(0.9375rem, 1.4vw, 1.125rem); max-width: 34ch; }
+
+/* the layer readout down the right edge */
+.asm__rail { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); z-index: 2; display: grid; gap: 0.55rem; pointer-events: none; }
+.asm__tick { display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; }
+.asm__tick span {
+  font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--slate);
+  transition: color 0.4s var(--ease-out), opacity 0.4s var(--ease-out);
+  opacity: 0.45;
+}
+.asm__tick i {
+  display: block; width: 14px; height: 1px; background: var(--rule-hi);
+  transition: width 0.45s var(--ease-out), background-color 0.4s var(--ease-out);
+}
+.asm__tick[data-on="true"] span { color: var(--bone); opacity: 1; }
+.asm__tick[data-on="true"] i { width: 30px; background: var(--accent); }
+@media (max-width: 900px) { .asm__rail { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .asm__track { height: auto; }
+  .asm__stage { position: static; height: auto; padding-block: 4rem; }
+  .asm__canvas { position: relative; aspect-ratio: 4 / 3; }
+  .asm__hud { height: auto; padding-block: 2.5rem 0; gap: 2rem; }
+  .asm__cap { min-height: 0; display: grid; gap: 2rem; }
+  .asm__step { position: static; opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- 50. QUIET HOME ---------- */
+.q { display: grid; gap: clamp(1.5rem, 4vw, 2.5rem); }
+.q__line { font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.55; color: var(--ash); max-width: 40ch; }
+.svc-min { border-top: 1px solid var(--rule); }
+.svc-min__row {
+  display: grid; gap: 0.35rem 2.5rem; align-items: baseline;
+  padding-block: clamp(1.35rem, 3vw, 2.1rem); border-bottom: 1px solid var(--rule);
+  position: relative; isolation: isolate; overflow: hidden;
+}
+@media (min-width: 820px) { .svc-min__row { grid-template-columns: 5rem minmax(0, 1fr) minmax(0, 0.85fr); } }
+.svc-min__row::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--accent); opacity: 0.08;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.7s var(--ease-swipe);
+}
+.svc-min__row:hover::before { transform: scaleX(1); }
+.svc-min__n { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.16em; color: var(--slate); transition: color 0.4s; }
+.svc-min__row:hover .svc-min__n { color: var(--accent); }
+.svc-min__t {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 15; font-weight: 600;
+  font-size: clamp(1.5rem, 3.6vw, 2.6rem); line-height: 1;
+  transition: transform 0.6s var(--ease-out);
+}
+@media (min-width: 820px) { .svc-min__row:hover .svc-min__t { transform: translateX(12px); } }
+.svc-min__d { color: var(--ash); font-size: 0.9375rem; line-height: 1.6; }
+
+/* work cards, stripped to a plate and a name */
+.work__card--min .work__body { display: grid; gap: 0.3rem; }
+.work__card--min .work__sector { font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); }

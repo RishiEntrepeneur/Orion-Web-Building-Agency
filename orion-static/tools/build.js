@@ -10,13 +10,8 @@ const CASES = require("./data/cases.js");
 const JOURNAL = require("./data/journal.js");
 const body = (f) => fs.readFileSync(path.join(__dirname, "bodies", f), "utf8");
 
-/* the contact form is lifted straight out of home.html so it never drifts */
-const index = fs.readFileSync(path.join(ROOT, "home.html"), "utf8");
-const start = index.indexOf('<section class="section" id="contact"');
-const endMark = "\n  </section>";
-const end = index.indexOf(endMark, start);
-if (start < 0 || end < 0) throw new Error("cannot lift the contact section from home.html");
-const contactBlock = index.slice(start, end + endMark.length)
+/* one copy of the contact form, used by contact.html */
+const contactBlock = body("contact-form.html")
   .replace('<span class="sec-head__idx">05</span>', '<span class="sec-head__idx">01</span>')
   .replace('data-sec="CONTACT"', 'data-sec="BRIEF"')
   .replace('<span class="sec-head__label" data-scramble-in>Start here</span>',

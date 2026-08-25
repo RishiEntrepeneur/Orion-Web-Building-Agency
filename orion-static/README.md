@@ -44,7 +44,7 @@ why the type holds together on a dark ground.
 
 ```
 index.html                        LANDING — the typed question, then the answer
-home.html                         home — hero, services, position, method, work
+home.html                         home — six quiet screens, one idea each
 about.html                        studio — principles, shape, working here
 services.html                     capabilities, engagement models, FAQ
 work.html                         six builds, long form, each linking to its case study
@@ -165,6 +165,7 @@ quality tiers, which is more distracting than simply running lighter.
 | Method | Pinned section, four steps advancing on scroll with a progress rail |
 | Work | Pinned stage with a horizontally-scrolling lane |
 | Magnetic | Buttons drift toward the cursor within reach |
+| The Assembly | Five layers of a page, exploded and inspected from a keyframed camera |
 | Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
 
 ## Sound
@@ -290,3 +291,39 @@ inside the studio's own budget (692ms measured) despite being an animation.
 To put the plain home page back at the root, reverse the two filenames and
 repoint the links — the generator reads its chrome from `home.html`, so that
 reference moves too.
+
+
+## Restraint
+
+The home page runs to **272 words** across six screens. It used to be 974 across
+nine, and it read as a brochure: every section carried body copy, tag lists,
+metrics and descriptions, so nothing had room to land.
+
+The detail did not get deleted — it moved to the pages built for it. Service
+descriptions and tags live on `services.html`, project metrics and stacks on the
+six case studies, standards and studio facts on `about.html`, the brief form on
+`contact.html`. The home page's job is to make one argument per screen and point
+at the page that elaborates.
+
+The budget that produced it: **a heading of six words or fewer, and at most one
+supporting line of about eighteen.** Anything that needed more was a link.
+
+## The Assembly
+
+The centrepiece is a scroll-driven exploded view, rendered in software 3D on a
+2D canvas — no WebGL, no library.
+
+Five layers of a web page — grid, structure, type, colour, motion — are built as
+sets of primitives in local space and separated along z as the view explodes.
+A camera of six keyframes is sampled by scroll position rather than by a clock,
+so the object is wherever your scroll says it is: front-on and collapsed, pulled
+apart at three-quarters, edge-on as strata, seen from above, then collapsed back
+and zoomed into the finished page.
+
+Layers are depth-sorted per frame and the one being described reads brightest,
+so exactly one thing is legible at a time. The whole thing costs a few hundred
+primitives a frame.
+
+Under reduced motion the track collapses, the stage stops pinning, and the
+object renders once as a static three-quarter exploded frame with every caption
+shown at once.
