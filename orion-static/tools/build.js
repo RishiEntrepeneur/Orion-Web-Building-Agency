@@ -1,17 +1,31 @@
 /* Regenerates every page except index.html (the intro landing page) and
-   home.html, which is the source of truth for
-   the shared chrome. Run: node tools/build.js */
+   home.html, which is the source of truth for the shared chrome.
+   Run: node tools/build.js */
 const fs = require("fs");
 const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
-const { write } = require("./generate-pages.js");
+const { write, SITE, ORIGIN, abs } = require("./generate-pages.js");
 const T = require("./templates.js");
-const CASES = require("./data/cases.js");
 const JOURNAL = require("./data/journal.js");
+const PACKAGES = require("./data/packages.js");
 const body = (f) => fs.readFileSync(path.join(__dirname, "bodies", f), "utf8");
 
-/* one copy of the contact form, used by contact.html */
+/* ---------- what I build: packages injected from data ---------- */
+const servicesBody = body("services.html").replace("<!--PACKAGES-->", () => T.packages(PACKAGES));
+
+/* ---------- contact: one copy of the form, options from the same data ---------- */
+/* "£999+ + £99/month" reads badly, so a trailing + becomes a leading "from". */
+const setupLabel = (k) => (k.setup.endsWith("+") ? "from " + k.setup.slice(0, -1) : k.setup);
+const packageOptions = PACKAGES
+  .map((k) => {
+    const label = `${k.name} — ${setupLabel(k)} + ${k.monthly}/month`;
+    return `                <option value="${label}">${label}</option>`;
+  })
+  .join("\n");
+
 const contactBlock = body("contact-form.html")
+  .replace("<!--PACKAGE_OPTIONS-->", () => packageOptions)
+  .replace('data-inbox=""', () => `data-inbox="${SITE.email || ""}"`)
   .replace('<span class="sec-head__idx">05</span>', '<span class="sec-head__idx">01</span>')
   .replace('data-sec="CONTACT"', 'data-sec="BRIEF"')
   .replace('<span class="sec-head__label" data-scramble-in>Start here</span>',
@@ -19,38 +33,38 @@ const contactBlock = body("contact-form.html")
 
 /* ---------- hand-written pages ---------- */
 write("services.html", {
-  title: "Capabilities — Orion",
-  desc: "What Orion actually delivers: premium web design and build, e-commerce ecosystems, AI-driven applications, and motion and 3D systems.",
-  slug: "services", current: "services.html", crumb: "Capabilities"
-}, body("services.html"));
+  title: "What I build — Orion",
+  desc: "Design and build, motion and 3D, performance and accessibility — and three packages, from £299 to build plus £39 a month.",
+  slug: "services", current: "services.html", crumb: "What I build"
+}, servicesBody);
 
 write("work.html", {
-  title: "Work — Orion",
-  desc: "Six representative builds across SaaS, luxury retail, industrial, finance, manufacturing and healthcare.",
-  slug: "work", current: "work.html", crumb: "Work"
+  title: "This site — Orion",
+  desc: "No client list yet, so here is this website taken apart: six problems it posed, how each was solved, and every number measured.",
+  slug: "work", current: "work.html", crumb: "This site"
 }, body("work.html"));
 
 write("about.html", {
-  title: "Studio — Orion",
-  desc: "A small team that does the whole job: what Orion believes, how the studio is shaped, and how to write to us.",
-  slug: "about", current: "about.html", crumb: "Studio"
+  title: "About — Orion",
+  desc: "Orion is one person: a twelve-year-old developer in England, of Indian family, who writes every line by hand.",
+  slug: "about", current: "about.html", crumb: "About"
 }, body("about.html"));
 
 write("contact.html", {
   title: "Contact — Orion",
-  desc: "Tell Orion the commercial problem. A reply from a human within one business day.",
+  desc: "Tell me what you want built. Read by one person, with no tracking and no autoresponder.",
   slug: "contact", current: "contact.html", crumb: "Contact"
 }, body("head.html") + "\n" + contactBlock + "\n" + body("tail.html"));
 
 write("privacy.html", {
   title: "Privacy — Orion",
-  desc: "This website collects nothing: no analytics, no cookies, no third-party scripts. What happens to an enquiry, and your rights under the UK GDPR.",
+  desc: "This website collects nothing: no analytics, no cookies, no third-party scripts. What happens to a message, and your rights under the UK GDPR.",
   slug: "privacy", crumb: "Privacy"
 }, body("privacy.html"));
 
 write("terms.html", {
   title: "Terms — Orion",
-  desc: "Terms for using the Orion website, written in plain English.",
+  desc: "Terms for using the Orion website, written in plain English. Orion is one person, not a company.",
   slug: "terms", crumb: "Terms"
 }, body("terms.html"));
 
@@ -60,53 +74,102 @@ write("404.html", {
   slug: "notfound", crumb: "Not found", noindex: true
 }, body("notfound.html"));
 
-/* ---------- journal ---------- */
+/* ---------- build notes ---------- */
 write("journal.html", {
-  title: "Journal — Orion",
-  desc: "Notes on the problems we actually hit, written by the people who hit them.",
-  slug: "journal", current: "journal.html", crumb: "Journal"
+  title: "Build notes — Orion",
+  desc: "Problems I actually hit building this site, and what fixed them.",
+  slug: "journal", current: "journal.html", crumb: "Build notes"
 }, T.journalIndex(JOURNAL));
 
 JOURNAL.forEach((a) => {
   const others = JOURNAL.filter((o) => o.slug !== a.slug);
   write(a.slug + ".html", {
-    title: a.title + " — Orion Journal",
+    title: a.title + " — Orion build notes",
     desc: a.dek,
     slug: a.slug, current: "journal.html", crumb: a.title,
     article: a
   }, T.article(a, others));
 });
 
-/* ---------- case studies ---------- */
-CASES.forEach((c, i) => {
-  const prev = CASES[(i - 1 + CASES.length) % CASES.length];
-  const next = CASES[(i + 1) % CASES.length];
-  write(c.slug + ".html", {
-    title: c.name + " — Orion",
-    desc: c.summary,
-    slug: c.slug, current: "work.html", crumb: c.name
-  }, T.caseStudy(c, prev, next));
-});
-
 /* ---------- sitemap + robots ---------- */
 const PAGES = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && f !== "404.html").sort();
-const today = process.env.BUILD_DATE || "2026-08-25";
-const urls = PAGES.map((f) => {
-  const loc = "https://orion.build/" + (f === "index.html" ? "" : f);
-  const pri = f === "index.html" ? "1.0" : f === "home.html" ? "0.9" : f.startsWith("case-") || f.startsWith("journal-") ? "0.7" : "0.8";
-  return `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><priority>${pri}</priority></url>`;
-}).join("\n");
-fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
+const sitemapPath = path.join(ROOT, "sitemap.xml");
+
+if (ORIGIN) {
+  const today = process.env.BUILD_DATE || "2026-08-25";
+  const urls = PAGES.map((f) => {
+    const pri = f === "index.html" ? "1.0" : f === "home.html" ? "0.9" : f.startsWith("journal-") ? "0.7" : "0.8";
+    return `  <url><loc>${abs(f)}</loc><lastmod>${today}</lastmod><priority>${pri}</priority></url>`;
+  }).join("\n");
+  fs.writeFileSync(sitemapPath,
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>
 `);
-fs.writeFileSync(path.join(ROOT, "robots.txt"),
+  fs.writeFileSync(path.join(ROOT, "robots.txt"),
 `User-agent: *
 Allow: /
 
-Sitemap: https://orion.build/sitemap.xml
+Sitemap: ${ORIGIN}/sitemap.xml
 `);
-console.log("wrote sitemap.xml (" + PAGES.length + " urls) and robots.txt");
+  console.log("wrote sitemap.xml (" + PAGES.length + " urls) and robots.txt");
+} else {
+  /* No domain set yet. A sitemap of URLs on a domain nobody owns is worse
+     than no sitemap, so it is not written — and any stale one is removed. */
+  if (fs.existsSync(sitemapPath)) fs.unlinkSync(sitemapPath);
+  fs.writeFileSync(path.join(ROOT, "robots.txt"),
+`User-agent: *
+Allow: /
+
+# No Sitemap line yet: set "origin" in tools/data/site.js to the real
+# domain and re-run "node tools/build.js" to generate sitemap.xml.
+`);
+  console.log("no origin set in tools/data/site.js — skipped sitemap.xml, wrote robots.txt");
+}
+
+/* ---------- prices agree across both surfaces ----------
+   The cards and the contact select are generated from the same data, so they
+   cannot drift — but nothing stops a future edit from hard-coding one of them,
+   and a price that disagrees with itself is exactly the kind of untruth this
+   build is supposed to catch. */
+const svc = fs.readFileSync(path.join(ROOT, "services.html"), "utf8");
+const con = fs.readFileSync(path.join(ROOT, "contact.html"), "utf8");
+const drift = [];
+PACKAGES.forEach((k) => {
+  if (!svc.includes(k.setup) || !svc.includes(k.monthly)) drift.push(k.name + " missing from services.html");
+  if (!con.includes(setupLabel(k)) || !con.includes(k.monthly)) drift.push(k.name + " missing from contact.html");
+});
+if (drift.length) {
+  console.error("\nBUILD FAILED — package prices disagree between pages:");
+  drift.forEach((d) => console.error("  " + d));
+  process.exit(1);
+}
+console.log("prices agree across services.html and contact.html (" + PACKAGES.length + " packages)");
+
+/* ---------- truth sweep ----------
+   Every string below was on this site once, and every one of them was
+   invented: clients that do not exist, prices that were never charged, a
+   company that was never registered, an address nobody lives at. The build
+   fails rather than let one come back by accident. */
+const BANNED = [
+  "orion.build", "studio@orion", "new@orion", "Orion Studio Ltd",
+  "egistered in England & Wales", "Northwind", "Maison Verre", "Halden Systems",
+  "Arden Capital", "Kestrel Manufacturing", "Meridian Care", "Founded 2024",
+  "\u00a325k", "\u00a3100k+", "\u00a34k / month", "\u00a36k fixed", "\u00a3950", "From \u00a31,800",
+  "4,120,000,000", "one business day", "Sample project", "sample set",
+  "3 people per project", "Concurrent projects"
+];
+const hits = [];
+[...PAGES, "404.html", "robots.txt"].forEach((f) => {
+  const text = fs.readFileSync(path.join(ROOT, f), "utf8");
+  BANNED.forEach((s) => { if (text.includes(s)) hits.push(f + ': "' + s + '"'); });
+});
+if (hits.length) {
+  console.error("\nBUILD FAILED — fabricated content in the output:");
+  hits.forEach((h) => console.error("  " + h));
+  process.exit(1);
+}
+console.log("truth sweep clean (" + BANNED.length + " patterns, " + (PAGES.length + 1) + " files)");
+
 console.log("\n" + (PAGES.length + 1) + " pages generated from home.html's chrome");

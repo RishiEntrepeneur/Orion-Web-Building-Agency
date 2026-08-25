@@ -24,8 +24,18 @@
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function lerp(a, b, t) { return a + (b - a) * t; }
   /* frame-rate independent damping: halfLife in ms */
+  /* Exponential damping approaches its target but never arrives, so every
+     damped value in the app kept changing in the far decimals forever: a
+     transform rewritten every frame while nothing is moving, and — worse —
+     anything that measures a damped element gets a slightly different answer
+     each frame and drifts along behind it. Snap when the remainder stops
+     mattering. EPS is below a thousandth of a pixel, a degree, or a unit of
+     normalised progress, so nothing visible is lost and rest becomes a real
+     fixed point rather than an asymptote. */
+  var DAMP_EPS = 0.0005;
   function damp(cur, target, halfLife, dt) {
     if (halfLife <= 0) return target;
+    if (Math.abs(target - cur) < DAMP_EPS) return target;
     return lerp(cur, target, 1 - Math.pow(2, -dt / halfLife));
   }
   function map(v, a, b, c, d) { return c + ((clamp(v, a, b) - a) / (b - a)) * (d - c); }
@@ -314,7 +324,7 @@
         el: el,
         strength: parseFloat(el.getAttribute("data-magnetic")) || 0.34,
         radius: parseFloat(el.getAttribute("data-magnetic-radius")) || 110,
-        x: 0, y: 0, tx: 0, ty: 0, live: true
+        x: 0, y: 0, tx: 0, ty: 0, live: true, last: ""
       };
     });
 
@@ -325,14 +335,24 @@
         var r = it.el.getBoundingClientRect();
         it.live = !(r.bottom < -200 || r.top > S.vh + 200);
         if (!it.live) { it.tx = 0; it.ty = 0; continue; }
-        var ddx = S.px - (r.left + r.width / 2);
-        var ddy = S.py - (r.top + r.height / 2);
+        /* Subtract the offset we are currently applying. getBoundingClientRect
+           reports the element where the transform has already put it, so
+           measuring the pull from that rect feeds the pull back into itself:
+           the closer it gets the harder it pulls, and it hunts around an
+           equilibrium instead of arriving at one. Measure the layout position. */
+        var ddx = S.px - (r.left + r.width / 2 - it.x);
+        var ddy = S.py - (r.top + r.height / 2 - it.y);
         var dist = Math.sqrt(ddx * ddx + ddy * ddy);
         var reach = Math.max(it.radius, Math.max(r.width, r.height) * 0.75);
         if (dist < reach) {
+          /* Quantise the target to the same 2-decimal grid the offset lives
+             on. The element sits inside a tilt-scene whose own damping keeps
+             nudging the measured rect by thousandths of a pixel; without this
+             the target creeps and the offset chases it across one 0.01 step
+             forever. Below the grid, no movement is a movement. */
           var f = 1 - dist / reach;
-          it.tx = ddx * it.strength * f;
-          it.ty = ddy * it.strength * f;
+          it.tx = Math.round(ddx * it.strength * f * 100) / 100;
+          it.ty = Math.round(ddy * it.strength * f * 100) / 100;
         } else { it.tx = 0; it.ty = 0; }
       }
     });
@@ -341,12 +361,23 @@
       for (var i = 0; i < items.length; i++) {
         var it = items[i];
         if (!it.live && it.x === 0 && it.y === 0) continue;
-        it.x = damp(it.x, it.tx, 110, dt);
-        it.y = damp(it.y, it.ty, 110, dt);
-        if (Math.abs(it.x) < 0.02 && Math.abs(it.y) < 0.02) {
-          if (it.x !== 0 || it.y !== 0) { it.x = 0; it.y = 0; it.el.style.transform = ""; }
+        /* Keep the offset on the same 2-decimal grid the DOM is given. The
+           reader subtracts it.x back out of the measured rect, so if the two
+           disagree by the rounding error the pull oscillates across it forever
+           instead of arriving. Same grid on both sides makes rest a fixed point. */
+        it.x = Math.round(damp(it.x, it.tx, 110, dt) * 100) / 100;
+        it.y = Math.round(damp(it.y, it.ty, 110, dt) * 100) / 100;
+        /* One grid step, not less: rounding to 2dp means the damp stalls with
+           up to 0.05px left, so a 0.02 threshold would never clear the
+           transform and the element would sit permanently displaced. */
+        if (Math.abs(it.x) < 0.08 && Math.abs(it.y) < 0.08) {
+          if (it.x !== 0 || it.y !== 0) { it.x = 0; it.y = 0; it.last = ""; it.el.style.transform = ""; }
         } else {
-          it.el.style.transform = "translate3d(" + it.x.toFixed(2) + "px," + it.y.toFixed(2) + "px,0)";
+          /* Damping is asymptotic, so once the rounded value stops changing
+             there is nothing left to write. Skip it rather than restyling
+             every element every frame for a sub-hundredth of a pixel. */
+          var next = "translate3d(" + it.x.toFixed(2) + "px," + it.y.toFixed(2) + "px,0)";
+          if (next !== it.last) { it.last = next; it.el.style.transform = next; }
         }
       }
     });
@@ -1346,8 +1377,15 @@
     var success = $("#brief-success");
     var out = $("#brief-out");
     var mailBtn = $("#brief-mail");
+    var copyBtn = $("#brief-copy");
+    var copied = $("#brief-copied");
+    var howto = $("#brief-howto");
     var resetBtn = $("#brief-reset");
-    var INBOX = "studio@orion.build";
+    /* The address comes from tools/data/site.js via the build, so there is
+       never a made-up one in the source. Empty is a legitimate state: the
+       brief is then copied rather than handed to a mail client. */
+    var INBOX = ((form.getAttribute("data-inbox") || "").trim());
+    var briefText = "";
 
     var fields = $$(".field", form);
     fields.forEach(function (field) {
@@ -1384,7 +1422,7 @@
         clearError(field);
         if (!v) { setError(field, "Required"); problems.push(field); return; }
         if (input.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
-          setError(field, "Enter a valid business email"); problems.push(field); return;
+          setError(field, "Enter a valid email address"); problems.push(field); return;
         }
         if (input.id === "brief-details" && v.length < 24) {
           setError(field, "A little more detail, please (24+ characters)"); problems.push(field);
@@ -1424,7 +1462,7 @@
       var name = (data.get("name") || "").toString().trim();
       var email = (data.get("email") || "").toString().trim();
       var company = (data.get("company") || "").toString().trim();
-      var budget = (data.get("budget") || "").toString().trim();
+      var pkg = (data.get("package") || "").toString().trim();
       var details = (data.get("details") || "").toString().trim();
 
       var body = [
@@ -1433,21 +1471,33 @@
         "",
         "NAME:     " + name,
         "EMAIL:    " + email,
-        "COMPANY:  " + (company || "—"),
-        "BUDGET:   " + budget,
+        "PROJECT:  " + (company || "—"),
+        "PACKAGE:  " + (pkg || "—"),
         "",
         "DETAILS",
         "-------",
         details,
         "",
-        "-- assembled by orion.build --"
+        "-- assembled in your own browser; nothing was sent automatically --"
       ].join("\n");
+      briefText = body;
 
-      var href = "mailto:" + INBOX +
-        "?subject=" + encodeURIComponent("Project brief — " + (company || name)) +
-        "&body=" + encodeURIComponent(body);
-
-      if (mailBtn) mailBtn.setAttribute("href", href);
+      if (mailBtn) {
+        if (INBOX) {
+          mailBtn.setAttribute("href", "mailto:" + INBOX +
+            "?subject=" + encodeURIComponent("Project brief — " + (company || name)) +
+            "&body=" + encodeURIComponent(body));
+          mailBtn.hidden = false;
+        } else {
+          mailBtn.hidden = true;
+        }
+      }
+      if (howto) {
+        howto.textContent = INBOX
+          ? "This page has no server, so nothing has been sent. Your brief was assembled in your own browser — open it in your mail app, or copy it and send it however you like."
+          : "This page has no server, so nothing has been sent. Your brief was assembled in your own browser — copy it and send it to me however you like.";
+      }
+      if (copied) copied.textContent = "";
       form.hidden = true;
       if (window.OrionAudio) window.OrionAudio.success();
       if (success) {
@@ -1457,8 +1507,31 @@
       if (out) typeOut(out, body);
     });
 
+    on(copyBtn, "click", function () {
+      if (!briefText) return;
+      function done(ok) {
+        if (copied) copied.textContent = ok
+          ? "Copied. Paste it into an email or a message."
+          : "Could not copy automatically — select the text above and copy it.";
+        if (window.OrionAudio) { ok ? window.OrionAudio.success() : window.OrionAudio.error(); }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(briefText).then(function () { done(true); }, function () { done(false); });
+      } else if (out) {
+        try {
+          var range = document.createRange();
+          range.selectNodeContents(out);
+          var sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          done(document.execCommand("copy"));
+        } catch (e) { done(false); }
+      } else { done(false); }
+    });
+
     on(resetBtn, "click", function () {
       if (success) success.hidden = true;
+      if (copied) copied.textContent = "";
       form.hidden = false;
       var first = $(".field__input", form);
       if (first) first.focus();

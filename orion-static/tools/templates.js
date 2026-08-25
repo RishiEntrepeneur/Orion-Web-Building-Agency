@@ -1,4 +1,4 @@
-/* Page body templates. Content lives in tools/data/, chrome in index.html. */
+/* Page body templates. Content lives in tools/data/, chrome in home.html. */
 const esc = (s) => String(s).replace(/&(?![a-z#]+;)/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function head(opts) {
@@ -38,104 +38,53 @@ function cta(zone, heading, primary, secondary) {
   </section>`;
 }
 
-/* ---------- case study ---------- */
-function caseStudy(c, prev, next) {
-  return [
-    head({
-      sec: "CASE", zone: c.zone, crumb: c.name,
-      parent: { href: "work.html", label: "Work" },
-      eyebrow: c.sector,
-      title: c.name,
-      titleStyle: "font-size:clamp(2.5rem,9vw,7.5rem)",
-      dek: c.summary,
-      meta: [c.year, c.engagement, "Sample project"]
-    }),
 
-    `  <section class="section" data-sec="PLATE" data-zone-set="${c.zone}" style="padding-block:clamp(2rem,4vw,3rem)">
-    <div class="shell">
-      <div class="plate-wide" data-tilt="3">
-        <canvas data-halftone="${c.seed}" data-tint="${c.tint}" data-mode="${c.mode}"></canvas>
-        <span class="plate-wide__tag">${c.tag}</span>
-      </div>
-    </div>
-  </section>`,
+/* ---------- packages ---------- */
+const tick = '<svg class="pk__tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.5 6.4 4.4 9.2 10.5 2.8" stroke-linecap="round" stroke-linejoin="round" /></svg>';
 
-    `  <section class="section" data-sec="BRIEF" data-zone-set="${c.zone}" data-3d="5" aria-labelledby="brief-h">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell split">
-      <div>
-        <p class="split__label" data-scramble-in>The brief</p>
-        <h2 id="brief-h" class="display mt-lg" style="font-size:clamp(1.6rem,3.4vw,2.5rem);max-width:14ch" data-kin="word">What we were asked to solve</h2>
-      </div>
-      <div class="prose">
-        ${c.brief.map((p) => `<p>${p}</p>`).join("\n        ")}
-      </div>
-    </div>
-  </section>`,
-
-    `  <section class="section" data-sec="APPROACH" data-zone-set="${c.zone}" data-3d="5" aria-labelledby="did-h">
+function packages(list) {
+  return `  <section class="section" data-sec="PACKAGES" data-zone-set="gold" aria-labelledby="pk-h" data-3d="5">
       <div class="wash" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
-        <span class="sec-head__idx">01</span>
-        <span class="sec-head__label">What we did</span>
-        <span class="sec-head__spacer"></span>
-        <span class="sec-head__label">${("0" + c.did.length).slice(-2)} workstreams</span>
-      </div>
-      <h2 id="did-h" class="sr-only">What we did</h2>
-      <ol class="steps">
-        ${c.did.map((d, i) => `<li>
-          <span class="steps__n">${("0" + (i + 1)).slice(-2)}</span>
-          <span class="steps__k">${d[0]}</span>
-          <span class="steps__v">${d[1]}</span>
-        </li>`).join("\n        ")}
-      </ol>
-    </div>
-  </section>`,
-
-    `  <section class="section" data-sec="OUTCOME" data-zone-set="${c.zone}" data-3d="5" aria-labelledby="out-h">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell">
-      <div class="sec-head">
         <span class="sec-head__idx">02</span>
-        <span class="sec-head__label">Outcome</span>
+        <span class="sec-head__label">Packages</span>
         <span class="sec-head__spacer"></span>
-        <span class="sec-head__label">Measured, not estimated</span>
+        <span class="sec-head__label">${("0" + list.length).slice(-2)} to choose from</span>
       </div>
-      <h2 id="out-h" class="sr-only">Outcome</h2>
-      <div class="stds">
-        ${c.outcome.map((o) => `<div class="std">
-          <span class="std__n">${o[0]}${o[1] ? `<small>${o[1]}</small>` : ""}</span>
-          <p class="std__l mono mono--bright">${o[2]}</p>
-          <p class="std__d">${o[3]}</p>
-        </div>`).join("\n        ")}
+      <h2 id="pk-h" class="display mb-lg" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        Three ways to start
+      </h2>
+      <p class="lede" style="max-width:56ch">
+        A one-off fee to build it, then a monthly fee that keeps it hosted, fast and looked after.
+        Cancel the monthly whenever you like — the site is yours either way.
+      </p>
+
+      <div class="pk mt-xl">
+        ${list.map((k) => `<article class="pk__card${k.popular ? " pk__card--pop" : ""}" aria-labelledby="pk-${k.id}">
+          ${k.popular ? '<span class="pk__badge">Most popular</span>' : ""}
+          <h3 class="pk__name" id="pk-${k.id}">${k.name}</h3>
+          <p class="pk__tag">${k.tagline}</p>
+          <p class="pk__price"><b>${k.setup}</b><span class="pk__once">one-off build</span></p>
+          <p class="pk__mo">then <b>${k.monthly}</b> a month</p>
+          <ul class="pk__list">
+            ${k.features.map((f) => `<li>${tick}<span>${f}</span></li>`).join("\n            ")}
+          </ul>
+          <p class="pk__for">${k.forWho}</p>
+          <a class="btn ${k.popular ? "btn--solid" : "btn--ghost"} pk__cta" href="contact.html" data-curtain="Contact" data-magnetic="0.22">
+            <span class="btn__lab"><span>Start here</span><span>${k.name}</span></span>
+          </a>
+        </article>`).join("\n        ")}
       </div>
-      <div class="mt-xl">
-        <p class="mono" style="margin-bottom:0.9rem">Built with</p>
-        <div class="svc__tags">
-          ${c.stack.map((t) => `<span class="svc__tag">${t}</span>`).join("\n          ")}
-        </div>
-      </div>
+
+      <p class="form__note mt-xl" style="max-width:62ch">
+        Prices are in pounds sterling and include hosting from the month the site goes live. A
+        domain name is bought in your own name and billed by whoever you buy it from, so it is not
+        part of these figures — I will tell you what it costs before you buy it. If none of the
+        three is the shape of what you need, say so and I will price the actual job.
+      </p>
     </div>
-  </section>`,
-
-    `  <nav class="pager" aria-label="Other projects">
-    <a class="pager__a" href="${prev.slug}.html" data-curtain="${prev.name}">
-      <span class="mono">← Previous project</span>
-      <span class="pager__t">${prev.name}</span>
-      <span class="mono mono--bright">${prev.tag}</span>
-    </a>
-    <a class="pager__a pager__a--next" href="${next.slug}.html" data-curtain="${next.name}">
-      <span class="mono">Next project →</span>
-      <span class="pager__t">${next.name}</span>
-      <span class="mono mono--bright">${next.tag}</span>
-    </a>
-  </nav>`,
-
-    cta(c.zone, "Bring us a problem this shape",
-      { href: "contact.html", curtain: "Contact", a: "Start a project", b: "Brief us" },
-      { href: "work.html", curtain: "Work", a: "All six projects", b: "Back to work" })
-  ].join("\n\n");
+  </section>`;
 }
 
 /* ---------- journal article ---------- */
@@ -155,12 +104,12 @@ function article(a, others) {
   return [
     head({
       sec: "ARTICLE", zone: a.zone, crumb: a.title,
-      parent: { href: "journal.html", label: "Journal" },
+      parent: { href: "journal.html", label: "Notes" },
       eyebrow: a.category,
       title: a.title,
       titleStyle: "font-size:clamp(2.25rem,7vw,5.5rem)",
       dek: a.dek,
-      meta: [a.dateLabel, a.read + " read", "Orion studio"]
+      meta: [a.dateLabel, a.read + " read", "Build note"]
     }),
 
         /* No data-3d on this one: it applies a transform to the section, which then
@@ -183,8 +132,8 @@ function article(a, others) {
             <div><dt class="mono">Published</dt><dd class="mono mono--bright">${a.dateLabel}</dd></div>
             <div><dt class="mono">Length</dt><dd class="mono mono--bright">${a.read}</dd></div>
           </dl>
-          <a class="arrow-link" href="journal.html" data-curtain="Journal">
-            All articles
+          <a class="arrow-link" href="journal.html" data-curtain="Notes">
+            All notes
             <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
           </a>
         </div>
@@ -199,11 +148,11 @@ function article(a, others) {
         <span class="sec-head__idx">—</span>
         <span class="sec-head__label">Keep reading</span>
         <span class="sec-head__spacer"></span>
-        <span class="sec-head__label"><a href="journal.html" data-curtain="Journal">All articles</a></span>
+        <span class="sec-head__label"><a href="journal.html" data-curtain="Notes">All notes</a></span>
       </div>
-      <h2 id="more-h" class="sr-only">More from the journal</h2>
+      <h2 id="more-h" class="sr-only">More build notes</h2>
       <div class="jx">
-        ${others.map((o) => `<a class="jx__a" href="${o.slug}.html" data-curtain="${o.title}">
+        ${others.map((o) => `<a class="jx__a" href="${o.slug}.html" data-curtain="Notes">
           <span class="jx__cat">${o.category}</span>
           <span>
             <span class="jx__t">${o.title}</span>
@@ -215,9 +164,9 @@ function article(a, others) {
     </div>
   </section>`,
 
-    cta(a.zone, "We write it because we build it",
-      { href: "contact.html", curtain: "Contact", a: "Start a project", b: "Brief us" },
-      { href: "services.html", curtain: "Capabilities", a: "Capabilities", b: "What we do" })
+    cta(a.zone, "I write it because I built it",
+      { href: "contact.html", curtain: "Contact", a: "Start a project", b: "Say hello" },
+      { href: "work.html", curtain: "This site", a: "How this was built", b: "Every number" })
   ].join("\n\n");
 }
 
@@ -225,10 +174,10 @@ function article(a, others) {
 function journalIndex(articles) {
   return [
     head({
-      sec: "JOURNAL", zone: "violet", crumb: "Journal",
-      title: "Journal",
-      dek: "Notes on the problems we actually hit, written by the people who hit them. No thought leadership, no predictions for next year.",
-      meta: [articles.length + " articles", "Engineering, typography, practice", "Written in-house"]
+      sec: "NOTES", zone: "violet", crumb: "Build notes",
+      title: "Build notes",
+      dek: "Problems I actually hit while building this site, and what fixed them. No thought leadership, no predictions for next year.",
+      meta: [articles.length + " notes", "Engineering, typography, practice", "Written by me"]
     }),
 
     `  <section class="section" data-sec="INDEX" data-zone-set="violet" data-3d="5" aria-labelledby="jx-h" style="padding-top:clamp(2.5rem,5vw,4rem)">
@@ -236,13 +185,13 @@ function journalIndex(articles) {
     <div class="shell">
       <div class="sec-head">
         <span class="sec-head__idx">01</span>
-        <span class="sec-head__label">All articles</span>
+        <span class="sec-head__label">All notes</span>
         <span class="sec-head__spacer"></span>
         <span class="sec-head__label">Newest first</span>
       </div>
-      <h2 id="jx-h" class="sr-only">All articles</h2>
+      <h2 id="jx-h" class="sr-only">All notes</h2>
       <div class="jx">
-        ${articles.map((a) => `<a class="jx__a" href="${a.slug}.html" data-curtain="${a.title}">
+        ${articles.map((a) => `<a class="jx__a" href="${a.slug}.html" data-curtain="Notes">
           <span class="jx__cat">${a.category}</span>
           <span>
             <span class="jx__t">${a.title}</span>
@@ -254,10 +203,10 @@ function journalIndex(articles) {
     </div>
   </section>`,
 
-    cta("blue", "Or skip the reading and talk to us",
-      { href: "contact.html", curtain: "Contact", a: "Start a project", b: "Brief us" },
-      { href: "about.html", curtain: "Studio", a: "About the studio", b: "Who we are" })
+    cta("blue", "Or skip the reading and just ask",
+      { href: "contact.html", curtain: "Contact", a: "Start a project", b: "Say hello" },
+      { href: "about.html", curtain: "About", a: "About me", b: "Who I am" })
   ].join("\n\n");
 }
 
-module.exports = { head, cta, caseStudy, article, journalIndex, esc };
+module.exports = { head, cta, packages, article, journalIndex, esc };

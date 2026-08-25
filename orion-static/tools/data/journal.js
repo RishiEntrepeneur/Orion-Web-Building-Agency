@@ -1,4 +1,4 @@
-/* Journal articles. Content blocks: p, h, ul, quote, code. */
+/* Build notes. Content blocks: p, h, ul, quote, code. */
 module.exports = [
   {
     slug: "journal-read-think-write",
@@ -65,7 +65,7 @@ module.exports = [
     read: "4 min",
     zone: "acid",
     body: [
-      { t: "p", c: "Almost every team we meet has a performance target. Almost none of them have a performance budget. The difference is not the number. It is what happens when you miss it." },
+      { t: "p", c: "Almost every site I look at has a performance target. Almost none of them have a performance budget. The difference is not the number. It is what happens when you miss it." },
       { t: "p", c: "A target is a shared aspiration. Everyone agrees the site should be fast, the number goes in a document, and then a launch date arrives with a tag manager attached to it. Nobody decides to be slow. It happens one reasonable exception at a time." },
       { t: "quote", c: "A budget you are allowed to exceed is a target. A target is a wish with a number on it." },
       { t: "h", c: "What makes it a budget" },

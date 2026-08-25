@@ -1,7 +1,14 @@
 # Orion — static site
 
-A nineteen-page marketing site for Orion, a web studio. **Zero dependencies,
-zero third-party network requests.** Hand-written HTML, CSS and ES2020.
+A thirteen-page site for Orion — one person, a twelve-year-old developer in
+England. **Zero dependencies, zero third-party network requests.** Hand-written
+HTML, CSS and ES2020.
+
+Nothing on this site is placeholder content. There are no invented clients, no
+invented metrics, no invented company and no invented contact details. Facts
+about Orion live in exactly one file, `tools/data/site.js`, and the rule there
+is that an unknown value stays empty rather than becoming something plausible —
+the build then omits whatever depended on it.
 
 Open `index.html` in a browser, or serve the folder:
 
@@ -45,32 +52,25 @@ why the type holds together on a dark ground.
 ```
 index.html                        LANDING — the typed question, then the answer
 home.html                         home — six quiet screens, one idea each
-about.html                        studio — principles, shape, working here
-services.html                     capabilities, engagement models, FAQ
-work.html                         six builds, long form, each linking to its case study
-journal.html                      article index
-contact.html                      brief form, what happens next, studio details
+about.html                        about — who I am, what I argue for
+services.html                     what I build, the three package cards, FAQ
+work.html                         THIS SITE — the teardown, with the measured numbers
+journal.html                      build-notes index
+contact.html                      brief form, what happens next
 
-case-northwind.html               \
-case-maison-verre.html             |
-case-halden.html                   |  six case studies, generated from
-case-arden.html                    |  tools/data/cases.js
-case-kestrel.html                  |
-case-meridian.html                /
-
-journal-read-think-write.html     \  three articles, generated from
+journal-read-think-write.html     \  three build notes, generated from
 journal-didone-on-dark.html        |  tools/data/journal.js
 journal-performance-budget.html   /
 
 privacy.html                      privacy notice
 terms.html                        site terms
-404.html                          not found, with eight ways back
+404.html                          not found, with nine ways back
 
-sitemap.xml, robots.txt           generated
+robots.txt                        generated
+sitemap.xml                       generated only once site.js has an origin
 ```
 
-Every case study links to the next and previous one, so the six form a loop.
-Every article links to the other two. Nothing on the site is a dead end: no
+Every build note links to the other two. Nothing on the site is a dead end: no
 element that looks clickable fails to lead somewhere, which is verified by
 crawling the built output rather than by inspection.
 
@@ -92,14 +92,16 @@ its own minimal chrome on purpose.
 node tools/build.js     # regenerates all generated pages, plus sitemap and robots
 ```
 
-- Chrome → edit `index.html`
+- Chrome → edit `home.html`
+- Facts about Orion (domain, email, location) → `tools/data/site.js`
+- Package names and prices → `tools/data/packages.js`
 - One-off page bodies → `tools/bodies/`
-- Case studies → `tools/data/cases.js`
-- Articles → `tools/data/journal.js`
+- Build notes → `tools/data/journal.js`
 - Repeated page shapes → `tools/templates.js`
 
-The contact form is lifted directly out of `index.html` at build time, so there
-is only ever one copy of it.
+The contact form lives in `tools/bodies/contact-form.html`, so there is only
+ever one copy of it. The build fills its package options from
+`tools/data/packages.js` and its `data-inbox` from `tools/data/site.js`.
 
 ## Motion
 
@@ -135,6 +137,15 @@ Two subtler things fall out of the same discipline:
   `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
   scaled by the transform, and in the word cycler that 2.9% error accumulated
   across steps until the previous word hung visibly above the current one.
+- A measurement must not include the effect it is used to compute. The magnetic
+  buttons took their pull from `getBoundingClientRect`, which reports the
+  element where the pull has already put it: the closer it got the harder it
+  pulled, so it hunted around an equilibrium and never reached one, writing a
+  new transform every frame forever. The reader now subtracts the offset it is
+  currently applying, and the offset is rounded to the same two decimals the DOM
+  is given — same grid on both sides, so rest is an actual fixed point. Parked
+  under the cursor it now produces **one distinct transform across 60 idle
+  frames**, where before every frame was different.
 
 Beyond that: the ambient colour washes use radial gradients rather than
 `filter: blur(90px)`, because a blur is a filter pass and those sections are
@@ -206,35 +217,55 @@ when the tab is hidden.
 
 Measured in Chromium at 360–1920px, not eyeballed:
 
-- **LCP 196–300ms** on all four pages; the LCP element is the `<h1>` in every case
-- **9 requests, ~376KB**, no third-party origins (224KB of that is the three
-  self-hosted variable families)
+- **LCP 232–248ms** on the interior pages and **740ms** on the animated landing
+  page; the LCP element is the `<h1>` in every case
+- **7–9 requests, 345–427KB**, a single origin (214KB of that is the five
+  self-hosted font files)
 - **Zero dead ends**: every internal link resolves, every page is reachable from
   home by following links, and nothing that looks clickable is inert
 - **Zero forced synchronous layouts** across 129 instrumented frames
-- **Contrast** computed numerically: body 18.0:1, secondary 9.8:1, mono labels
-  5.5:1, and all seven zone signals between 6.3:1 and 17.5:1 as text against the
-  ground; interactive borders use a dedicated `--edge` token at 3.5:1 (WCAG 1.4.11)
+- **Contrast** computed numerically: body 17.95:1, secondary 9.78:1, mono labels
+  5.49:1, and all seven zone signals between 6.27:1 and 17.53:1 as text against
+  the ground; interactive borders use a dedicated `--edge` token at 3.51:1 (WCAG 1.4.11)
 - **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
 - **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
   panels and the closed drawer are `inert`
 - **Form**: blocks empty submits with per-field messages, validates email shape
-  and detail length, then assembles the brief
+  and detail length, then assembles the brief — and, with no address configured,
+  offers "copy" rather than a mail link
+- **Truth sweep**: the built output is grepped for every fabricated string this
+  site used to carry, and the build is failed if one comes back
+- **Price agreement**: the build fails if a package price on `services.html`
+  does not appear on `contact.html` — both are generated from one file, and this
+  is what stops anyone hard-coding one of them later
 
 ## The contact form
 
 There is no server. The form validates in the browser, renders the assembled
-brief into a terminal panel and hands it to your mail client as a prefilled
-`mailto:` draft. Nothing is transmitted, stored or tracked until the visitor
-presses send themselves. Wire it to a real endpoint by replacing the submit
-handler in `assets/js/app.js`.
+brief into a terminal panel, and then offers two ways out: **copy the brief**,
+always; and **open it in your mail app**, only when `site.js` has an email set.
 
-## Content note
+That second condition is the point. The form reads its address from
+`data-inbox`, which the build fills from `site.js`. While that value is empty
+there is no address anywhere in the source, so the site cannot ship a
+plausible-looking address that does not exist. Set `email` and re-run
+`node tools/build.js` and the mail button appears by itself. To post to a real
+endpoint instead, replace the submit handler in `assets/js/app.js`.
 
-Project names, metrics and the studio address are **sample content** for an
-unlaunched studio, not real client results. The four "standards" figures are
-stated as commitments the studio holds itself to, not as measured past
-outcomes. Replace them before the site goes live.
+## Before publishing
+
+Two values in `tools/data/site.js` are deliberately empty, and the build
+degrades honestly around both:
+
+| Value | While empty | Once set |
+|---|---|---|
+| `origin` | no canonical links, no `og:url`, no `sitemap.xml`, and `robots.txt` carries no `Sitemap:` line | all four are emitted against the real domain |
+| `email` | no address is printed anywhere; the brief is copied instead | the mail button appears on the contact page |
+
+Prices live in `tools/data/packages.js` and appear in two places from that one
+source: the cards on `services.html` and the select on `contact.html`. Each
+package is a one-off build fee plus a monthly fee, and the build fails if the
+two surfaces ever disagree.
 
 ## Fonts
 
@@ -265,7 +296,7 @@ Neither throws, neither warns, and both look like "sticky is broken".
 
 ## The intro sequence
 
-`intro.html` is a cinematic entry page: somebody types "How to build a website"
+`index.html` is a cinematic entry page: somebody types "How to build a website"
 into a prompt box, autocomplete offers the usual answers, and then the real one
 arrives and assembles itself as a wireframe of the site's own layout before
 rushing past the camera into a title card.
@@ -286,7 +317,7 @@ back button.
 
 The root still carries a real `<h1>` and its own canonical, and its first paint
 is on frame one rather than behind the reveal, so the landing page keeps an LCP
-inside the studio's own budget (692ms measured) despite being an animation.
+inside the site's own budget (692ms measured) despite being an animation.
 
 To put the plain home page back at the root, reverse the two filenames and
 repoint the links — the generator reads its chrome from `home.html`, so that
@@ -295,13 +326,13 @@ reference moves too.
 
 ## Restraint
 
-The home page runs to **272 words** across six screens. It used to be 974 across
-nine, and it read as a brochure: every section carried body copy, tag lists,
-metrics and descriptions, so nothing had room to land.
+The home page runs to just under **300 words** across six screens. It used to be
+974 across nine, and it read as a brochure: every section carried body copy, tag
+lists, metrics and descriptions, so nothing had room to land.
 
-The detail did not get deleted — it moved to the pages built for it. Service
-descriptions and tags live on `services.html`, project metrics and stacks on the
-six case studies, standards and studio facts on `about.html`, the brief form on
+The detail did not get deleted — it moved to the pages built for it. What each
+discipline involves and what it costs live on `services.html`, the build's
+measured numbers on `work.html`, who I am on `about.html`, the brief form on
 `contact.html`. The home page's job is to make one argument per screen and point
 at the page that elaborates.
 

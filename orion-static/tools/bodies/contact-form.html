@@ -6,24 +6,24 @@
           <span class="sec-head__idx">05</span>
           <span class="sec-head__label" data-scramble-in>Start here</span>
         </div>
-        <h2 id="contact-h" class="contact__h" data-kin="word">Let's build<br />something<br />permanent</h2>
+        <h2 id="contact-h" class="contact__h" data-kin="word">Tell me<br />what you<br />want built</h2>
         <p class="lede mt-lg">
-          Tell us what you are trying to achieve commercially. You will hear back from a person who
-          will actually work on it, within one business day.
+          What the site is for, and what is wrong with the one you have. I read every message
+          myself, because there is nobody else to read it.
         </p>
 
         <dl class="contact__dl">
-          <div class="contact__row"><dt class="mono">Email</dt><dd><a href="mailto:studio@orion.build">studio@orion.build</a></dd></div>
-          <div class="contact__row"><dt class="mono">Studio</dt><dd>London, United Kingdom — working worldwide</dd></div>
-          <div class="contact__row"><dt class="mono">Response</dt><dd>Within one business day, always from a human</dd></div>
-          <div class="contact__row"><dt class="mono">Engagements</dt><dd>Project builds, retainers and rescue work</dd></div>
+          <div class="contact__row"><dt class="mono">Who replies</dt><dd>Me. There is no team and no autoresponder.</dd></div>
+          <div class="contact__row"><dt class="mono">Where I am</dt><dd>England, United Kingdom — working remotely</dd></div>
+          <div class="contact__row"><dt class="mono">How long</dt><dd>Usually a few days. I am twelve, so I answer around school.</dd></div>
+          <div class="contact__row"><dt class="mono">Anything commercial</dt><dd>Goes through my parents before it is agreed</dd></div>
         </dl>
       </div>
 
       <div>
         <p class="form__alert" id="brief-alert" role="alert" hidden></p>
 
-        <form class="form" id="brief" novalidate>
+        <form class="form" id="brief" novalidate data-inbox="">
           <div class="form__row">
             <div class="field">
               <input class="field__input" type="text" id="brief-name" name="name" autocomplete="name" required />
@@ -33,7 +33,7 @@
             </div>
             <div class="field">
               <input class="field__input" type="email" id="brief-email" name="email" autocomplete="email" required />
-              <label class="field__label" for="brief-email">Business email</label>
+              <label class="field__label" for="brief-email">Your email</label>
               <span class="field__bar" aria-hidden="true"></span>
               <span class="field__err" aria-live="polite"></span>
             </div>
@@ -42,20 +42,17 @@
           <div class="form__row">
             <div class="field">
               <input class="field__input" type="text" id="brief-company" name="company" autocomplete="organization" />
-              <label class="field__label" for="brief-company">Company (optional)</label>
+              <label class="field__label" for="brief-company">Company or project (optional)</label>
               <span class="field__bar" aria-hidden="true"></span>
               <span class="field__err" aria-live="polite"></span>
             </div>
             <div class="field">
-              <select class="field__select" id="brief-budget" name="budget" required>
+              <select class="field__select" id="brief-package" name="package" required>
                 <option value="" selected disabled></option>
-                <option value="£10k – £25k">£10k – £25k</option>
-                <option value="£25k – £50k">£25k – £50k</option>
-                <option value="£50k – £100k">£50k – £100k</option>
-                <option value="£100k+">£100k+</option>
-                <option value="Retainer">Ongoing retainer</option>
+<!--PACKAGE_OPTIONS-->
+                <option value="Not sure yet">Not sure yet — help me choose</option>
               </select>
-              <label class="field__label" for="brief-budget">Budget tier</label>
+              <label class="field__label" for="brief-package">Which package</label>
               <svg class="field__chev" width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" /></svg>
               <span class="field__bar" aria-hidden="true"></span>
               <span class="field__err" aria-live="polite"></span>
@@ -64,16 +61,16 @@
 
           <div class="field">
             <textarea class="field__area" id="brief-details" name="details" rows="5" required></textarea>
-            <label class="field__label" for="brief-details">Project details</label>
+            <label class="field__label" for="brief-details">What you want built</label>
             <span class="field__bar" aria-hidden="true"></span>
             <span class="field__err" aria-live="polite"></span>
           </div>
 
           <div class="row" style="justify-content:space-between;align-items:center">
             <button class="btn btn--solid" type="submit" data-magnetic="0.26">
-              <span class="btn__lab"><span>Assemble brief</span><span>Transmit</span></span>
+              <span class="btn__lab"><span>Assemble brief</span><span>Put it together</span></span>
             </button>
-            <p class="form__note" style="max-width:22ch">No tracking, no autoresponder, no sales sequence.</p>
+            <p class="form__note" style="max-width:22ch">No tracking, no autoresponder, no mailing list.</p>
           </div>
         </form>
 
@@ -87,18 +84,22 @@
             </div>
             <pre class="terminal__out" id="brief-out"></pre>
           </div>
-          <p class="form__note mt-lg">
-            This page has no server. Your brief was assembled in the browser — open it in your mail
-            client to send it, or copy it anywhere you like.
+          <p class="form__note mt-lg" id="brief-howto">
+            This page has no server, so nothing has been sent anywhere. Your brief was assembled
+            in your own browser — copy it and send it to me however you like.
           </p>
           <div class="row mt-lg">
-            <a class="btn btn--solid" id="brief-mail" href="#">
+            <a class="btn btn--solid" id="brief-mail" href="#" hidden>
               <span class="btn__lab"><span>Open in mail app</span><span>Send it</span></span>
             </a>
+            <button class="btn btn--solid" id="brief-copy" type="button">
+              <span class="btn__lab"><span>Copy brief</span><span>To clipboard</span></span>
+            </button>
             <button class="btn btn--ghost" id="brief-reset" type="button">
               <span class="btn__lab"><span>Edit brief</span><span>Go back</span></span>
             </button>
           </div>
+          <p class="form__note mt-lg" id="brief-copied" role="status" aria-live="polite"></p>
         </div>
       </div>
     </div>
