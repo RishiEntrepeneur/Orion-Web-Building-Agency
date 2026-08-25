@@ -16,8 +16,8 @@
 <meta property="og:url" content="https://orion.build/" />
 <meta name="twitter:card" content="summary_large_image" />
 
-<link rel="preload" href="assets/fonts/anton-latin-400.woff2" as="font" type="font/woff2" crossorigin />
-<link rel="preload" href="assets/fonts/inter-tight-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/bodoni-normal-400-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/archivo-normal-100-900.woff2" as="font" type="font/woff2" crossorigin />
 
 <link rel="stylesheet" href="assets/css/styles.css" />
 
@@ -148,19 +148,21 @@
 <main id="main">
 
   <!-- ============ HERO ============ -->
-  <section class="hero" id="index" data-sec="INDEX" data-zone-set="blue">
+  <section class="hero" id="index" data-sec="INDEX" data-zone-set="gold">
     <div class="hero__field" aria-hidden="true"><canvas id="flow"></canvas></div>
     <div class="hero__grid" aria-hidden="true"></div>
+    <div class="wash" aria-hidden="true"></div>
+    <div class="floor" aria-hidden="true"><div class="floor__plane"></div></div>
 
-    <div class="shell hero__in">
-      <div>
+    <div class="shell hero__in tilt-scene" data-tilt-amount="3.4">
+      <div data-layer="1">
         <div class="hero__meta rv">
           <span class="hero__meta-dot" aria-hidden="true"></span>
           <span class="mono mono--bright">Taking briefs for Q4 2026</span>
           <span class="mono">London · Remote · Worldwide</span>
         </div>
 
-        <h1 class="hero__h1" data-kin="word">
+        <h1 class="hero__h1 chroma" data-kin="word" data-layer="2">
           We build<br />websites that<br />define
           <span class="cycler" id="cycler" aria-hidden="true">
             <span class="cycler__track">
@@ -207,13 +209,13 @@
         </div>
       </div>
 
-      <aside class="hero__aside rv" style="--d:260" aria-hidden="true">
-        <div class="ascii-frame" data-parallax="0.05">
-          <pre class="ascii" id="ascii"></pre>
-        </div>
-        <div class="ascii-cap">
-          <span class="mono">FIG. 01 — ORIONIS, LIVE PLOT</span>
-          <span class="mono mono--accent">ASCII / 22FPS</span>
+      <aside class="hero__aside rv" style="--d:260" data-layer="4" aria-hidden="true">
+        <div class="orbit">
+          <canvas id="orbit"></canvas>
+          <div class="orbit__hud">
+            <span class="mono">FIG. 01 — ARMILLARY, ORIONIS</span>
+            <span class="mono mono--accent">LIVE / 3D</span>
+          </div>
         </div>
       </aside>
     </div>
@@ -235,7 +237,8 @@
   </div>
 
   <!-- ============ SERVICES ============ -->
-  <section class="section" id="services" data-sec="SERVICES" data-zone-set="violet" aria-labelledby="services-h">
+  <section class="section" id="services" data-sec="SERVICES" data-zone-set="violet" aria-labelledby="services-h" data-3d="6">
+      <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
         <span class="sec-head__idx">01</span>
@@ -362,9 +365,10 @@
   </section>
 
   <!-- ============ STATEMENT ============ -->
-  <section class="section" data-sec="POSITION" data-zone-set="acid">
+  <section class="section" data-sec="POSITION" data-zone-set="teal" data-3d="7">
+      <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
-      <p class="stmt__q" data-kin="word">
+      <p class="stmt__q chroma" data-kin="word">
         <span class="hi">Most websites are forgettable.</span>
         That is a decision somebody made —
         <span class="sig">and so is this.</span>
@@ -377,9 +381,10 @@
   </section>
 
   <!-- ============ METHOD (pinned) ============ -->
-  <section class="section method" id="method" data-sec="METHOD" data-zone-set="acid" aria-labelledby="method-h" style="padding-block:0">
+  <section class="section method" id="method" data-sec="METHOD" data-zone-set="blue" aria-labelledby="method-h" style="padding-block:0">
     <div class="method__track" id="method-track">
       <div class="method__stage">
+        <div class="wash" aria-hidden="true"></div>
         <div class="shell method__inner">
           <div class="sec-head">
             <span class="sec-head__idx">02</span>
@@ -457,9 +462,10 @@
   </section>
 
   <!-- ============ WORK (horizontal) ============ -->
-  <section class="section work" id="work" data-sec="WORK" data-zone-set="flare" aria-labelledby="work-h" style="padding-block:0">
+  <section class="section work" id="work" data-sec="WORK" data-zone-set="magenta" aria-labelledby="work-h" style="padding-block:0">
     <div class="work__track" id="work-track">
       <div class="work__stage">
+        <div class="wash" aria-hidden="true"></div>
         <div class="work__lane" id="work-lane" data-cursor-text="Scroll" data-cursor-state="drag">
 
           <div class="work__intro">
@@ -479,7 +485,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="1.4" data-tint="59,130,246" data-mode="dots"></canvas>
+              <canvas data-halftone="1.4" data-tint="76,141,255" data-mode="dots"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">SaaS</span>
               <span class="work__no">01 / 06</span>
@@ -497,7 +503,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="2.7" data-tint="139,92,246" data-mode="cross"></canvas>
+              <canvas data-halftone="2.7" data-tint="233,201,121" data-mode="cross"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">Luxury retail</span>
               <span class="work__no">02 / 06</span>
@@ -515,7 +521,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="3.9" data-tint="216,255,74" data-mode="bars"></canvas>
+              <canvas data-halftone="3.9" data-tint="217,255,74" data-mode="bars"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">Industrial</span>
               <span class="work__no">03 / 06</span>
@@ -533,7 +539,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="5.1" data-tint="255,77,46" data-mode="dots"></canvas>
+              <canvas data-halftone="5.1" data-tint="63,217,192" data-mode="dots"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">Finance</span>
               <span class="work__no">04 / 06</span>
@@ -551,7 +557,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="6.3" data-tint="110,110,255" data-mode="cross"></canvas>
+              <canvas data-halftone="6.3" data-tint="169,123,255" data-mode="cross"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">Manufacturing</span>
               <span class="work__no">05 / 06</span>
@@ -569,7 +575,7 @@
 
           <article class="work__card" data-cursor-text="View" data-cursor-state="view">
             <div class="work__media">
-              <canvas data-halftone="7.8" data-tint="216,255,74" data-mode="dots"></canvas>
+              <canvas data-halftone="7.8" data-tint="255,111,176" data-mode="dots"></canvas>
               <span class="work__scrim"></span>
               <span class="work__tag">Healthcare</span>
               <span class="work__no">06 / 06</span>
@@ -604,7 +610,8 @@
   </section>
 
   <!-- ============ STANDARDS ============ -->
-  <section class="section" data-sec="STANDARDS" data-zone-set="blue" aria-labelledby="std-h">
+  <section class="section" data-sec="STANDARDS" data-zone-set="acid" aria-labelledby="std-h" data-3d="5">
+      <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
         <span class="sec-head__idx">04</span>
@@ -660,7 +667,8 @@
   </div>
 
   <!-- ============ CONTACT ============ -->
-  <section class="section" id="contact" data-sec="CONTACT" data-zone-set="violet" aria-labelledby="contact-h">
+  <section class="section" id="contact" data-sec="CONTACT" data-zone-set="flare" aria-labelledby="contact-h" data-3d="4">
+      <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell contact__grid">
       <div>
         <div class="sec-head">
@@ -766,6 +774,11 @@
   </section>
 
 </main>
+
+<!-- ============ ASCII BAND ============ -->
+<div class="band" aria-hidden="true">
+  <pre class="band__pre" id="ascii" data-rows="22"></pre>
+</div>
 
 <!-- ============ FOOTER ============ -->
 <footer class="foot">

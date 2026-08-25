@@ -439,9 +439,20 @@
     if (el.getAttribute("data-kin-ready") === "true") return;
     var byChar = el.getAttribute("data-kin") === "char";
     var nodes = [];
-    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    /* Never descend into a self-contained animation or screen-reader-only text.
+       Wrapping the cycler's own words in masks desynchronised it from its track
+       pitch and let neighbouring words bleed through. */
+    var SKIP = "[data-kin-skip], .cycler, .sr-only";
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (node) {
+        if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var host = node.parentElement;
+        if (host && host.closest(SKIP)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
     var n;
-    while ((n = walker.nextNode())) { if (n.nodeValue.trim()) nodes.push(n); }
+    while ((n = walker.nextNode())) { nodes.push(n); }
 
     var counter = 0;
     nodes.forEach(function (textNode) {
@@ -643,18 +654,29 @@
     /* width follows the active word so the headline reflows honestly */
     function sizeTo(i) {
       var probe = items[i];
-      el.style.width = probe.getBoundingClientRect().width + "px";
+      /* italics overhang their advance width, so the mask needs a buffer or the
+         last letter is sheared off */
+      var pad = parseFloat(getComputedStyle(el).fontSize) * 0.1;
+      el.style.width = (probe.getBoundingClientRect().width + pad) + "px";
     }
     var idx = 0;
     el.style.transition = "width 0.85s cubic-bezier(0.76,0,0.24,1)";
     sizeTo(0);
-    window.addEventListener("resize", function () { sizeTo(idx); }, { passive: true });
+    window.addEventListener("resize", function () { sizeTo(idx); step(); }, { passive: true });
+
+    /* Measure the real item height rather than hard-coding the em step. A
+       hard-coded step silently desynchronises the moment the CSS height
+       changes, leaving the previous word half-visible above the current one. */
+    var stepPx = 0;
+    function step() { stepPx = items[0].getBoundingClientRect().height; }
+    step();
 
     if (REDUCED) return;
     window.setInterval(function () {
       if (document.hidden) return;
       idx = (idx + 1) % items.length;
-      track.style.transform = "translateY(-" + idx * 0.82 + "em)";
+      if (!stepPx) step();
+      track.style.transform = "translateY(-" + (idx * stepPx).toFixed(2) + "px)";
       sizeTo(idx);
     }, 2600);
   }
@@ -779,19 +801,23 @@
     var COUNT = REDUCED ? 0 : LOWTIER ? 260 : 760;
 
     var PALETTE = [
-      [59, 130, 246],   /* blue */
-      [59, 130, 246],
-      [110, 110, 255],
-      [139, 92, 246],   /* violet */
-      [139, 92, 246],
-      [216, 255, 74],   /* acid — rare */
-      [255, 77, 46]     /* flare — rarer */
+      [233, 201, 121],  /* gold    */
+      [76, 141, 255],   /* blue    */
+      [169, 123, 255],  /* violet  */
+      [63, 217, 192],   /* teal    */
+      [255, 111, 176],  /* magenta */
+      [255, 122, 69],   /* flare   */
+      [217, 255, 74]    /* acid    */
     ];
+    /* weighted so gold and violet carry the field and the hotter hues punctuate */
     function pickColour(i) {
       var r = hash2(i * 7.13, i * 3.71);
-      if (r > 0.965) return PALETTE[6];
-      if (r > 0.9) return PALETTE[5];
-      if (r > 0.55) return PALETTE[3];
+      if (r > 0.97) return PALETTE[6];
+      if (r > 0.93) return PALETTE[5];
+      if (r > 0.86) return PALETTE[4];
+      if (r > 0.74) return PALETTE[3];
+      if (r > 0.55) return PALETTE[2];
+      if (r > 0.30) return PALETTE[1];
       return PALETTE[0];
     }
 
@@ -924,8 +950,9 @@
     var STAR_CH = ["@", "#", "*", "+", "o", ".", "."];
 
     var frameW = (pre.parentElement || pre).getBoundingClientRect().width || 420;
-    var COLS = clamp(Math.round(frameW / 7.4), 44, 86);
-    var ROWS = Math.round(COLS * 0.52);
+    var wantRows = parseInt(pre.getAttribute("data-rows"), 10) || 0;
+    var COLS = clamp(Math.round(frameW / (wantRows ? 9.5 : 7.4)), 44, wantRows ? 190 : 86);
+    var ROWS = wantRows || Math.round(COLS * 0.52);
     var buf = new Array(COLS * ROWS);
     var yaw = 0, pitch = 0;
     var lastPaint = 0;
@@ -939,10 +966,14 @@
       var f = d / (d + z2);
       return { x: x1 * f, y: y1 * f, s: f };
     }
+    /* one shared unit for both axes, doubled horizontally because a character
+       cell is about twice as tall as it is wide. Without this the figure
+       stretches to whatever the container's aspect happens to be. */
     function toGrid(p) {
+      var unit = (ROWS - 1) * 0.46;
       return {
-        c: Math.round((p.x * 0.46 + 0.5) * (COLS - 1)),
-        r: Math.round((-p.y * 0.44 + 0.5) * (ROWS - 1)),
+        c: Math.round(COLS / 2 + p.x * unit * 2.05),
+        r: Math.round(ROWS / 2 - p.y * unit),
         s: p.s
       };
     }
@@ -970,7 +1001,7 @@
       for (var i = 0; i < buf.length; i++) buf[i] = null;
 
       /* faint deterministic starfield */
-      for (var k = 0; k < COLS * ROWS * 0.05; k++) {
+      for (var k = 0; k < COLS * ROWS * 0.07; k++) {
         var h = hash2(k * 3.1, k * 7.7);
         var h2 = hash2(k * 5.3, k * 1.9);
         put(Math.floor(h * COLS), Math.floor(h2 * ROWS), h > 0.5 ? "." : "`", 0);
@@ -1462,6 +1493,255 @@
     });
   }
 
+
+  /* ============================================================
+     28. THE 3D RIG — scroll planes, pointer scene tilt, chroma
+     ============================================================ */
+  function init3D() {
+    if (REDUCED) return;
+
+    /* --- scroll-driven plane tilt --- */
+    var planes = $$("[data-3d]").map(function (el) {
+      return {
+        el: el,
+        rx: 0, tz: 0,
+        maxRx: parseFloat(el.getAttribute("data-3d")) || 6,
+        maxTz: parseFloat(el.getAttribute("data-3d-depth")) || 110
+      };
+    });
+
+    /* --- pointer scene tilt --- */
+    var scenes = $$(".tilt-scene").map(function (el) {
+      return { el: el, x: 0, y: 0, amt: parseFloat(el.getAttribute("data-tilt-amount")) || 3.2 };
+    });
+
+    /* --- chromatic split driven by scroll velocity --- */
+    var chromas = $$(".chroma");
+    var chroma = 0;
+
+    addTicker(function (dt) {
+      for (var i = 0; i < planes.length; i++) {
+        var p = planes[i];
+        var r = p.el.getBoundingClientRect();
+        if (r.bottom < -240 || r.top > S.vh + 240) continue;
+        var centre = r.top + r.height / 2;
+        var delta = clamp((centre - S.vh / 2) / S.vh, -1.15, 1.15);
+        p.rx = damp(p.rx, delta * p.maxRx, 90, dt);
+        p.tz = damp(p.tz, -Math.abs(delta) * p.maxTz, 90, dt);
+        p.el.style.setProperty("--rx", p.rx.toFixed(3) + "deg");
+        p.el.style.setProperty("--tz", p.tz.toFixed(1) + "px");
+      }
+
+      for (var j = 0; j < scenes.length; j++) {
+        var sc = scenes[j];
+        var sr = sc.el.getBoundingClientRect();
+        var live = sr.bottom > 0 && sr.top < S.vh;
+        var tx = live ? (0.5 - S.ny) * sc.amt : 0;
+        var ty = live ? (S.nx - 0.5) * sc.amt : 0;
+        sc.x = damp(sc.x, tx, 120, dt);
+        sc.y = damp(sc.y, ty, 120, dt);
+        sc.el.style.setProperty("--tilt-x", sc.x.toFixed(3) + "deg");
+        sc.el.style.setProperty("--tilt-y", sc.y.toFixed(3) + "deg");
+      }
+
+      if (chromas.length) {
+        chroma = damp(chroma, clamp(Math.abs(S.vel) * 0.055, 0, 3.2), 70, dt);
+        for (var k = 0; k < chromas.length; k++) {
+          chromas[k].style.setProperty("--chroma", chroma.toFixed(2));
+        }
+      }
+    });
+  }
+
+  /* ============================================================
+     29. WORK CARDS — rotate in Y as they cross the lane
+     ============================================================ */
+  function initCard3D() {
+    if (REDUCED) return;
+    var cards = $$(".work__card");
+    if (!cards.length) return;
+    var state = cards.map(function () { return 0; });
+    addTicker(function (dt) {
+      for (var i = 0; i < cards.length; i++) {
+        var r = cards[i].getBoundingClientRect();
+        if (r.right < -300 || r.left > S.vw + 300) continue;
+        var centre = r.left + r.width / 2;
+        var d = clamp((centre - S.vw / 2) / (S.vw / 2), -1, 1);
+        state[i] = damp(state[i], -d * 15, 70, dt);
+        cards[i].style.setProperty("--card-ry", state[i].toFixed(2) + "deg");
+      }
+    });
+  }
+
+  /* ============================================================
+     30. ORBIT PLATE — software 3D armillary sphere
+     Real perspective projection, no library.
+     ============================================================ */
+  function initOrbit() {
+    var canvas = $("#orbit");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    var host = canvas.parentElement;
+    var W = 0, H = 0, dpr = 1;
+
+    /* three graduated rings in different planes, plus Orion inside */
+    var SEG = LOWTIER ? 56 : 96;
+    function ring(tiltX, tiltZ, radius) {
+      var pts = [];
+      for (var i = 0; i <= SEG; i++) {
+        var a = (i / SEG) * Math.PI * 2;
+        var x = Math.cos(a) * radius, y = 0, z = Math.sin(a) * radius;
+        /* tilt about X */
+        var y1 = y * Math.cos(tiltX) - z * Math.sin(tiltX);
+        var z1 = y * Math.sin(tiltX) + z * Math.cos(tiltX);
+        /* tilt about Z */
+        var x2 = x * Math.cos(tiltZ) - y1 * Math.sin(tiltZ);
+        var y2 = x * Math.sin(tiltZ) + y1 * Math.cos(tiltZ);
+        pts.push([x2, y2, z1]);
+      }
+      return pts;
+    }
+    var RINGS = [
+      { pts: ring(0, 0, 1), w: 1.15, ticks: 24 },
+      { pts: ring(Math.PI / 2, 0, 0.985), w: 0.8, ticks: 0 },
+      { pts: ring(Math.PI / 2, Math.PI / 2, 0.97), w: 0.8, ticks: 0 },
+      { pts: ring(0.42, 0.32, 0.72), w: 0.65, ticks: 12 },
+      { pts: ring(-0.55, 0.9, 0.5), w: 0.55, ticks: 0 }
+    ];
+    var STARS = [
+      [-0.42, 0.40, 0.10], [0.40, 0.47, -0.09], [-0.21, 0.01, 0.04],
+      [0.00, 0.06, 0.00], [0.21, 0.10, -0.04], [-0.38, -0.47, 0.07],
+      [0.47, -0.44, -0.12], [0.01, 0.68, 0.01], [-0.03, -0.20, 0.02]
+    ];
+    var LINKS = [[0,1],[0,2],[1,4],[2,3],[3,4],[2,5],[4,6],[5,6],[7,0],[7,1],[3,8]];
+
+    var yaw = 0.6, pitch = 0.35, roll = 0;
+    var accent = [233, 201, 121];
+
+    function resize() {
+      var r = host.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      dpr = Math.min(window.devicePixelRatio || 1, LOWTIER ? 1 : 1.75);
+      W = Math.round(r.width); H = Math.round(r.height);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function readAccent() {
+      var v = getComputedStyle(host).getPropertyValue("--accent").trim();
+      var m = v.match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return;
+      var n = parseInt(m[1], 16);
+      accent = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    /* rotate then project — d is the eye distance in scene units */
+    function project(p) {
+      var cy = Math.cos(yaw), sy = Math.sin(yaw);
+      var cp = Math.cos(pitch), sp = Math.sin(pitch);
+      var cr = Math.cos(roll), sr = Math.sin(roll);
+      var x = p[0] * cy - p[2] * sy;
+      var z = p[0] * sy + p[2] * cy;
+      var y = p[1] * cp - z * sp;
+      z = p[1] * sp + z * cp;
+      var x2 = x * cr - y * sr;
+      var y2 = x * sr + y * cr;
+      var d = 3.6;
+      var f = d / (d + z);
+      var scale = Math.min(W, H) * 0.42;
+      return [W / 2 + x2 * f * scale, H / 2 + y2 * f * scale, z, f];
+    }
+
+    function draw() {
+      if (!W) { resize(); if (!W) return; }
+      ctx.clearRect(0, 0, W, H);
+
+      var a = accent;
+      /* rings, back half first so the front reads as in front */
+      for (var pass = 0; pass < 2; pass++) {
+        for (var r = 0; r < RINGS.length; r++) {
+          var R = RINGS[r];
+          ctx.lineWidth = R.w;
+          ctx.beginPath();
+          var drawing = false;
+          for (var i = 0; i < R.pts.length; i++) {
+            var pr = project(R.pts[i]);
+            var back = pr[2] > 0;
+            if ((pass === 0) !== back) { drawing = false; continue; }
+            if (!drawing) { ctx.moveTo(pr[0], pr[1]); drawing = true; }
+            else ctx.lineTo(pr[0], pr[1]);
+          }
+          ctx.strokeStyle = pass === 0
+            ? "rgba(" + a[0] + "," + a[1] + "," + a[2] + ",0.2)"
+            : "rgba(" + a[0] + "," + a[1] + "," + a[2] + ",0.78)";
+          ctx.stroke();
+
+          /* graduation ticks on the marked rings */
+          if (R.ticks) {
+            for (var t = 0; t < R.ticks; t++) {
+              var idx = Math.round((t / R.ticks) * SEG);
+              var p0 = R.pts[idx];
+              var pin = project([p0[0] * 0.94, p0[1] * 0.94, p0[2] * 0.94]);
+              var pout = project([p0[0] * 1.06, p0[1] * 1.06, p0[2] * 1.06]);
+              if ((pass === 0) !== (pin[2] > 0)) continue;
+              ctx.beginPath();
+              ctx.moveTo(pin[0], pin[1]); ctx.lineTo(pout[0], pout[1]);
+              ctx.strokeStyle = "rgba(" + a[0] + "," + a[1] + "," + a[2] + "," + (pass === 0 ? 0.16 : 0.55) + ")";
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      /* the constellation suspended inside the armature */
+      var proj = STARS.map(project);
+      ctx.lineWidth = 0.7;
+      for (var l = 0; l < LINKS.length; l++) {
+        var A = proj[LINKS[l][0]], Bp = proj[LINKS[l][1]];
+        ctx.beginPath();
+        ctx.moveTo(A[0], A[1]); ctx.lineTo(Bp[0], Bp[1]);
+        ctx.strokeStyle = "rgba(246,242,233,0.24)";
+        ctx.stroke();
+      }
+      for (var s2 = 0; s2 < proj.length; s2++) {
+        var q = proj[s2];
+        var rad = Math.max(0.9, 2.6 * q[3]);
+        var glow = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], rad * 5);
+        glow.addColorStop(0, "rgba(246,242,233,0.95)");
+        glow.addColorStop(0.35, "rgba(" + a[0] + "," + a[1] + "," + a[2] + ",0.45)");
+        glow.addColorStop(1, "rgba(" + a[0] + "," + a[1] + "," + a[2] + ",0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(q[0], q[1], rad * 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(246,242,233,0.98)";
+        ctx.beginPath(); ctx.arc(q[0], q[1], rad, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+    readAccent();
+
+    if (REDUCED) { draw(); return; }
+
+    var visible = true;
+    var io = new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0 });
+    io.observe(host);
+
+    var spin = 0, accentTick = 0;
+    addTicker(function (dt) {
+      if (!visible) return;
+      spin += dt * 0.00021;
+      yaw = damp(yaw, spin + (S.nx - 0.5) * 1.15, 200, dt);
+      pitch = damp(pitch, 0.32 + (S.ny - 0.5) * -0.7 + S.progress * 0.45, 200, dt);
+      roll = damp(roll, (S.nx - 0.5) * 0.16, 260, dt);
+      accentTick += dt;
+      if (accentTick > 400) { accentTick = 0; readAccent(); }
+      draw();
+    });
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -1493,6 +1773,9 @@
     initMagnetic();
     initScramble();
     initFaq();
+    init3D();
+    initCard3D();
+    initOrbit();
 
     initBoot().then(function () {
       /* reveals run after the curtain lifts so the stagger is actually seen */

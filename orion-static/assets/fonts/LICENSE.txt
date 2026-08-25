@@ -1,8 +1,8 @@
 Fonts in this directory are licensed under the SIL Open Font License, Version 1.1.
 
-  Anton            — Copyright (c) The Anton Project Authors
-  Inter Tight      — Copyright (c) The Inter Project Authors
-  JetBrains Mono   — Copyright (c) The JetBrains Mono Project Authors
+  Bodoni Moda     — Copyright (c) The Bodoni Moda Project Authors
+  Archivo         — Copyright (c) The Archivo Project Authors
+  IBM Plex Mono   — Copyright (c) The IBM Plex Project Authors
 
 Full licence text: https://openfontlicense.org/open-font-license-official-text/
 

@@ -12,16 +12,33 @@ python3 -m http.server 8000
 
 ## Art direction
 
-Mission-control editorial. True black ground, *bone* white type rather than
-blue-white, Anton condensed at billboard scale, hairline rules instead of card
-borders, monospaced data labels, and blue/violet/acid used as a hot **signal**
-rather than as ambient glow.
+**Couture observatory** — luxury editorial typography inside a technical
+instrument frame, flying through coloured space.
 
-Colour is zoned: each section declares `data-zone-set` and the accent swaps as
-you scroll — blue for the index, violet for services, acid for method and
-position, flare for work. Zone utilities redeclare literal colour values rather
-than chaining `var()` indirections, because a custom property that references
-another resolves where it is *declared*, not where it is used.
+Bodoni Moda, a high-contrast didone, set in mixed case at billboard scale with
+italic for emphasis. Archivo carries the interface, IBM Plex Mono the data
+labels. The ground is a violet-black rather than a neutral one.
+
+Colour is zoned across **seven** signals — champagne gold for the index, violet
+for services, teal for the position statement, blue for the method, magenta for
+the work, acid for the standards, flare for contact. Each section carries an
+ambient two-hue wash in its own accent, so colour is present throughout rather
+than saved for a single pop. Every one of the seven clears 4.5:1 against the
+ground as text, which is what allows them all to be used for type.
+
+Zone utilities redeclare literal colour values rather than chaining `var()`
+indirections, because a custom property that references another resolves where
+it is *declared*, not where it is used.
+
+### The didone problem, and the fix
+
+A high-contrast serif reversed out of near-black loses its hairlines: at the
+sizes used here the hyphen in "E-commerce" and the diagonal of a "4" dropped
+below one device pixel and disappeared outright. The fix is optical-size
+compensation — `font-optical-sizing` is switched off and `opsz` is pinned
+*below* the rendered size in three bands (26 for display, 15 for headings, 9 for
+small numerals), because lower optical sizes carry sturdier hairlines. This is
+why the type holds together on a dark ground.
 
 ## Files
 
@@ -62,7 +79,14 @@ Smoothing uses frame-rate-independent exponential damping
 | | |
 |---|---|
 | Preloader | Constellation draws in, counter races to 100, slat curtain lifts |
+| 3D scroll rig | Every unpinned section tilts and recedes in real perspective as it crosses the viewport |
+| Scene tilt | The hero rotates toward the cursor, its layers separated in z |
+| Armillary | A software-3D rotating armature with Orion suspended inside, true perspective projection, no library |
+| Grid floor | A CSS-3D plane receding to a horizon under the hero |
+| Chromatic split | Headlines fringe blue/magenta in proportion to scroll velocity |
+| Card rotation | Work tiles rotate in Y by their position across the lane |
 | Cursor | Stateful dot + difference-blend ring: link, view, drag, text |
+| 3D flips | Button labels and nav links rotate on the X axis rather than sliding |
 | Kinetic type | Headings split into masked words that rise into place |
 | Text scramble | Mono labels resolve out of noise on hover and on first view |
 | Flow field | Curl-noise particle plot, pointer-repelled, hero background |
@@ -88,11 +112,12 @@ when the tab is hidden.
 
 Measured in Chromium at 360–1920px, not eyeballed:
 
-- **LCP 136–224ms** on all four pages; the LCP element is the `<h1>` in every case
-- **7 requests, ~235KB**, no third-party origins
-- **Contrast** computed numerically: body 17.9:1, secondary 9.2:1, mono labels
-  4.8:1, every accent ≥ 8.3:1 against the ground; interactive borders use a
-  dedicated `--edge` token at 3.4:1 (WCAG 1.4.11)
+- **LCP 196–300ms** on all four pages; the LCP element is the `<h1>` in every case
+- **9 requests, ~376KB**, no third-party origins (224KB of that is the three
+  self-hosted variable families)
+- **Contrast** computed numerically: body 18.0:1, secondary 9.8:1, mono labels
+  5.5:1, and all seven zone signals between 6.3:1 and 17.5:1 as text against the
+  ground; interactive borders use a dedicated `--edge` token at 3.5:1 (WCAG 1.4.11)
 - **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
 - **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
   panels and the closed drawer are `inert`
@@ -116,7 +141,9 @@ outcomes. Replace them before the site goes live.
 
 ## Fonts
 
-Anton, Inter Tight and JetBrains Mono, latin subsets, self-hosted under the SIL
-Open Font License 1.1 (see `assets/fonts/LICENSE.txt`). Self-hosting removes the
+Bodoni Moda (roman and italic), Archivo and IBM Plex Mono — latin subsets,
+self-hosted under the SIL Open Font License 1.1 (see
+`assets/fonts/LICENSE.txt`). Bodoni and Archivo are variable, so every weight
+and, for Archivo, every width comes from a single file. Self-hosting removes the
 render-blocking third-party request and the flash of fallback text that the
 Google Fonts CDN causes on a cold connection.
