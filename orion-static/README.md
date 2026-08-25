@@ -1,6 +1,6 @@
 # Orion — static site
 
-An eighteen-page marketing site for Orion, a web studio. **Zero dependencies,
+A nineteen-page marketing site for Orion, a web studio. **Zero dependencies,
 zero third-party network requests.** Hand-written HTML, CSS and ES2020.
 
 Open `index.html` in a browser, or serve the folder:
@@ -43,6 +43,7 @@ why the type holds together on a dark ground.
 ## Pages
 
 ```
+intro.html                        the typed question, then the answer building
 index.html                        home
 about.html                        studio — principles, shape, working here
 services.html                     capabilities, engagement models, FAQ
@@ -87,7 +88,7 @@ HUD, nav, drawer and footer. Every other page is generated from it, so the
 chrome cannot drift.
 
 ```sh
-node tools/build.js     # regenerates all 17 other pages, plus sitemap and robots
+node tools/build.js     # regenerates all generated pages, plus sitemap and robots
 ```
 
 - Chrome → edit `index.html`
@@ -258,3 +259,27 @@ Google Fonts CDN causes on a cold connection.
    it simply scrolls away. The column needs `align-self: stretch`.
 
 Neither throws, neither warns, and both look like "sticky is broken".
+
+
+## The intro sequence
+
+`intro.html` is a cinematic entry page: somebody types "How to build a website"
+into a prompt box, autocomplete offers the usual answers, and then the real one
+arrives and assembles itself as a wireframe of the site's own layout before
+rushing past the camera into a title card.
+
+It runs off a **cue list evaluated against elapsed time**, not chained timeouts.
+That is what makes it skippable: Escape simply fires every cue that has not run
+yet and lands on the final frame. Skip is an ordinary link, so the page curtain
+carries it into the site.
+
+`index.html` is still the front door. To make the intro the site's landing page
+instead, swap the two filenames and update the handful of `index.html` links:
+
+```sh
+mv index.html home.html && mv intro.html index.html
+# then point the intro's two exits and the nav/footer at home.html
+```
+
+Bear in mind the trade: an intro is a gate, and returning visitors will meet it
+every time unless you remember a dismissal in `localStorage`.
