@@ -156,6 +156,26 @@ Under `prefers-reduced-motion`, or below 900px where a 1200px screen would be
 illegible anyway, the flight is dropped entirely and the three builds are a
 plain list of links.
 
+## The single-file preview
+
+`tools/make-artifact.js` folds the whole thing into one self-contained HTML
+file: the intro as an overlay, the home page, the packages, the machine and the
+contact form, with every font inlined as a data URI and every link that needs a
+second page either pulled in whole or removed. It refuses to emit a file with a
+dead link in it.
+
+The machine is the one thing that cannot survive the fold intact — a single file
+has no second page to point an iframe at. So the artifact's laptop screen shows
+full-length stills of the three demos instead, and makes them scrollable once
+the flight lands. The camera move is identical; only the interactivity inside
+the screen is lost.
+
+```sh
+python3 -m http.server 8765      # serve the site
+node tools/demo-stills.mjs       # recapture the stills after a demo changes
+SP=tools/stills node tools/make-artifact.js
+```
+
 ## Motion
 
 Everything runs off a single `requestAnimationFrame` loop, driven by a
