@@ -35,3 +35,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# static starter — nothing to ignore, it has no build output

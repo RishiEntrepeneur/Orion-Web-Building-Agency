@@ -1,0 +1,506 @@
+/* ==========================================================================
+   ORION — Cosmic Minimalism
+   --------------------------------------------------------------------------
+   Tailwind (via CDN) handles layout and spacing. This file owns the things
+   Tailwind should not: the palette, the glass and glow treatments, the
+   particle canvas, the timeline, and the motion system.
+
+   Contrast note. Every colour below was measured, not eyeballed:
+     --blue  #3b82f6 clears AA (4.96:1+) for text on every surface here.
+     --violet #8b5cf6 does NOT (3.97:1 on --raised), so violet TEXT uses
+       --violet-text #b69cff instead. The raw violet is for glows, borders
+       and fills only.
+     White on a solid blue fill is 3.68:1 and fails, so filled accent buttons
+       carry dark ink (#05060a on blue = 5.51:1, on violet = 4.78:1).
+   ========================================================================== */
+
+:root {
+  /* Substrate — obsidian through deep slate */
+  --obsidian: #05060a;
+  --slate: #0a0c12;
+  --surface: #12151d;
+  --raised: #191d28;
+  --hairline: #232838;
+
+  /* Type */
+  --white: #f8fafc;
+  --muted: #a9b4c7;
+  --dim: #7d8899;
+
+  /* Accents */
+  --blue: #3b82f6;
+  --violet: #8b5cf6;
+  --blue-text: #7dabff;
+  --violet-text: #b69cff;
+
+  --glow-blue: 59 130 246;
+  --glow-violet: 139 92 246;
+
+  --header-h: 4.5rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------- base --- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Anchor targets must clear the fixed header. */
+  scroll-padding-top: calc(var(--header-h) + 1.5rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--obsidian);
+  color: var(--white);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+  text-wrap: balance;
+  letter-spacing: -0.03em;
+}
+
+::selection {
+  background: rgb(var(--glow-blue) / 0.35);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue-text);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Skip link — visible only when focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--blue);
+  border-radius: 0.5rem;
+  color: var(--white);
+  font-size: 0.875rem;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--blue), var(--violet));
+  border-radius: 99px;
+  border: 2px solid var(--obsidian);
+}
+html { scrollbar-color: #2b3350 var(--obsidian); scrollbar-width: thin; }
+
+/* ------------------------------------------------------------ surfaces --- */
+
+.glass {
+  background: rgba(10, 12, 18, 0.62);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+/* Header only frosts once you have scrolled — over the hero it stays clear. */
+.site-header {
+  transition: background-color 0.4s var(--ease-out-expo),
+              border-color 0.4s var(--ease-out-expo),
+              backdrop-filter 0.4s var(--ease-out-expo);
+  border-bottom: 1px solid transparent;
+}
+.site-header[data-scrolled="true"] {
+  background: rgba(10, 12, 18, 0.72);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border-bottom-color: var(--hairline);
+}
+
+.panel {
+  background:
+    linear-gradient(158deg, rgba(255,255,255,0.045), rgba(255,255,255,0.008) 46%, transparent),
+    var(--surface);
+  border: 1px solid var(--hairline);
+}
+
+/* --------------------------------------------------------------- glow --- */
+
+/* Soft border that lights up on hover — the signature interaction. */
+.glow-card {
+  position: relative;
+  isolation: isolate;
+  transition: transform 0.5s var(--ease-out-expo),
+              border-color 0.5s var(--ease-out-expo),
+              box-shadow 0.5s var(--ease-out-expo);
+}
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg,
+    rgb(var(--glow-blue) / 0.9),
+    rgb(var(--glow-violet) / 0.75) 55%,
+    transparent 85%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  z-index: 1;
+}
+.glow-card:hover::before,
+.glow-card:focus-within::before { opacity: 1; }
+
+.glow-card:hover,
+.glow-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 60px -30px rgb(var(--glow-blue) / 0.55);
+}
+
+/* Cursor-tracked spotlight, positioned by app.js via --mx/--my. */
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--glow-blue) / 0.14), transparent 68%);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out-expo);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-card:hover.spotlight::after { opacity: 1; }
+
+/* ------------------------------------------------------------ buttons --- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.3s var(--ease-out-expo),
+              box-shadow 0.3s var(--ease-out-expo),
+              background-color 0.3s var(--ease-out-expo),
+              border-color 0.3s var(--ease-out-expo),
+              filter 0.3s var(--ease-out-expo);
+  position: relative;
+  overflow: hidden;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.985); }
+
+/* Dark ink on the accent fill: white on #3b82f6 measures 3.68:1 and fails AA. */
+.btn-primary {
+  background-image: linear-gradient(115deg, var(--blue), var(--violet));
+  color: var(--obsidian);
+  box-shadow: 0 10px 34px -12px rgb(var(--glow-blue) / 0.85);
+}
+.btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 18px 48px -14px rgb(var(--glow-violet) / 0.95);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--hairline);
+  color: var(--white);
+}
+.btn-ghost:hover {
+  border-color: rgb(var(--glow-blue) / 0.6);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 40px -18px rgb(var(--glow-blue) / 0.7);
+}
+
+/* Specular sweep across a button on hover. */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease-out-expo);
+  pointer-events: none;
+}
+.btn:hover::after { transform: translateX(120%); }
+
+/* ------------------------------------------------------------- accents --- */
+
+.text-gradient {
+  background-image: linear-gradient(100deg, var(--white) 0%, var(--blue-text) 46%, var(--violet-text) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--glow-blue) / 0.3);
+  background: rgb(var(--glow-blue) / 0.08);
+  color: var(--blue-text);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.eyebrow .dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--blue);
+  box-shadow: 0 0 10px 2px rgb(var(--glow-blue) / 0.8);
+}
+
+/* Faint grid, masked so it never shows a hard rectangle edge. */
+.grid-mesh {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+          mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+}
+
+/* ------------------------------------------------------------ particles --- */
+
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- timeline --- */
+
+.timeline { position: relative; }
+
+/* The rail is drawn as a scaleY transform so it can be animated cheaply. */
+.timeline-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.4375rem;
+  width: 2px;
+  background: linear-gradient(180deg, var(--blue), var(--violet));
+  transform-origin: top center;
+  transform: scaleY(0);
+  transition: transform 1.4s var(--ease-out-expo);
+}
+.timeline[data-visible="true"] .timeline-rail { transform: scaleY(1); }
+
+@media (min-width: 1024px) {
+  .timeline-rail { left: 0; right: 0; top: 1.4375rem; bottom: auto; width: auto; height: 2px; transform: scaleX(0); transform-origin: left center; }
+  .timeline[data-visible="true"] .timeline-rail { transform: scaleX(1); }
+}
+
+.timeline-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.875rem;
+  height: 2.875rem;
+  border-radius: 999px;
+  background: var(--slate);
+  border: 1px solid var(--hairline);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.5s var(--ease-out-expo),
+              border-color 0.5s var(--ease-out-expo),
+              box-shadow 0.5s var(--ease-out-expo),
+              background-color 0.5s var(--ease-out-expo);
+}
+.timeline-step[data-visible="true"] .timeline-node {
+  color: var(--white);
+  border-color: rgb(var(--glow-blue) / 0.7);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px rgb(var(--glow-blue) / 0.1), 0 0 26px -4px rgb(var(--glow-blue) / 0.85);
+}
+
+/* ---------------------------------------------------------------- form --- */
+
+.field {
+  width: 100%;
+  border-radius: 0.85rem;
+  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--white);
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo);
+}
+.field::placeholder { color: var(--dim); }
+.field:hover { border-color: #2e3548; }
+.field:focus {
+  outline: none;
+  border-color: rgb(var(--glow-blue) / 0.8);
+  box-shadow: 0 0 0 4px rgb(var(--glow-blue) / 0.12);
+}
+.field[aria-invalid="true"] {
+  border-color: #f6607f;
+  box-shadow: 0 0 0 4px rgba(246, 96, 127, 0.12);
+}
+select.field {
+  appearance: none;
+  /* Chevron drawn inline so the select needs no image asset. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237d8899' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.75rem;
+}
+select.field option { background: var(--surface); color: var(--white); }
+
+.field-error {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.8125rem;
+  color: #f6879c;
+  min-height: 1.15rem;
+}
+
+/* ---------------------------------------------------------- navigation --- */
+
+.nav-link {
+  position: relative;
+  padding: 0.5rem 0.25rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.3s var(--ease-out-expo);
+}
+.nav-link:hover { color: var(--white); }
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0.1rem;
+  height: 1px;
+  width: 0;
+  background: linear-gradient(90deg, var(--blue), var(--violet));
+  transition: width 0.35s var(--ease-out-expo);
+}
+.nav-link:hover::after { width: 100%; }
+.nav-link[aria-current="true"] { color: var(--white); }
+.nav-link[aria-current="true"]::after { width: 100%; }
+
+/* Mobile drawer slides and fades together. */
+#mobile-menu {
+  transform: translateY(-0.75rem);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.35s var(--ease-out-expo),
+              opacity 0.35s var(--ease-out-expo),
+              visibility 0.35s;
+}
+#mobile-menu[data-open="true"] {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ------------------------------------------------------------- reveals --- */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition: opacity 0.85s var(--ease-out-expo), transform 0.85s var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+.reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Content already on screen at load is shown instantly. An element that starts
+   at opacity 0 does not count as painted, so animating the hero in would push
+   Largest Contentful Paint back by the length of the fade for no benefit. */
+.reveal.is-instant {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* --------------------------------------------------------- portfolio ---- */
+
+.work-card figure { margin: 0; }
+.work-card .work-media {
+  transition: transform 0.7s var(--ease-out-expo), filter 0.7s var(--ease-out-expo);
+}
+.work-card:hover .work-media { transform: scale(1.05); filter: saturate(1.15); }
+
+.work-overlay {
+  background: linear-gradient(to top,
+    rgba(5, 6, 10, 0.94) 0%,
+    rgba(5, 6, 10, 0.7) 40%,
+    rgba(5, 6, 10, 0.05) 100%);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------ reduced motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .timeline-rail { transform: none !important; }
+  #particle-canvas { display: none; }
+}
+
+/* Badge on the form success panel. Written here rather than as an arbitrary
+   Tailwind value: colour-with-opacity on an arbitrary value is unreliable. */
+.success-badge {
+  border: 1px solid rgb(var(--glow-blue) / 0.5);
+  background: rgb(var(--glow-blue) / 0.12);
+  color: var(--blue-text);
+}

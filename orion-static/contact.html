@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact — Orion</title>
+  <meta name="description" content="Send Orion a project brief. Fixed scope, fixed price, same-working-day reply." />
+  <meta name="theme-color" content="#05060a" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Orion — Architecting Elite Digital Experiences" />
+  <meta property="og:description" content="We build websites that define industries. Premium web design, e-commerce ecosystems and AI-driven web applications." />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind Play CDN.
+       Convenient for development; it ships the compiler and cannot purge, so
+       see README.md for the one-line build that produces a real stylesheet
+       before you deploy. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obsidian: "#05060a",
+            space: { 950: "#0a0c12", 900: "#12151d", 800: "#191d28" },
+            hairline: "#232838",
+            ink: "#f8fafc",
+            muted: "#a9b4c7",
+            dim: "#7d8899",
+            electric: "#3b82f6",
+            neon: "#8b5cf6",
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+          },
+          maxWidth: { content: "80rem" },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- ============================================================ header -->
+  <header class="site-header fixed inset-x-0 top-0 z-50">
+    <nav class="mx-auto flex h-[4.5rem] w-full max-w-content items-center justify-between gap-4 px-5 sm:px-8" aria-label="Primary">
+      <a href="index.html" class="group flex shrink-0 items-center gap-3" aria-label="Orion — home">
+        <span aria-hidden="true" class="relative grid size-9 place-items-center">
+          <svg viewBox="0 0 36 36" class="size-full" fill="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="mark" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+              </linearGradient>
+            </defs>
+            <!-- Orion's Belt: three stars on one line -->
+            <line x1="8" y1="25" x2="28" y2="11" stroke="url(#mark)" stroke-opacity="0.5" stroke-width="1.25" stroke-linecap="round" />
+            <circle cx="8"  cy="25" r="2.4" fill="url(#mark)" />
+            <circle cx="18" cy="18" r="3.2" fill="#f8fafc" />
+            <circle cx="28" cy="11" r="2.6" fill="url(#mark)" />
+          </svg>
+        </span>
+        <span class="font-display text-lg font-bold tracking-[0.22em] text-ink transition-colors duration-300 group-hover:text-[color:var(--blue-text)]">ORION</span>
+      </a>
+
+      <ul class="hidden items-center gap-8 lg:flex">
+        <li><a class="nav-link" data-nav-link href="index.html#services">Services</a></li>
+        <li><a class="nav-link" data-nav-link href="index.html#work">Work</a></li>
+        <li><a class="nav-link" data-nav-link href="index.html#process">Process</a></li>
+        <li><a class="nav-link" data-nav-link href="index.html#contact" aria-current="true">Contact</a></li>
+      </ul>
+
+      <div class="hidden lg:block">
+        <a href="index.html#contact" class="btn btn-primary h-10 px-5 text-sm">
+          Launch Project
+          <svg class="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12L12 4M6 4h6v6" /></svg>
+        </a>
+      </div>
+
+      <button id="menu-toggle" type="button" class="grid size-11 place-items-center rounded-xl border border-[color:var(--hairline)] bg-white/[0.04] text-ink transition-colors duration-300 hover:border-[color:var(--blue)] lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
+        <svg data-icon="open" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        <svg data-icon="close" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" hidden><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </nav>
+
+    <div id="mobile-menu" class="glass absolute inset-x-0 top-[4.5rem] border-b border-[color:var(--hairline)] px-5 pb-7 pt-4 lg:hidden" data-open="false">
+      <ul class="flex flex-col">
+        <li><a class="block border-b border-[color:var(--hairline)] py-4 text-lg text-muted transition-colors hover:text-ink" href="index.html#services">Services</a></li>
+        <li><a class="block border-b border-[color:var(--hairline)] py-4 text-lg text-muted transition-colors hover:text-ink" href="index.html#work">Work</a></li>
+        <li><a class="block border-b border-[color:var(--hairline)] py-4 text-lg text-muted transition-colors hover:text-ink" href="index.html#process">Process</a></li>
+        <li><a class="block py-4 text-lg text-muted transition-colors hover:text-ink" href="index.html#contact">Contact</a></li>
+      </ul>
+      <a href="index.html#contact" class="btn btn-primary mt-5 h-12 w-full text-sm">Launch Project</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="relative px-5 pb-24 pt-[9rem] sm:px-8 sm:pb-32 sm:pt-[11rem]">
+      <div class="grid-mesh pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+      <div class="mx-auto grid w-full max-w-content grid-cols-1 gap-14 lg:grid-cols-[0.85fr_1fr] lg:gap-20">
+        <div>
+          <p class="reveal"><span class="eyebrow"><span class="dot" aria-hidden="true"></span>Start a Project</span></p>
+          <h1 class="reveal mt-7 font-display text-[clamp(2.25rem,5.5vw,4rem)] font-bold leading-[1.02] text-ink" data-reveal-delay="60">
+            Tell us what you are <span class="text-gradient">building.</span>
+          </h1>
+          <p class="reveal mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted" data-reveal-delay="120">
+            No discovery call to book a discovery call. Send the brief and we reply
+            the same working day with a scope and a number.
+          </p>
+
+          <dl class="reveal mt-12 flex flex-col gap-6 border-t border-[color:var(--hairline)] pt-8" data-reveal-delay="160">
+            <div>
+              <dt class="font-mono text-xs uppercase tracking-[0.18em] text-dim">Email</dt>
+              <dd class="mt-1.5"><a href="mailto:hello@orion.studio" class="text-lg text-ink transition-colors hover:text-[color:var(--blue-text)]">hello@orion.studio</a></dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs uppercase tracking-[0.18em] text-dim">Reply time</dt>
+              <dd class="mt-1.5 text-lg text-ink">Same working day</dd>
+            </div>
+            <div>
+              <dt class="font-mono text-xs uppercase tracking-[0.18em] text-dim">Engagements</dt>
+              <dd class="mt-1.5 text-lg text-ink">Fixed scope, fixed price</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="reveal panel rounded-2xl p-6 sm:p-9" data-reveal-delay="100">
+          <p id="form-status" class="mb-6 rounded-xl border border-[#f6607f]/40 bg-[#f6607f]/10 px-4 py-3 text-sm text-[#f6879c]" role="alert" hidden></p>
+
+          <form id="project-form" novalidate>
+            <div class="flex flex-col gap-6">
+              <div>
+                <label for="name" class="mb-2.5 block font-mono text-xs uppercase tracking-[0.18em] text-dim">Name</label>
+                <input class="field" type="text" id="name" name="name" autocomplete="name" placeholder="Alex Whitfield" aria-describedby="name-error" aria-invalid="false" required />
+                <span class="field-error" id="name-error" aria-live="polite"></span>
+              </div>
+              <div>
+                <label for="email" class="mb-2.5 block font-mono text-xs uppercase tracking-[0.18em] text-dim">Business email</label>
+                <input class="field" type="email" id="email" name="email" autocomplete="email" placeholder="alex@company.com" aria-describedby="email-error" aria-invalid="false" required />
+                <span class="field-error" id="email-error" aria-live="polite"></span>
+              </div>
+              <div>
+                <label for="budget" class="mb-2.5 block font-mono text-xs uppercase tracking-[0.18em] text-dim">Budget tier</label>
+                <select class="field" id="budget" name="budget" aria-describedby="budget-error" aria-invalid="false" required>
+                  <option value="">Select a range…</option>
+                  <option value="5-15k">£5,000 – £15,000</option>
+                  <option value="15-40k">£15,000 – £40,000</option>
+                  <option value="40-100k">£40,000 – £100,000</option>
+                  <option value="100k+">£100,000+</option>
+                  <option value="unsure">Not sure yet</option>
+                </select>
+                <span class="field-error" id="budget-error" aria-live="polite"></span>
+              </div>
+              <div>
+                <label for="details" class="mb-2.5 block font-mono text-xs uppercase tracking-[0.18em] text-dim">Project details</label>
+                <textarea class="field resize-y" id="details" name="details" rows="6" placeholder="What are you building, who is it for, and what does success look like?" aria-describedby="details-error" aria-invalid="false" required></textarea>
+                <span class="field-error" id="details-error" aria-live="polite"></span>
+              </div>
+              <button type="submit" class="btn btn-primary h-14 w-full text-base">
+                Send Project Brief
+                <svg class="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" /></svg>
+              </button>
+              <p class="text-center text-xs leading-relaxed text-dim">
+                We reply the same working day. Your details are never shared or sold.
+              </p>
+            </div>
+          </form>
+
+          <div id="form-success" tabindex="-1" hidden>
+            <span class="success-badge grid size-12 place-items-center rounded-full" aria-hidden="true">
+              <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+            </span>
+            <h2 class="mt-6 font-display text-2xl font-bold text-ink">Brief assembled.</h2>
+            <p class="mt-4 text-pretty leading-relaxed text-muted">
+              This starter has no server behind it, so nothing was transmitted. Your
+              brief is below, and the button opens it as a prefilled email — that
+              part genuinely works.
+            </p>
+            <pre id="form-preview" class="mt-6 max-h-64 overflow-auto whitespace-pre-wrap rounded-xl border border-[color:var(--hairline)] bg-black/40 p-4 font-mono text-xs leading-relaxed text-muted"></pre>
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+              <a id="form-mailto" href="#" class="btn btn-primary h-12 flex-1 px-6 text-sm">Open In Mail App</a>
+              <button id="form-reset" type="button" class="btn btn-ghost h-12 flex-1 px-6 text-sm">Edit Brief</button>
+            </div>
+            <p class="mt-5 border-t border-[color:var(--hairline)] pt-5 font-mono text-xs uppercase tracking-[0.16em] text-dim">
+              To go live: POST this payload to your form endpoint in app.js
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ footer -->
+  <footer class="border-t border-[color:var(--hairline)] px-5 py-14 sm:px-8">
+    <div class="mx-auto flex w-full max-w-content flex-col gap-10 md:flex-row md:items-start md:justify-between">
+      <div class="max-w-sm">
+        <a href="index.html" class="font-display text-lg font-bold tracking-[0.22em] text-ink">ORION</a>
+        <p class="mt-4 text-pretty leading-relaxed text-muted">
+          Architecting elite digital experiences for companies that treat their
+          website as infrastructure.
+        </p>
+      </div>
+
+      <nav class="flex flex-col gap-3" aria-label="Footer">
+        <h2 class="font-mono text-xs uppercase tracking-[0.18em] text-dim">Navigate</h2>
+        <a class="text-muted transition-colors hover:text-ink" href="index.html#services">Services</a>
+        <a class="text-muted transition-colors hover:text-ink" href="index.html#work">Work</a>
+        <a class="text-muted transition-colors hover:text-ink" href="index.html#process">Process</a>
+        <a class="text-muted transition-colors hover:text-ink" href="index.html#contact">Contact</a>
+      </nav>
+
+      <nav class="flex flex-col gap-3" aria-label="Pages">
+        <h2 class="font-mono text-xs uppercase tracking-[0.18em] text-dim">Pages</h2>
+        <a class="text-muted transition-colors hover:text-ink" href="services.html">Services detail</a>
+        <a class="text-muted transition-colors hover:text-ink" href="contact.html">Contact page</a>
+        <a class="text-muted transition-colors hover:text-ink" href="mailto:hello@orion.studio">hello@orion.studio</a>
+      </nav>
+    </div>
+
+    <div class="mx-auto mt-12 flex w-full max-w-content flex-col gap-3 border-t border-[color:var(--hairline)] pt-8 text-sm text-dim sm:flex-row sm:items-center sm:justify-between">
+      <p>© <span data-year>2025</span> Orion. All rights reserved.</p>
+      <p>Architecting Elite Digital Experiences</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js" defer></script>
+</body>
+</html>
