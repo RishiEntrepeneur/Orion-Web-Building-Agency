@@ -1207,3 +1207,188 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   .sound[aria-pressed="true"] .sound__bars i { animation: none; height: 8px; }
 }
+
+/* ============================================================
+   41. CASE STUDY
+   ============================================================ */
+.plate-wide {
+  position: relative; aspect-ratio: 21 / 9; overflow: hidden;
+  border: 1px solid var(--rule); background: #08070e;
+}
+.plate-wide canvas { width: 100%; height: 100%; }
+.plate-wide__tag {
+  position: absolute; top: 1rem; left: 1rem; z-index: 2;
+  font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #08070e; background: var(--accent);
+  padding: 0.3rem 0.6rem;
+}
+@media (max-width: 700px) { .plate-wide { aspect-ratio: 4 / 3; } }
+
+.split { display: grid; gap: clamp(1.75rem, 4vw, 3.25rem); }
+@media (min-width: 900px) { .split { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr); } }
+.split__label { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.17em; text-transform: uppercase; color: var(--accent); }
+
+.steps { border-top: 1px solid var(--rule); }
+.steps li {
+  display: grid; gap: 0.4rem 2rem; align-items: baseline;
+  padding-block: 1.15rem; border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 820px) { .steps li { grid-template-columns: 3.5rem 12rem minmax(0, 1fr); } }
+.steps__n { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.16em; color: var(--slate); }
+.steps__k { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ash); }
+.steps__v { color: var(--ash); font-size: 0.9375rem; line-height: 1.65; }
+
+.pager { display: grid; gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); }
+@media (min-width: 720px) { .pager { grid-template-columns: 1fr 1fr; } }
+.pager__a {
+  background: var(--void); padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  display: flex; flex-direction: column; gap: 0.6rem;
+  transition: background-color 0.4s var(--ease-out);
+}
+.pager__a:hover { background: var(--carbon); }
+.pager__a--next { text-align: right; align-items: flex-end; }
+.pager__t { font-family: var(--f-display); font-optical-sizing: none; font-variation-settings: "opsz" 15; font-weight: 600; font-size: clamp(1.25rem, 2.6vw, 1.9rem); line-height: 1.05; }
+.pager__a:hover .pager__t { color: var(--accent); }
+
+/* ============================================================
+   42. PROSE (journal articles, legal pages)
+   ============================================================ */
+.prose { max-width: 68ch; }
+.prose > * + * { margin-top: 1.35rem; }
+.prose p { color: var(--ash); font-size: 1.0625rem; line-height: 1.72; text-wrap: pretty; }
+.prose h2 {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 18; font-weight: 600;
+  font-size: clamp(1.5rem, 3.2vw, 2.15rem); line-height: 1.1; color: var(--bone);
+  margin-top: clamp(2.5rem, 5vw, 3.5rem); padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+.prose h3 { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.17em; text-transform: uppercase; color: var(--accent); margin-top: 2rem; }
+.prose ul { display: grid; gap: 0.6rem; }
+.prose ul li { display: grid; grid-template-columns: 1.35rem 1fr; gap: 0.5rem; color: var(--ash); font-size: 1rem; line-height: 1.65; }
+.prose ul li::before { content: "—"; color: var(--accent); }
+.prose em { font-style: italic; }
+.prose strong { color: var(--bone); font-weight: 600; }
+.prose a { color: var(--bone); border-bottom: 1px solid var(--edge); transition: color 0.3s, border-color 0.3s; }
+.prose a:hover { color: var(--accent); border-color: var(--accent); }
+.prose code {
+  font-family: var(--f-mono); font-size: 0.85em; color: var(--bone);
+  background: var(--carbon); border: 1px solid var(--rule);
+  padding: 0.1em 0.35em; white-space: nowrap;
+}
+.prose pre {
+  background: #08070e; border: 1px solid var(--rule); border-left: 2px solid var(--accent);
+  padding: 1.15rem 1.25rem; overflow-x: auto;
+  font-family: var(--f-mono); font-size: 0.8125rem; line-height: 1.75; color: var(--ash);
+}
+.prose pre code { background: none; border: 0; padding: 0; white-space: pre; font-size: inherit; }
+.pull {
+  border-left: 2px solid var(--accent); padding: 0.35rem 0 0.35rem 1.5rem;
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 20; font-weight: 500; font-style: italic;
+  font-size: clamp(1.25rem, 3vw, 1.9rem); line-height: 1.25; color: var(--bone);
+  margin-block: clamp(2rem, 4vw, 3rem) !important;
+}
+
+.article-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; }
+
+/* ============================================================
+   43. JOURNAL INDEX
+   ============================================================ */
+.jx { border-top: 1px solid var(--rule); }
+.jx__a {
+  display: grid; gap: 0.6rem 2.5rem; align-items: baseline;
+  padding-block: clamp(1.75rem, 4vw, 2.75rem); border-bottom: 1px solid var(--rule);
+  position: relative; isolation: isolate; overflow: hidden;
+}
+@media (min-width: 900px) { .jx__a { grid-template-columns: 9rem minmax(0, 1fr) 7rem; } }
+.jx__a::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--accent); opacity: 0.09;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.7s var(--ease-swipe);
+}
+.jx__a:hover::before, .jx__a:focus-visible::before { transform: scaleX(1); }
+.jx__cat { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.jx__t {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 18; font-weight: 600;
+  font-size: clamp(1.5rem, 3.6vw, 2.5rem); line-height: 1.05;
+  transition: transform 0.6s var(--ease-out);
+}
+@media (min-width: 900px) { .jx__a:hover .jx__t { transform: translateX(12px); } }
+.jx__d { margin-top: 0.6rem; color: var(--ash); font-size: 0.9375rem; line-height: 1.6; max-width: 52ch; }
+.jx__m { font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); }
+@media (min-width: 900px) { .jx__m { text-align: right; } }
+
+/* ============================================================
+   44. PRINCIPLES (about)
+   ============================================================ */
+.principles { border-top: 1px solid var(--rule); counter-reset: pr; }
+.principles > li {
+  counter-increment: pr;
+  display: grid; gap: 0.5rem 2.5rem;
+  padding-block: clamp(1.5rem, 3.5vw, 2.5rem); border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 900px) { .principles > li { grid-template-columns: 5rem minmax(0, 0.85fr) minmax(0, 1fr); } }
+.principles > li::before {
+  content: "0" counter(pr);
+  font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.16em; color: var(--accent);
+}
+.principles h3 {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 16; font-weight: 600;
+  font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.05;
+}
+.principles p { color: var(--ash); font-size: 0.9375rem; line-height: 1.7; }
+
+/* ============================================================
+   45. 404
+   ============================================================ */
+.nf { min-height: 78svh; display: flex; align-items: center; }
+.nf__code {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 26; font-weight: 600;
+  font-size: clamp(6rem, 26vw, 20rem); line-height: 0.85; letter-spacing: -0.03em;
+  color: transparent; -webkit-text-stroke: 1.5px var(--accent);
+}
+.nf__links { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: clamp(2rem, 4vw, 3rem); }
+@media (min-width: 640px) { .nf__links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .nf__links { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.nf__link {
+  background: var(--void); padding: 1.25rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
+  transition: background-color 0.4s var(--ease-out);
+}
+.nf__link:hover { background: var(--carbon); }
+.nf__link b { font-family: var(--f-display); font-optical-sizing: none; font-variation-settings: "opsz" 14; font-weight: 600; font-size: 1.15rem; }
+.nf__link:hover b { color: var(--accent); }
+.nf__link span { color: var(--slate); font-size: 0.8125rem; line-height: 1.5; }
+
+/* work cards and index rows are links now */
+a.work__card, a.wx__item { color: inherit; }
+a.work__card:hover .work__name, a.wx__item:hover .wx__name { color: var(--accent); }
+a.wx__item { transition: none; }
+
+/* ---------- 46. ARTICLE SIDEBAR ---------- */
+.article-grid { display: grid; gap: clamp(2.5rem, 5vw, 4.5rem); align-items: start; }
+@media (min-width: 1024px) { .article-grid { grid-template-columns: minmax(0, 1fr) 17rem; } }
+/* The sidebar must stretch to the full row height even though the container is
+   align-items:start, because a sticky child can only travel within its
+   containing block — and a shrink-wrapped column gives it nowhere to go. */
+.toc { position: relative; align-self: stretch; height: 100%; }
+@media (min-width: 1024px) { .toc__inner { position: sticky; top: 7rem; } }
+.toc h2 { margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--rule); }
+.toc__list { counter-reset: toc; display: grid; }
+.toc__list li { border-bottom: 1px solid var(--rule); }
+.toc__list a {
+  display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.5rem; align-items: baseline;
+  padding-block: 0.7rem; color: var(--ash); font-size: 0.875rem; line-height: 1.45;
+  transition: color 0.3s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.toc__list a:hover { color: var(--bone); transform: translateX(3px); }
+.toc__list a[aria-current="true"] { color: var(--accent); }
+.toc__n { font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.14em; color: var(--slate); }
+.toc__list a[aria-current="true"] .toc__n { color: var(--accent); }
+.toc__meta { display: grid; gap: 0.85rem; margin-block: 1.5rem; }
+.toc__meta div { display: flex; justify-content: space-between; gap: 1rem; }

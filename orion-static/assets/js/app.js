@@ -1608,8 +1608,27 @@
   function init3D() {
     if (REDUCED) return;
 
+    /* A transform makes an element the containing block for its descendants,
+       which silently breaks position:sticky inside it. Rather than rely on
+       remembering that, refuse to tilt any section that contains a sticky
+       element. This costs one pass at startup and prevents a whole class of
+       bug that presents as "the sidebar just scrolls away". */
+    function holdsSticky(el) {
+      var kids = el.querySelectorAll("*");
+      for (var i = 0; i < kids.length; i++) {
+        if (getComputedStyle(kids[i]).position === "sticky") return true;
+      }
+      return false;
+    }
+
     /* --- scroll-driven plane tilt --- */
-    var planes = $$("[data-3d]").map(function (el) {
+    var planes = $$("[data-3d]").filter(function (el) {
+      if (!holdsSticky(el)) return true;
+      el.removeAttribute("data-3d");
+      el.style.removeProperty("--rx");
+      el.style.removeProperty("--tz");
+      return false;
+    }).map(function (el) {
       return {
         el: el,
         rx: 0, tz: 0, delta: 0, live: false,
@@ -2121,6 +2140,35 @@
     }, { passive: true });
   }
 
+
+  /* ============================================================
+     32. ARTICLE CONTENTS — highlight the section being read
+     ============================================================ */
+  function initToc() {
+    var links = $$(".toc__list a");
+    if (!links.length) return;
+    var targets = links.map(function (a) {
+      return { link: a, el: document.getElementById((a.getAttribute("href") || "#").slice(1)) };
+    }).filter(function (t) { return t.el; });
+    if (!targets.length) return;
+
+    var active = -1, want = 0;
+    addReader(function () {
+      var best = 0;
+      for (var i = 0; i < targets.length; i++) {
+        if (targets[i].el.getBoundingClientRect().top <= S.vh * 0.35) best = i;
+      }
+      want = best;
+    });
+    addWriter(function () {
+      if (want === active) return;
+      active = want;
+      for (var i = 0; i < targets.length; i++) {
+        targets[i].link.setAttribute("aria-current", String(i === active));
+      }
+    });
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -2153,6 +2201,7 @@
     initScramble();
     initFaq();
     initAudio();
+    initToc();
     init3D();
     initCard3D();
     initOrbit();

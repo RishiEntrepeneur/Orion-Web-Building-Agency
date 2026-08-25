@@ -1,7 +1,7 @@
 # Orion — static site
 
-A four-page marketing site for Orion, a web studio. **Zero dependencies, zero build
-step, zero third-party network requests.** Hand-written HTML, CSS and ES2020.
+An eighteen-page marketing site for Orion, a web studio. **Zero dependencies,
+zero third-party network requests.** Hand-written HTML, CSS and ES2020.
 
 Open `index.html` in a browser, or serve the folder:
 
@@ -40,32 +40,64 @@ compensation — `font-optical-sizing` is switched off and `opsz` is pinned
 small numerals), because lower optical sizes carry sturdier hairlines. This is
 why the type holds together on a dark ground.
 
-## Files
+## Pages
 
 ```
-index.html          home — hero, services, position, method, work, standards, contact
-services.html       capabilities, engagement models, FAQ
-work.html           six builds, long form
-contact.html        brief form, what-happens-next, studio details
+index.html                        home
+about.html                        studio — principles, shape, working here
+services.html                     capabilities, engagement models, FAQ
+work.html                         six builds, long form, each linking to its case study
+journal.html                      article index
+contact.html                      brief form, what happens next, studio details
+
+case-northwind.html               \
+case-maison-verre.html             |
+case-halden.html                   |  six case studies, generated from
+case-arden.html                    |  tools/data/cases.js
+case-kestrel.html                  |
+case-meridian.html                /
+
+journal-read-think-write.html     \  three articles, generated from
+journal-didone-on-dark.html        |  tools/data/journal.js
+journal-performance-budget.html   /
+
+privacy.html                      privacy notice
+terms.html                        site terms
+404.html                          not found, with eight ways back
+
+sitemap.xml, robots.txt           generated
+```
+
+Every case study links to the next and previous one, so the six form a loop.
+Every article links to the other two. Nothing on the site is a dead end: no
+element that looks clickable fails to lead somewhere, which is verified by
+crawling the built output rather than by inspection.
+
+```
 assets/css/styles.css   design tokens, components, motion primitives
 assets/js/app.js        the whole motion system, one rAF loop
-assets/fonts/           Anton, Inter Tight, JetBrains Mono (OFL, latin subsets)
-tools/                  page generator — see below
+assets/fonts/           Bodoni Moda, Archivo, IBM Plex Mono (OFL, latin subsets)
+tools/                  page generator, templates and content data
 ```
 
-### Editing pages
+### Editing
 
 `index.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. The other three pages are generated from it so the
+HUD, nav, drawer and footer. Every other page is generated from it, so the
 chrome cannot drift.
 
 ```sh
-node tools/build.js     # regenerates services.html, work.html, contact.html
+node tools/build.js     # regenerates all 17 other pages, plus sitemap and robots
 ```
 
-Edit the chrome in `index.html` and the page bodies in `tools/bodies/`, then
-re-run the generator. The contact form is lifted directly out of `index.html`,
-so there is only ever one copy of it.
+- Chrome → edit `index.html`
+- One-off page bodies → `tools/bodies/`
+- Case studies → `tools/data/cases.js`
+- Articles → `tools/data/journal.js`
+- Repeated page shapes → `tools/templates.js`
+
+The contact form is lifted directly out of `index.html` at build time, so there
+is only ever one copy of it.
 
 ## Motion
 
@@ -174,6 +206,8 @@ Measured in Chromium at 360–1920px, not eyeballed:
 - **LCP 196–300ms** on all four pages; the LCP element is the `<h1>` in every case
 - **9 requests, ~376KB**, no third-party origins (224KB of that is the three
   self-hosted variable families)
+- **Zero dead ends**: every internal link resolves, every page is reachable from
+  home by following links, and nothing that looks clickable is inert
 - **Zero forced synchronous layouts** across 129 instrumented frames
 - **Contrast** computed numerically: body 18.0:1, secondary 9.8:1, mono labels
   5.5:1, and all seven zone signals between 6.3:1 and 17.5:1 as text against the
@@ -207,3 +241,20 @@ self-hosted under the SIL Open Font License 1.1 (see
 and, for Archivo, every width comes from a single file. Self-hosting removes the
 render-blocking third-party request and the flash of fallback text that the
 Google Fonts CDN causes on a cold connection.
+
+
+## A trap worth naming twice
+
+`position: sticky` fails silently in two different ways, and this site hit both.
+
+1. **A transformed ancestor.** A transform makes an element the containing block
+   for everything inside it, so a sticky descendant stops behaving. This is why
+   the 3D scroll rig applies perspective per element rather than to a wrapper —
+   and why `init3D` now refuses to tilt any section that contains a sticky
+   element, rather than relying on anyone remembering the rule.
+2. **A shrink-wrapped containing block.** A sticky element can only travel
+   within its containing block. In a grid with `align-items: start`, a sidebar
+   column is only as tall as its own content, so there is nowhere to travel and
+   it simply scrolls away. The column needs `align-self: stretch`.
+
+Neither throws, neither warns, and both look like "sticky is broken".

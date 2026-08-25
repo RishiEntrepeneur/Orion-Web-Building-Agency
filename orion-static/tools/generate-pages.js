@@ -39,6 +39,20 @@ function chrome(page, opts) {
     const re2 = new RegExp(`(<a class="drawer__a" style="--i:\\d+" href="${opts.current}")`, "g");
     h = h.replace(re2, '$1 aria-current="page"');
   }
+  /* a 404 must not be indexed */
+  if (opts.noindex) {
+    h = h.replace('<meta name="theme-color"', '<meta name="robots" content="noindex, follow" />\n<meta name="theme-color"');
+  }
+
+  /* Article schema for journal pieces */
+  if (opts.article) {
+    const a = opts.article;
+    h = h.replace("</head>", `<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":${JSON.stringify(a.title)},"description":${JSON.stringify(a.dek)},"datePublished":"${a.date}","dateModified":"${a.date}","articleSection":${JSON.stringify(a.category)},"author":{"@type":"Organization","name":"Orion"},"publisher":{"@type":"Organization","name":"Orion"},"mainEntityOfPage":"https://orion.build/${page}"}
+</script>
+</head>`);
+  }
+
   /* JSON-LD breadcrumb for subpages */
   if (opts.crumb) {
     h = h.replace("</head>", `<script type="application/ld+json">
