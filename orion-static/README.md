@@ -69,12 +69,47 @@ so there is only ever one copy of it.
 
 ## Motion
 
-Everything runs off a single `requestAnimationFrame` loop with registered
-tickers, driven by a non-reactive shared state object. Scroll and pointer are
-read into that object by passive listeners; nothing in the loop triggers a
-React-style re-render and nothing polls the DOM for values it can cache.
-Smoothing uses frame-rate-independent exponential damping
-(`1 - 2^(-dt/halfLife)`), so motion is identical at 60Hz and 144Hz.
+Everything runs off a single `requestAnimationFrame` loop, driven by a
+non-reactive shared state object. Scroll and pointer are read into that object
+by passive listeners; nothing in the loop triggers a React-style re-render and
+nothing polls the DOM for values it can cache. Smoothing uses frame-rate
+independent exponential damping (`1 - 2^(-dt/halfLife)`), so motion is
+identical at 60Hz and 144Hz.
+
+### Why it is smooth: read, think, write
+
+The loop runs three phases per frame, and callbacks register into the phase they
+belong in — `addReader`, `addTicker`, `addWriter`:
+
+1. **Read** — every `getBoundingClientRect` and `getComputedStyle` in the whole app
+2. **Think** — damping and maths, no DOM access
+3. **Write** — every style, transform and attribute
+
+The reason is that a layout read issued *after* a style write forces the browser
+to lay the page out synchronously to answer it. With a dozen animated elements
+each measuring and then writing in turn, that is dozens of forced layouts per
+frame, and it is the actual cause of scroll-linked stutter — far more than any
+easing curve. Instrumenting the running page confirms **zero read-after-write
+transitions across 129 consecutive frames**: one layout pass per frame.
+
+Two subtler things fall out of the same discipline:
+
+- Event handlers must not measure either. A `pointermove` handler that reads a
+  rect runs *between* frames and lands after that frame's writes, so the tilt
+  effect measures in the read phase instead.
+- Anything inside a 3D-transformed subtree must be measured with
+  `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
+  scaled by the transform, and in the word cycler that 2.9% error accumulated
+  across steps until the previous word hung visibly above the current one.
+
+Beyond that: the ambient colour washes use radial gradients rather than
+`filter: blur(90px)`, because a blur is a filter pass and those sections are
+3D-transformed, so it re-rasterised as they tilted. `will-change` is applied
+only to the handful of elements the loop writes every frame — applying it
+broadly costs memory and makes things worse. And the loop keeps a rolling
+average of frame cost: if the machine cannot hold 60fps it permanently steps
+down particle count and canvas frame rates rather than oscillating between
+quality tiers, which is more distracting than simply running lighter.
 
 | | |
 |---|---|
@@ -98,6 +133,30 @@ Smoothing uses frame-rate-independent exponential damping
 | Magnetic | Buttons drift toward the cursor within reach |
 | Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
 
+## Sound
+
+Off by default, with a toggle in the nav and in the mobile drawer. The choice
+persists in `localStorage`, and if it was on last visit the engine arms itself on
+the first pointer or key event — browsers will not let a page start audio before
+a gesture, and the toggle is itself that gesture on a first visit.
+
+Every sound is **synthesised at runtime** from oscillators and shaped noise, so
+there are no audio files and the page weight does not change. The graph is a
+gain bus into a compressor, with a send into a convolution reverb whose impulse
+response is generated on the fly — reverb is what stops synthesised tones
+sounding like a system beep.
+
+The seven colour zones are tuned to the seven notes of an A minor pentatonic
+scale, low to high, so scrolling the page plays an ascending run and any two
+sections sound consonant together. Hovers pick from a small pool of high notes
+so a fast sweep across the nav does not repeat one pitch, and are rate-limited
+to one every 55ms. The rest: a pluck on click, rising and falling arpeggios for
+the drawer, a filtered noise sweep on page transitions, a resolving chord when
+the preloader lifts, a major arpeggio on a valid submit and a low detuned pair
+on a validation failure.
+
+No `AudioContext` is constructed until the visitor asks for sound.
+
 Everything above is gated behind `prefers-reduced-motion: reduce`. Under it the
 preloader is skipped, the cursor is disabled, pins collapse to normal flow, all
 four method steps show at once, and the flow field and ASCII plot render as
@@ -115,6 +174,7 @@ Measured in Chromium at 360–1920px, not eyeballed:
 - **LCP 196–300ms** on all four pages; the LCP element is the `<h1>` in every case
 - **9 requests, ~376KB**, no third-party origins (224KB of that is the three
   self-hosted variable families)
+- **Zero forced synchronous layouts** across 129 instrumented frames
 - **Contrast** computed numerically: body 18.0:1, secondary 9.8:1, mono labels
   5.5:1, and all seven zone signals between 6.3:1 and 17.5:1 as text against the
   ground; interactive borders use a dedicated `--edge` token at 3.5:1 (WCAG 1.4.11)

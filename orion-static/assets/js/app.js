@@ -47,23 +47,49 @@
     return vnoise(x, y) * 0.55 + vnoise(x * 2.03, y * 2.03) * 0.28 + vnoise(x * 4.07, y * 4.07) * 0.17;
   }
 
-  /* ---------- 2. CENTRAL LOOP ---------- */
+  /* ---------- 2. CENTRAL LOOP ----------
+     Three phases per frame: every layout READ, then all the maths, then every
+     style WRITE. Interleaving a read after a write forces a synchronous layout,
+     and with a dozen animated elements that is dozens of layouts per frame —
+     which is what actually makes scroll-linked motion stutter. */
+  var readers = [];
   var tickers = [];
+  var writers = [];
   var lastT = 0;
   var running = false;
 
+  function addReader(fn) { readers.push(fn); return fn; }
   function addTicker(fn) { tickers.push(fn); return fn; }
+  function addWriter(fn) { writers.push(fn); return fn; }
   function removeTicker(fn) {
-    var i = tickers.indexOf(fn);
-    if (i > -1) tickers.splice(i, 1);
+    [readers, tickers, writers].forEach(function (list) {
+      var i = list.indexOf(fn);
+      if (i > -1) list.splice(i, 1);
+    });
   }
+  function runPhase(list, dt, t) {
+    for (var i = 0; i < list.length; i++) {
+      try { list[i](dt, t); } catch (err) { /* one bad ticker must not kill the loop */ }
+    }
+  }
+  /* Rolling frame cost, used to step canvas work down on hardware that cannot
+     hold 60fps. Stepping down is permanent for the session: oscillating between
+     tiers is more distracting than simply running lighter. */
+  var Q = { avg: 16.7, tier: 1, checked: 0, samples: 0 };
+
   function frame(t) {
     if (!running) return;
     var dt = lastT ? Math.min(t - lastT, 64) : 16.7;
     lastT = t;
-    for (var i = 0; i < tickers.length; i++) {
-      try { tickers[i](dt, t); } catch (err) { /* one bad ticker must not kill the loop */ }
+    Q.avg += (dt - Q.avg) * 0.045;
+    Q.samples++;
+    if (Q.samples > 90 && t - Q.checked > 2500) {
+      Q.checked = t;
+      if (Q.avg > 26 && Q.tier > 0.4) { Q.tier = Q.tier > 0.7 ? 0.62 : 0.4; }
     }
+    runPhase(readers, dt, t);
+    runPhase(tickers, dt, t);
+    runPhase(writers, dt, t);
     requestAnimationFrame(frame);
   }
   function startLoop() {
@@ -86,6 +112,8 @@
     vh: window.innerHeight,
     vw: window.innerWidth,
     max: 1,
+    ySmooth: 0,      /* damped scroll — a wheel notch is a ~100px jump */
+    progressSmooth: 0,
     px: 0, py: 0,    /* pointer, px */
     nx: 0.5, ny: 0.5,/* pointer normalised */
     sx: 0, sy: 0,    /* smoothed pointer */
@@ -115,9 +143,11 @@
   addTicker(function (dt) {
     var raw = S.y - S.yPrev;
     S.yPrev = S.y;
-    S.vel = damp(S.vel, raw, 90, dt);
-    S.sx = damp(S.sx, S.px, 70, dt);
-    S.sy = damp(S.sy, S.py, 70, dt);
+    S.vel = damp(S.vel, raw, 110, dt);
+    S.ySmooth = damp(S.ySmooth, S.y, 55, dt);
+    S.progressSmooth = damp(S.progressSmooth, S.progress, 55, dt);
+    S.sx = damp(S.sx, S.px, 60, dt);
+    S.sy = damp(S.sy, S.py, 60, dt);
   });
 
   /* ---------- 4. UTIL ---------- */
@@ -206,6 +236,7 @@
           el.style.opacity = "0";
           el.style.transform = "translateY(-14px)";
         });
+        if (window.OrionAudio) window.OrionAudio.boot();
         window.setTimeout(function () {
           boot.hidden = true;
           document.body.removeAttribute("data-locked");
@@ -283,37 +314,37 @@
         el: el,
         strength: parseFloat(el.getAttribute("data-magnetic")) || 0.34,
         radius: parseFloat(el.getAttribute("data-magnetic-radius")) || 110,
-        x: 0, y: 0, tx: 0, ty: 0
+        x: 0, y: 0, tx: 0, ty: 0, live: true
       };
     });
 
 
-    addTicker(function (dt) {
+    addReader(function () {
       for (var i = 0; i < items.length; i++) {
         var it = items[i];
         var r = it.el.getBoundingClientRect();
-        /* skip work when far off screen */
-        if (r.bottom < -200 || r.top > S.vh + 200) {
-          if (it.x !== 0 || it.y !== 0) {
-            it.tx = 0; it.ty = 0;
-          } else continue;
-        } else {
-          var cx = r.left + r.width / 2;
-          var cy = r.top + r.height / 2;
-          var ddx = S.px - cx;
-          var ddy = S.py - cy;
-          var dist = Math.sqrt(ddx * ddx + ddy * ddy);
-          var reach = Math.max(it.radius, Math.max(r.width, r.height) * 0.75);
-          if (dist < reach) {
-            var f = 1 - dist / reach;
-            it.tx = ddx * it.strength * f;
-            it.ty = ddy * it.strength * f;
-          } else { it.tx = 0; it.ty = 0; }
-        }
-        it.x = damp(it.x, it.tx, 90, dt);
-        it.y = damp(it.y, it.ty, 90, dt);
+        it.live = !(r.bottom < -200 || r.top > S.vh + 200);
+        if (!it.live) { it.tx = 0; it.ty = 0; continue; }
+        var ddx = S.px - (r.left + r.width / 2);
+        var ddy = S.py - (r.top + r.height / 2);
+        var dist = Math.sqrt(ddx * ddx + ddy * ddy);
+        var reach = Math.max(it.radius, Math.max(r.width, r.height) * 0.75);
+        if (dist < reach) {
+          var f = 1 - dist / reach;
+          it.tx = ddx * it.strength * f;
+          it.ty = ddy * it.strength * f;
+        } else { it.tx = 0; it.ty = 0; }
+      }
+    });
+
+    addWriter(function (dt) {
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        if (!it.live && it.x === 0 && it.y === 0) continue;
+        it.x = damp(it.x, it.tx, 110, dt);
+        it.y = damp(it.y, it.ty, 110, dt);
         if (Math.abs(it.x) < 0.02 && Math.abs(it.y) < 0.02) {
-          it.el.style.transform = "";
+          if (it.x !== 0 || it.y !== 0) { it.x = 0; it.y = 0; it.el.style.transform = ""; }
         } else {
           it.el.style.transform = "translate3d(" + it.x.toFixed(2) + "px," + it.y.toFixed(2) + "px,0)";
         }
@@ -329,7 +360,7 @@
     var nav = $("#nav");
     if (!nav) return;
     var lastDir = 0;
-    addTicker(function () {
+    addWriter(function () {
       nav.setAttribute("data-stuck", String(S.y > 24));
       var open = $("#drawer") && $("#drawer").getAttribute("data-open") === "true";
       if (open) { nav.setAttribute("data-hidden", "false"); return; }
@@ -353,6 +384,7 @@
       btn.setAttribute("aria-expanded", "true");
       btn.setAttribute("aria-label", "Close navigation menu");
       document.body.setAttribute("data-locked", "true");
+      if (window.OrionAudio) window.OrionAudio.open();
       window.setTimeout(function () { if (links[0]) links[0].focus(); }, 260);
     }
     function close(restore) {
@@ -361,6 +393,7 @@
       btn.setAttribute("aria-expanded", "false");
       btn.setAttribute("aria-label", "Open navigation menu");
       document.body.removeAttribute("data-locked");
+      if (window.OrionAudio) window.OrionAudio.close();
       if (restore !== false && lastFocus && lastFocus.focus) lastFocus.focus();
     }
 
@@ -402,25 +435,33 @@
     var sections = $$("main [data-sec]");
     var shownSec = "";
 
-    addTicker(function () {
-      if (bar) bar.style.transform = "scaleX(" + S.progress.toFixed(4) + ")";
+    var best = sections[0] || null;
+    addReader(function () {
+      if (!sections.length) return;
+      best = sections[0];
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].getBoundingClientRect().top <= S.vh * 0.42) best = sections[i];
+      }
+    });
+
+    addWriter(function () {
+      /* the smoothed value keeps the bar from stepping with each wheel notch */
+      if (bar) bar.style.transform = "scaleX(" + S.progressSmooth.toFixed(4) + ")";
       if (readP) readP.textContent = ("00" + Math.round(S.progress * 100)).slice(-3);
       if (readX) readX.textContent = S.nx.toFixed(3);
       if (readY) readY.textContent = S.ny.toFixed(3);
 
-      if (!sections.length) return;
-      var best = sections[0];
-      for (var i = 0; i < sections.length; i++) {
-        var r = sections[i].getBoundingClientRect();
-        if (r.top <= S.vh * 0.42) best = sections[i];
-      }
+      if (!best) return;
       var name = best.getAttribute("data-sec");
       if (name !== shownSec) {
         shownSec = name;
         if (readS) readS.textContent = name;
         if (idx) idx.textContent = ("0" + (sections.indexOf(best) + 1)).slice(-2) + " / " + ("0" + sections.length).slice(-2);
         var zone = best.getAttribute("data-zone-set");
-        if (zone) document.documentElement.setAttribute("data-zone", zone);
+        if (zone) {
+          document.documentElement.setAttribute("data-zone", zone);
+          if (window.OrionAudio) window.OrionAudio.zone(zone);
+        }
         var id = best.id;
         if (id) {
           $$("[data-nav-link]").forEach(function (a) {
@@ -652,13 +693,29 @@
     if (items.length < 2) return;
 
     /* width follows the active word so the headline reflows honestly */
-    function sizeTo(i) {
-      var probe = items[i];
+    /* Split so the measurement lands in the read phase and the width in the
+       write phase — the interval below fires between frames, and measuring
+       there would force a layout after that frame's writes. */
+    var wantSize = -1, nextWidth = -1;
+    function sizeTo(i) { wantSize = i; }
+    addReader(function () {
+      if (wantSize < 0) return;
+      var probe = items[wantSize];
+      /* Computed style, not getBoundingClientRect: the headline sits inside a
+         perspective layer, so a client rect comes back scaled by the 3D
+         transform and the error accumulates across steps. */
+      var cs = getComputedStyle(probe);
       /* italics overhang their advance width, so the mask needs a buffer or the
          last letter is sheared off */
-      var pad = parseFloat(getComputedStyle(el).fontSize) * 0.1;
-      el.style.width = (probe.getBoundingClientRect().width + pad) + "px";
-    }
+      var pad = parseFloat(getComputedStyle(el).fontSize) * 0.15;
+      nextWidth = parseFloat(cs.width) + pad;
+      wantSize = -1;
+    });
+    addWriter(function () {
+      if (nextWidth < 0) return;
+      el.style.width = nextWidth + "px";
+      nextWidth = -1;
+    });
     var idx = 0;
     el.style.transition = "width 0.85s cubic-bezier(0.76,0,0.24,1)";
     sizeTo(0);
@@ -667,15 +724,19 @@
     /* Measure the real item height rather than hard-coding the em step. A
        hard-coded step silently desynchronises the moment the CSS height
        changes, leaving the previous word half-visible above the current one. */
-    var stepPx = 0;
-    function step() { stepPx = items[0].getBoundingClientRect().height; }
-    step();
+    var stepPx = 0, needStep = true;
+    function step() { needStep = true; }
+    addReader(function () {
+      if (!needStep) return;
+      stepPx = parseFloat(getComputedStyle(items[0]).height) || 0;
+      if (stepPx) needStep = false;
+    });
 
     if (REDUCED) return;
     window.setInterval(function () {
       if (document.hidden) return;
       idx = (idx + 1) % items.length;
-      if (!stepPx) step();
+      if (!stepPx) return;
       track.style.transform = "translateY(-" + (idx * stepPx).toFixed(2) + "px)";
       sizeTo(idx);
     }, 2600);
@@ -716,16 +777,21 @@
       window.addEventListener("resize", build, { passive: true });
 
       if (REDUCED) return;
-      addTicker(function (dt) {
+      var live = false, boost = 0;
+      addReader(function () {
+        if (!groupW) build();
         var r = marq.getBoundingClientRect();
-        if (r.bottom < -100 || r.top > S.vh + 100) return;
-        if (!groupW) { build(); return; }
-        var boost = clamp(Math.abs(S.vel) * 0.06, 0, 2.6);
-        var skew = clamp(S.vel * -0.07, -6, 6);
+        live = !(r.bottom < -100 || r.top > S.vh + 100);
+      });
+      addWriter(function (dt) {
+        if (!live || !groupW) return;
+        /* speed reacts to scroll velocity, but no skew: skewing a full-width
+           strip re-rasterises it every frame for very little visual gain */
+        boost = damp(boost, clamp(Math.abs(S.vel) * 0.06, 0, 2.6), 130, dt);
         offset -= dir * (baseSpeed + baseSpeed * boost) * dt;
         if (offset <= -groupW) offset += groupW;
         if (offset > 0) offset -= groupW;
-        track.style.transform = "translate3d(" + offset.toFixed(2) + "px,0,0) skewX(" + skew.toFixed(2) + "deg)";
+        track.style.transform = "translate3d(" + offset.toFixed(2) + "px,0,0)";
       });
     });
   }
@@ -742,20 +808,26 @@
         el: el,
         amt: parseFloat(el.getAttribute("data-parallax")) || 0.12,
         rot: parseFloat(el.getAttribute("data-parallax-rot")) || 0,
-        cur: 0
+        cur: 0, delta: 0, live: false
       };
     });
-    addTicker(function (dt) {
+    addReader(function () {
       for (var i = 0; i < items.length; i++) {
         var it = items[i];
         var r = it.el.getBoundingClientRect();
-        if (r.bottom < -300 || r.top > S.vh + 300) continue;
-        var centre = r.top + r.height / 2;
-        var delta = (centre - S.vh / 2) / S.vh;
-        var target = -delta * it.amt * S.vh;
-        it.cur = damp(it.cur, target, 60, dt);
+        it.live = !(r.bottom < -300 || r.top > S.vh + 300);
+        if (!it.live) continue;
+        it.delta = (r.top + r.height / 2 - S.vh / 2) / S.vh;
+      }
+    });
+
+    addWriter(function (dt) {
+      for (var i = 0; i < items.length; i++) {
+        var it = items[i];
+        if (!it.live) continue;
+        it.cur = damp(it.cur, -it.delta * it.amt * S.vh, 80, dt);
         var t = "translate3d(0," + it.cur.toFixed(2) + "px,0)";
-        if (it.rot) t += " rotate(" + (delta * it.rot).toFixed(2) + "deg)";
+        if (it.rot) t += " rotate(" + (it.delta * it.rot).toFixed(2) + "deg)";
         it.el.style.transform = t;
       }
     });
@@ -769,17 +841,25 @@
     $$("[data-tilt]").forEach(function (el) {
       var max = parseFloat(el.getAttribute("data-tilt")) || 5;
       var rx = 0, ry = 0, tx = 0, ty = 0, active = false;
+      var box = null;
       on(el, "pointerenter", function () { active = true; });
-      on(el, "pointerleave", function () { active = false; tx = 0; ty = 0; });
-      on(el, "pointermove", function (e) {
+      on(el, "pointerleave", function () { active = false; tx = 0; ty = 0; box = null; });
+
+      /* The rect is measured in the read phase, not in the pointermove handler.
+         A handler that measures runs between frames and lands after the frame's
+         writes, which is exactly the forced layout the phasing exists to avoid. */
+      addReader(function () {
+        if (!active) return;
         var r = el.getBoundingClientRect();
-        tx = ((e.clientY - r.top) / r.height - 0.5) * -2 * max;
-        ty = ((e.clientX - r.left) / r.width - 0.5) * 2 * max;
-      }, { passive: true });
-      addTicker(function (dt) {
+        box = r;
+        tx = ((S.py - r.top) / r.height - 0.5) * -2 * max;
+        ty = ((S.px - r.left) / r.width - 0.5) * 2 * max;
+      });
+
+      addWriter(function (dt) {
         if (!active && Math.abs(rx) < 0.01 && Math.abs(ry) < 0.01) return;
-        rx = damp(rx, tx, 90, dt);
-        ry = damp(ry, ty, 90, dt);
+        rx = damp(rx, tx, 110, dt);
+        ry = damp(ry, ty, 110, dt);
         el.style.transform = "perspective(900px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
       });
     });
@@ -799,6 +879,7 @@
     var W = 0, H = 0;
     var particles = [];
     var COUNT = REDUCED ? 0 : LOWTIER ? 260 : 760;
+    var lastTier = 1;
 
     var PALETTE = [
       [233, 201, 121],  /* gold    */
@@ -847,7 +928,7 @@
 
     function spawn() {
       particles.length = 0;
-      var n = Math.round(COUNT * clamp((W * H) / (1440 * 800), 0.35, 1.25));
+      var n = Math.round(COUNT * Q.tier * clamp((W * H) / (1440 * 800), 0.35, 1.25));
       for (var i = 0; i < n; i++) {
         var p = { x: 0, y: 0, px: 0, py: 0, life: 0, age: 0, c: pickColour(i), w: hash2(i, 11.3) > 0.9 ? 1.6 : 0.85 };
         reseed(p, i);
@@ -864,6 +945,7 @@
     }
 
     var visible = true;
+    var hostLeft = 0, hostTop = 0;
     var io = new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0 });
     io.observe(host);
 
@@ -873,12 +955,8 @@
       ctx.fillRect(0, 0, W, H);
 
       var mx = 0, my = 0;
-      if (!silent) {
-        var hr = host.getBoundingClientRect();
-        mx = S.sx - hr.left;
-        my = S.sy - hr.top;
-      }
-      var scrollWarp = S.y * 0.0009;
+      if (!silent) { mx = S.sx - hostLeft; my = S.sy - hostTop; }
+      var scrollWarp = S.ySmooth * 0.0009;
 
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
@@ -922,7 +1000,16 @@
       }
     }
 
-    addTicker(function (dt, t) { if (visible) step(dt, t, false); });
+    addReader(function () {
+      if (!visible) return;
+      var r = host.getBoundingClientRect();
+      hostLeft = r.left; hostTop = r.top;
+    });
+    addWriter(function (dt, t) {
+      if (!visible) return;
+      if (Q.tier !== lastTier) { lastTier = Q.tier; spawn(); }
+      step(dt, t, false);
+    });
     window.addEventListener("resize", resize, { passive: true });
     resize();
   }
@@ -1052,7 +1139,7 @@
       var targetPitch = (S.ny - 0.5) * -0.55 + S.progress * 0.5;
       yaw = damp(yaw, targetYaw, 180, dt);
       pitch = damp(pitch, targetPitch, 180, dt);
-      if (t - lastPaint < 45) return;   /* ~22fps is plenty for text-mode art */
+      if (t - lastPaint < 45 / Q.tier) return;   /* ~22fps is plenty for text-mode art */
       lastPaint = t;
       paint(t);
     });
@@ -1094,15 +1181,15 @@
         return clamp(v * 0.72 * edge, 0, 1);
       }
 
+      var hostLeft = 0, hostTop = 0;
       function draw(t) {
-        if (!W) { resize(); if (!W) return; }
+        if (!W) return;
         ctx.clearRect(0, 0, W, H);
         ctx.fillStyle = "#08080d";
         ctx.fillRect(0, 0, W, H);
 
         var time = t * 0.0004;
-        var r = host.getBoundingClientRect();
-        var mx = S.sx - r.left, my = S.sy - r.top;
+        var mx = S.sx - hostLeft, my = S.sy - hostTop;
 
         for (var y = cell * 0.5; y < H; y += cell) {
           for (var x = cell * 0.5; x < W; x += cell) {
@@ -1149,10 +1236,17 @@
       var io = new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0 });
       io.observe(host);
       var last = 0;
-      addTicker(function (dt, t) {
-        hover = damp(hover, hoverT, 120, dt);
+      addReader(function () {
         if (!visible) return;
-        if (t - last < (LOWTIER ? 66 : 33)) return;   /* 15–30fps: plenty for a plate */
+        if (!W) resize();
+        if (hover < 0.01) return;
+        var r = host.getBoundingClientRect();
+        hostLeft = r.left; hostTop = r.top;
+      });
+      addWriter(function (dt, t) {
+        hover = damp(hover, hoverT, 140, dt);
+        if (!visible) return;
+        if (t - last < (LOWTIER ? 66 : 33) / Q.tier) return;   /* 15–30fps: plenty for a plate */
         last = t;
         draw(t);
       });
@@ -1178,12 +1272,16 @@
     }
 
     var current = -1;
-    addTicker(function () {
+    var frac = -1;
+    addReader(function () {
       var r = track.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > S.vh) return;
-      var span = Math.max(1, r.height - S.vh);
-      var p = clamp(-r.top / span, 0, 1);
-      var f = p * n;
+      if (r.bottom < 0 || r.top > S.vh) { frac = -1; return; }
+      frac = clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1) * n;
+    });
+
+    addWriter(function () {
+      if (frac < 0) return;
+      var f = frac;
       var i = clamp(Math.floor(f - 0.0001), 0, n - 1);
 
       for (var j = 0; j < ticks.length; j++) {
@@ -1224,13 +1322,16 @@
     window.addEventListener("resize", measureLane, { passive: true });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureLane).catch(function () {});
 
-    addTicker(function (dt) {
+    var laneLive = false;
+    addReader(function () {
       var r = track.getBoundingClientRect();
-      if (r.bottom < -50 || r.top > S.vh + 50) return;
-      var span = Math.max(1, r.height - S.vh);
-      var p = clamp(-r.top / span, 0, 1);
-      target = -p * maxShift;
-      shift = damp(shift, target, 55, dt);
+      laneLive = !(r.bottom < -50 || r.top > S.vh + 50);
+      if (laneLive) target = -clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1) * maxShift;
+    });
+
+    addWriter(function (dt) {
+      if (!laneLive) return;
+      shift = damp(shift, target, 75, dt);
       lane.style.transform = "translate3d(" + shift.toFixed(2) + "px,0,0)";
     });
   }
@@ -1312,6 +1413,7 @@
           alertBox.hidden = false;
           alertBox.textContent = problems.length + (problems.length === 1 ? " field needs attention." : " fields need attention.");
         }
+        if (window.OrionAudio) window.OrionAudio.error();
         var first = $(".field__input, .field__area, .field__select", problems[0]);
         if (first) first.focus();
         return;
@@ -1347,6 +1449,7 @@
 
       if (mailBtn) mailBtn.setAttribute("href", href);
       form.hidden = true;
+      if (window.OrionAudio) window.OrionAudio.success();
       if (success) {
         success.hidden = false;
         success.focus();
@@ -1392,6 +1495,7 @@
 
       e.preventDefault();
       if (word) word.textContent = (a.getAttribute("data-curtain") || "Orion");
+      if (window.OrionAudio) window.OrionAudio.whoosh();
       curtain.setAttribute("data-state", "out");
       window.setTimeout(function () { location.href = url.href; }, 640);
     });
@@ -1448,14 +1552,18 @@
     $$("[data-belt]").forEach(function (svg) {
       var stars = $$("circle", svg);
       if (!stars.length) return;
-      var cx = 0, cy = 0;
-      addTicker(function (dt) {
+      var cx = 0, cy = 0, tx = 0, ty = 0, live = false;
+      addReader(function () {
         var r = svg.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > S.vh) return;
-        var dx = clamp((S.px - (r.left + r.width / 2)) / 260, -1, 1);
-        var dy = clamp((S.py - (r.top + r.height / 2)) / 260, -1, 1);
-        cx = damp(cx, dx, 110, dt);
-        cy = damp(cy, dy, 110, dt);
+        live = !(r.bottom < 0 || r.top > S.vh);
+        if (!live) return;
+        tx = clamp((S.px - (r.left + r.width / 2)) / 260, -1, 1);
+        ty = clamp((S.py - (r.top + r.height / 2)) / 260, -1, 1);
+      });
+      addWriter(function (dt) {
+        if (!live) return;
+        cx = damp(cx, tx, 135, dt);
+        cy = damp(cy, ty, 135, dt);
         stars.forEach(function (s, i) {
           var depth = [1.6, 1, 2.2][i % 3];
           s.setAttribute("transform", "translate(" + (cx * depth).toFixed(2) + "," + (cy * depth).toFixed(2) + ")");
@@ -1504,7 +1612,7 @@
     var planes = $$("[data-3d]").map(function (el) {
       return {
         el: el,
-        rx: 0, tz: 0,
+        rx: 0, tz: 0, delta: 0, live: false,
         maxRx: parseFloat(el.getAttribute("data-3d")) || 6,
         maxTz: parseFloat(el.getAttribute("data-3d-depth")) || 110
       };
@@ -1512,40 +1620,48 @@
 
     /* --- pointer scene tilt --- */
     var scenes = $$(".tilt-scene").map(function (el) {
-      return { el: el, x: 0, y: 0, amt: parseFloat(el.getAttribute("data-tilt-amount")) || 3.2 };
+      return { el: el, x: 0, y: 0, live: false, amt: parseFloat(el.getAttribute("data-tilt-amount")) || 3.2 };
     });
 
     /* --- chromatic split driven by scroll velocity --- */
     var chromas = $$(".chroma");
     var chroma = 0;
 
-    addTicker(function (dt) {
+    addReader(function () {
       for (var i = 0; i < planes.length; i++) {
         var p = planes[i];
         var r = p.el.getBoundingClientRect();
-        if (r.bottom < -240 || r.top > S.vh + 240) continue;
-        var centre = r.top + r.height / 2;
-        var delta = clamp((centre - S.vh / 2) / S.vh, -1.15, 1.15);
-        p.rx = damp(p.rx, delta * p.maxRx, 90, dt);
-        p.tz = damp(p.tz, -Math.abs(delta) * p.maxTz, 90, dt);
+        p.live = !(r.bottom < -240 || r.top > S.vh + 240);
+        if (p.live) p.delta = clamp((r.top + r.height / 2 - S.vh / 2) / S.vh, -1.15, 1.15);
+      }
+      for (var j = 0; j < scenes.length; j++) {
+        var sr = scenes[j].el.getBoundingClientRect();
+        scenes[j].live = sr.bottom > 0 && sr.top < S.vh;
+      }
+    });
+
+    addWriter(function (dt) {
+      for (var i = 0; i < planes.length; i++) {
+        var p = planes[i];
+        if (!p.live) continue;
+        p.rx = damp(p.rx, p.delta * p.maxRx, 115, dt);
+        p.tz = damp(p.tz, -Math.abs(p.delta) * p.maxTz, 115, dt);
         p.el.style.setProperty("--rx", p.rx.toFixed(3) + "deg");
         p.el.style.setProperty("--tz", p.tz.toFixed(1) + "px");
       }
 
       for (var j = 0; j < scenes.length; j++) {
         var sc = scenes[j];
-        var sr = sc.el.getBoundingClientRect();
-        var live = sr.bottom > 0 && sr.top < S.vh;
-        var tx = live ? (0.5 - S.ny) * sc.amt : 0;
-        var ty = live ? (S.nx - 0.5) * sc.amt : 0;
-        sc.x = damp(sc.x, tx, 120, dt);
-        sc.y = damp(sc.y, ty, 120, dt);
+        var tx = sc.live ? (0.5 - S.ny) * sc.amt : 0;
+        var ty = sc.live ? (S.nx - 0.5) * sc.amt : 0;
+        sc.x = damp(sc.x, tx, 150, dt);
+        sc.y = damp(sc.y, ty, 150, dt);
         sc.el.style.setProperty("--tilt-x", sc.x.toFixed(3) + "deg");
         sc.el.style.setProperty("--tilt-y", sc.y.toFixed(3) + "deg");
       }
 
       if (chromas.length) {
-        chroma = damp(chroma, clamp(Math.abs(S.vel) * 0.055, 0, 3.2), 70, dt);
+        chroma = damp(chroma, clamp(Math.abs(S.vel) * 0.055, 0, 3.2), 90, dt);
         for (var k = 0; k < chromas.length; k++) {
           chromas[k].style.setProperty("--chroma", chroma.toFixed(2));
         }
@@ -1560,15 +1676,19 @@
     if (REDUCED) return;
     var cards = $$(".work__card");
     if (!cards.length) return;
-    var state = cards.map(function () { return 0; });
-    addTicker(function (dt) {
+    var state = cards.map(function () { return { ry: 0, d: 0, live: false }; });
+    addReader(function () {
       for (var i = 0; i < cards.length; i++) {
         var r = cards[i].getBoundingClientRect();
-        if (r.right < -300 || r.left > S.vw + 300) continue;
-        var centre = r.left + r.width / 2;
-        var d = clamp((centre - S.vw / 2) / (S.vw / 2), -1, 1);
-        state[i] = damp(state[i], -d * 15, 70, dt);
-        cards[i].style.setProperty("--card-ry", state[i].toFixed(2) + "deg");
+        state[i].live = !(r.right < -300 || r.left > S.vw + 300);
+        if (state[i].live) state[i].d = clamp((r.left + r.width / 2 - S.vw / 2) / (S.vw / 2), -1, 1);
+      }
+    });
+    addWriter(function (dt) {
+      for (var i = 0; i < cards.length; i++) {
+        if (!state[i].live) continue;
+        state[i].ry = damp(state[i].ry, -state[i].d * 15, 95, dt);
+        cards[i].style.setProperty("--card-ry", state[i].ry.toFixed(2) + "deg");
       }
     });
   }
@@ -1730,7 +1850,7 @@
     io.observe(host);
 
     var spin = 0, accentTick = 0;
-    addTicker(function (dt) {
+    addWriter(function (dt) {
       if (!visible) return;
       spin += dt * 0.00021;
       yaw = damp(yaw, spin + (S.nx - 0.5) * 1.15, 200, dt);
@@ -1740,6 +1860,265 @@
       if (accentTick > 400) { accentTick = 0; readAccent(); }
       draw();
     });
+  }
+
+
+  /* ============================================================
+     31. AUDIO — synthesised, no files, off by default
+     Everything is generated with oscillators and shaped noise, so the site
+     stays dependency-free and adds no bytes. The AudioContext is not created
+     until the visitor turns sound on, which is itself a user gesture — the
+     only moment a browser will let one start unsuspended.
+     ============================================================ */
+  var OrionAudio = (function () {
+    var ctx = null, master = null, wet = null, comp = null;
+    var enabled = false;
+    var built = false;
+    var lastHover = 0;
+
+    /* A minor pentatonic, so any sequence the page plays stays consonant. */
+    var ZONE_NOTE = {
+      gold: 220.00, violet: 261.63, teal: 293.66, blue: 329.63,
+      magenta: 392.00, acid: 440.00, flare: 523.25
+    };
+    var HOVER_POOL = [659.25, 783.99, 880.00, 1046.50];
+
+    function store(v) {
+      try { localStorage.setItem("orion-sound", v ? "1" : "0"); } catch (e) {}
+    }
+    function restore() {
+      try { return localStorage.getItem("orion-sound") === "1"; } catch (e) { return false; }
+    }
+
+    /* A short synthetic impulse response. Reverb is what stops synthesised
+       tones sounding like a 1990s system beep. */
+    function makeVerb() {
+      var len = Math.floor(ctx.sampleRate * 1.9);
+      var buf = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (var c = 0; c < 2; c++) {
+        var d = buf.getChannelData(c);
+        for (var i = 0; i < len; i++) {
+          var decay = Math.pow(1 - i / len, 2.6);
+          d[i] = (Math.random() * 2 - 1) * decay;
+        }
+      }
+      var conv = ctx.createConvolver();
+      conv.buffer = buf;
+      return conv;
+    }
+
+    function build() {
+      if (built) return true;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      try { ctx = new AC(); } catch (e) { return false; }
+
+      comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -18;
+      comp.ratio.value = 8;
+      comp.attack.value = 0.003;
+      comp.release.value = 0.25;
+
+      master = ctx.createGain();
+      master.gain.value = 0.0;
+
+      var conv = makeVerb();
+      wet = ctx.createGain();
+      wet.gain.value = 0.34;
+      wet.connect(conv);
+      conv.connect(master);
+
+      master.connect(comp);
+      comp.connect(ctx.destination);
+      built = true;
+      return true;
+    }
+
+    function now() { return ctx.currentTime; }
+
+    function env(node, t0, peak, attack, hold, release) {
+      var g = node.gain;
+      g.cancelScheduledValues(t0);
+      g.setValueAtTime(0.0001, t0);
+      g.exponentialRampToValueAtTime(Math.max(peak, 0.0002), t0 + attack);
+      g.setValueAtTime(Math.max(peak, 0.0002), t0 + attack + hold);
+      g.exponentialRampToValueAtTime(0.0001, t0 + attack + hold + release);
+    }
+
+    function tone(opts) {
+      if (!enabled || !built) return;
+      var t0 = now() + (opts.delay || 0);
+      var osc = ctx.createOscillator();
+      osc.type = opts.type || "sine";
+      osc.frequency.setValueAtTime(opts.freq, t0);
+      if (opts.glide) osc.frequency.exponentialRampToValueAtTime(opts.glide, t0 + (opts.dur || 0.3));
+      if (opts.detune) osc.detune.value = opts.detune;
+
+      var g = ctx.createGain();
+      var filt = ctx.createBiquadFilter();
+      filt.type = "lowpass";
+      filt.frequency.value = opts.cutoff || 5200;
+      filt.Q.value = opts.q || 0.7;
+
+      var pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+      if (pan) pan.pan.value = opts.pan || 0;
+
+      osc.connect(filt); filt.connect(g);
+      if (pan) { g.connect(pan); pan.connect(master); pan.connect(wet); }
+      else { g.connect(master); g.connect(wet); }
+
+      var a = opts.attack != null ? opts.attack : 0.006;
+      var h = opts.hold != null ? opts.hold : 0.01;
+      var r = opts.release != null ? opts.release : (opts.dur || 0.3);
+      env(g, t0, opts.gain != null ? opts.gain : 0.22, a, h, r);
+      osc.start(t0);
+      osc.stop(t0 + a + h + r + 0.08);
+    }
+
+    function noise(opts) {
+      if (!enabled || !built) return;
+      var t0 = now() + (opts.delay || 0);
+      var dur = opts.dur || 0.35;
+      var len = Math.max(1, Math.floor(ctx.sampleRate * dur));
+      var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      var src = ctx.createBufferSource();
+      src.buffer = buf;
+
+      var filt = ctx.createBiquadFilter();
+      filt.type = opts.filter || "bandpass";
+      filt.frequency.setValueAtTime(opts.from || 700, t0);
+      filt.frequency.exponentialRampToValueAtTime(opts.to || 3000, t0 + dur);
+      filt.Q.value = opts.q || 1.1;
+
+      var g = ctx.createGain();
+      src.connect(filt); filt.connect(g);
+      g.connect(master); g.connect(wet);
+      env(g, t0, opts.gain != null ? opts.gain : 0.1, 0.01, dur * 0.2, dur * 0.7);
+      src.start(t0);
+      src.stop(t0 + dur + 0.05);
+    }
+
+    function fadeMaster(to, time) {
+      if (!built) return;
+      master.gain.cancelScheduledValues(now());
+      master.gain.setValueAtTime(master.gain.value, now());
+      master.gain.linearRampToValueAtTime(to, now() + (time || 0.25));
+    }
+
+    var api = {
+      get on() { return enabled; },
+
+      /* called from the toggle, which is always a real user gesture */
+      toggle: function () {
+        if (!enabled) {
+          if (!build()) return false;
+          if (ctx.state === "suspended") ctx.resume();
+          enabled = true;
+          fadeMaster(0.24, 0.4);
+          store(true);
+          api.chord([392.00, 523.25, 659.25], 0.05);
+        } else {
+          enabled = false;
+          fadeMaster(0, 0.25);
+          store(false);
+        }
+        return enabled;
+      },
+      wanted: restore,
+
+      hover: function () {
+        var t = performance.now();
+        if (t - lastHover < 55) return;   /* moving fast across a nav should not machine-gun */
+        lastHover = t;
+        tone({ freq: HOVER_POOL[Math.floor(Math.random() * HOVER_POOL.length)],
+               type: "sine", gain: 0.05, attack: 0.004, hold: 0.005, release: 0.14, cutoff: 6000 });
+      },
+      click: function () {
+        tone({ freq: 523.25, type: "triangle", gain: 0.14, attack: 0.002, hold: 0.006, release: 0.16, cutoff: 4200 });
+        tone({ freq: 1046.50, type: "sine", gain: 0.06, attack: 0.002, hold: 0.004, release: 0.1 });
+      },
+      chord: function (freqs, spread) {
+        freqs.forEach(function (f, i) {
+          tone({ freq: f, type: "sine", gain: 0.11, delay: i * (spread || 0.06),
+                 attack: 0.01, hold: 0.03, release: 0.85, cutoff: 4000, pan: (i - 1) * 0.25 });
+        });
+      },
+      open: function () {
+        api.chord([329.63, 440.00, 587.33], 0.05);
+        noise({ from: 400, to: 2600, dur: 0.4, gain: 0.05 });
+      },
+      close: function () {
+        api.chord([587.33, 440.00, 329.63], 0.045);
+      },
+      zone: function (name) {
+        var f = ZONE_NOTE[name];
+        if (!f) return;
+        tone({ freq: f, type: "sine", gain: 0.1, attack: 0.012, hold: 0.04, release: 1.5, cutoff: 3200 });
+        tone({ freq: f * 2, type: "sine", gain: 0.035, attack: 0.014, hold: 0.02, release: 1.1, cutoff: 5000 });
+      },
+      whoosh: function () {
+        noise({ from: 260, to: 4200, dur: 0.55, gain: 0.07, filter: "bandpass", q: 0.8 });
+      },
+      boot: function () {
+        api.chord([220.00, 329.63, 440.00, 659.25], 0.09);
+      },
+      success: function () {
+        api.chord([440.00, 554.37, 659.25, 880.00], 0.07);
+      },
+      error: function () {
+        tone({ freq: 138.59, type: "sawtooth", gain: 0.1, attack: 0.005, hold: 0.05, release: 0.4, cutoff: 900 });
+        tone({ freq: 146.83, type: "sawtooth", gain: 0.08, attack: 0.005, hold: 0.05, release: 0.4, cutoff: 900, detune: 12 });
+      }
+    };
+    return api;
+  })();
+  window.OrionAudio = OrionAudio;
+
+  function initAudio() {
+    var btn = $$("[data-sound-toggle]");
+    if (!btn.length) return;
+
+    function paint() {
+      btn.forEach(function (b) {
+        b.setAttribute("aria-pressed", String(OrionAudio.on));
+        b.setAttribute("aria-label", OrionAudio.on ? "Turn sound off" : "Turn sound on");
+        var label = $("[data-sound-label]", b);
+        if (label) label.textContent = OrionAudio.on ? "Sound on" : "Sound off";
+      });
+    }
+    paint();
+
+    btn.forEach(function (b) {
+      on(b, "click", function () { OrionAudio.toggle(); paint(); });
+    });
+
+    /* If they turned it on last visit, arm it on their first interaction —
+       browsers will not let a page start audio before one. */
+    if (OrionAudio.wanted()) {
+      var arm = function () {
+        document.removeEventListener("pointerdown", arm);
+        document.removeEventListener("keydown", arm);
+        OrionAudio.toggle();
+        paint();
+      };
+      document.addEventListener("pointerdown", arm, { once: true });
+      document.addEventListener("keydown", arm, { once: true });
+    }
+
+    /* interaction sounds, delegated so they cover everything on the page */
+    on(document, "pointerover", function (e) {
+      if (!OrionAudio.on || !e.target.closest) return;
+      if (e.target.closest("a, button, [role='button'], .svc__row, .work__card")) OrionAudio.hover();
+    }, { passive: true });
+
+    on(document, "click", function (e) {
+      if (!OrionAudio.on || !e.target.closest) return;
+      var t = e.target.closest("a, button, [role='button']");
+      if (!t || t.hasAttribute("data-sound-toggle")) return;
+      OrionAudio.click();
+    }, { passive: true });
   }
 
   /* ============================================================
@@ -1773,6 +2152,7 @@
     initMagnetic();
     initScramble();
     initFaq();
+    initAudio();
     init3D();
     initCard3D();
     initOrbit();

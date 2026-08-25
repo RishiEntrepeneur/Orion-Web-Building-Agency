@@ -489,8 +489,8 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 .kin .kw > i {
   display: inline-block; font-style: inherit;
   transform: translateY(115%) rotate(3deg);
-  transition: transform 0.9s var(--ease-out);
-  transition-delay: calc(var(--i, 0) * 42ms + var(--d, 0) * 1ms);
+  transition: transform 1.15s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 52ms + var(--d, 0) * 1ms);
 }
 .kin[data-in="true"] .kw > i { transform: none; }
 
@@ -498,7 +498,7 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 .kin--char .kw > i > b { display: inline-block; font-weight: inherit; }
 
 /* generic reveal */
-.rv { opacity: 0; transform: translateY(26px); transition: opacity 0.8s var(--ease-out), transform 0.9s var(--ease-out); transition-delay: calc(var(--d, 0) * 1ms); }
+.rv { opacity: 0; transform: translateY(26px); transition: opacity 1s var(--ease-out), transform 1.15s var(--ease-out); transition-delay: calc(var(--d, 0) * 1ms); }
 .rv[data-in="true"] { opacity: 1; transform: none; }
 .rv--instant { transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
 
@@ -563,7 +563,9 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 /* word cycler */
 .cycler { display: inline-block; position: relative; overflow: hidden; vertical-align: bottom; height: 0.98em; }
 .cycler__track { display: block; transition: transform 0.85s var(--ease-io); }
-.cycler__item { display: block; height: 0.98em; line-height: 0.98em; color: var(--accent); white-space: nowrap; font-style: italic; font-weight: 500; }
+/* max-content so the item sizes to its own text. As a plain block it would
+   fill the width JS just set on the parent, making the measurement circular. */
+.cycler__item { display: block; width: max-content; height: 0.98em; line-height: 0.98em; color: var(--accent); white-space: nowrap; font-style: italic; font-weight: 500; }
 
 .hero__foot { margin-top: clamp(1.75rem, 4vw, 2.75rem); display: flex; flex-wrap: wrap; gap: 0.85rem; }
 
@@ -1030,29 +1032,29 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 /* ambient colour wash — one per zone, this is where the colour lives */
 .wash { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .wash::before, .wash::after {
-  content: ""; position: absolute; border-radius: 50%;
-  filter: blur(90px);
+  content: ""; position: absolute;
+  background-repeat: no-repeat;
 }
 .wash::before {
   width: 68vw; height: 68vw; max-width: 980px; max-height: 980px;
   top: -20%; left: -14%;
-  background: var(--accent);
-  opacity: 0.19;
+  background-image: radial-gradient(circle closest-side, var(--accent), transparent);
+  opacity: 0.26;
 }
 .wash::after {
   width: 52vw; height: 52vw; max-width: 760px; max-height: 760px;
   bottom: -24%; right: -10%;
-  background: var(--violet);
-  opacity: 0.13;
+  background-image: radial-gradient(circle closest-side, var(--violet), transparent);
+  opacity: 0.19;
 }
 /* second hue so no section is lit by a single colour */
 .wash--alt::before { left: auto; right: -16%; }
-.wash--alt::after { right: auto; left: -12%; background: var(--teal); opacity: 0.11; }
-[data-zone="teal"] .wash::after    { background: var(--gold); }
-[data-zone="magenta"] .wash::after { background: var(--blue); }
-[data-zone="acid"] .wash::after    { background: var(--magenta); }
-[data-zone="flare"] .wash::after   { background: var(--gold); }
-[data-zone="gold"] .wash::after    { background: var(--blue); opacity: 0.15; }
+.wash--alt::after { right: auto; left: -12%; background-image: radial-gradient(circle closest-side, var(--teal), transparent); opacity: 0.16; }
+[data-zone="teal"] .wash::after    { background-image: radial-gradient(circle closest-side, var(--gold), transparent); }
+[data-zone="magenta"] .wash::after { background-image: radial-gradient(circle closest-side, var(--blue), transparent); }
+[data-zone="acid"] .wash::after    { background-image: radial-gradient(circle closest-side, var(--magenta), transparent); }
+[data-zone="flare"] .wash::after   { background-image: radial-gradient(circle closest-side, var(--gold), transparent); }
+[data-zone="gold"] .wash::after    { background-image: radial-gradient(circle closest-side, var(--blue), transparent); opacity: 0.22; }
 
 /* section base needs a stacking context for the wash to sit behind content */
 .section, .hero, .pagehead { isolation: isolate; }
@@ -1166,3 +1168,42 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 [data-layer="3"] { --layer: 3; }
 [data-layer="4"] { --layer: 4; }
 @media (prefers-reduced-motion: reduce) { .tilt-scene [data-layer] { transform: none !important; } }
+
+/* ---------- 39. COMPOSITING HINTS ----------
+   Only for elements the rAF loop writes every frame. Applying will-change
+   broadly costs memory and can make things worse, not better. */
+[data-3d], .tilt-scene, .marq__track, .work__lane,
+.cur__dot, .cur__ring, .progress i, .work__card { will-change: transform; }
+.wash { contain: paint; }
+.grain, .scan, .vignette { contain: strict; }
+
+/* ---------- 40. SOUND TOGGLE ---------- */
+.sound {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  height: 2.75rem; padding-inline: 0.7rem;
+  border: 1px solid var(--edge); color: var(--ash);
+  font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: border-color 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+.sound:hover { border-color: var(--accent); color: var(--bone); }
+.sound[aria-pressed="true"] { border-color: var(--accent); color: var(--bone); }
+.sound__bars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.sound__bars i {
+  display: block; width: 2px; height: 3px; background: currentColor;
+  transform-origin: bottom;
+  transition: height 0.35s var(--ease-out);
+}
+.sound[aria-pressed="true"] .sound__bars i {
+  animation: eq 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--b) * 0.14s);
+}
+@keyframes eq {
+  0%, 100% { height: 3px; }
+  50% { height: 12px; }
+}
+.sound__label { display: none; }
+@media (min-width: 1180px) { .sound__label { display: inline; } }
+@media (prefers-reduced-motion: reduce) {
+  .sound[aria-pressed="true"] .sound__bars i { animation: none; height: 8px; }
+}
