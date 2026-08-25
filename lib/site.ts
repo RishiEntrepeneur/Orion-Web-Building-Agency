@@ -25,28 +25,21 @@ export const site = {
   },
 } as const;
 
-export const navLinks = [
-  { label: "Capabilities", href: "#capabilities" },
-  { label: "Packages", href: "#packages" },
-  { label: "Process", href: "#process" },
-  { label: "FAQ", href: "#faq" },
-] as const;
-
 export const footerColumns = [
   {
     title: "Studio",
     links: [
-      { label: "Capabilities", href: "#capabilities" },
-      { label: "Packages", href: "#packages" },
-      { label: "Process", href: "#process" },
-      { label: "Showreel", href: "#showreel" },
+      { label: "Services", href: "/services" },
+      { label: "Work", href: "/work" },
+      { label: "About", href: "/about" },
+      { label: "Pricing", href: "/pricing" },
     ],
   },
   {
-    title: "Support",
+    title: "Start",
     links: [
-      { label: "FAQ", href: "#faq" },
-      { label: "Start a Project", href: "#packages" },
+      { label: "Project Briefing", href: "/contact" },
+      { label: "Package Calculator", href: "/pricing#calculator" },
       { label: `Email ${site.email}`, href: `mailto:${site.email}` },
       { label: `Call ${site.phone}`, href: `tel:${site.phone.replace(/\s+/g, "")}` },
     ],

@@ -1,21 +1,94 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { damp } from "@/lib/pointer-state";
 import { cn } from "@/lib/utils";
 
 type LogoMarkProps = {
   className?: string;
-  /** Unique suffix for the gradient id — the mark renders more than once per
-      document and duplicate ids are invalid HTML. */
+  /** Unique suffix for gradient/filter ids — the mark renders more than once
+      per document and duplicate ids are invalid HTML. */
   instanceId: string;
 };
 
 /**
- * Logo mark: a machined aperture ring around a wireframe solid.
+ * Orion's Belt.
  *
- * Monochrome, lit from the upper left like every other metal surface in the
- * system, so the highlight direction is consistent across the page.
+ * The three aligned supergiants — Alnitak, Alnilam, Mintaka — at their true
+ * relative spacing and magnitudes: Alnilam, the centre star, is the brightest
+ * of the three and sits fractionally off the midpoint, which is exactly what
+ * makes the real belt recognisable rather than a tidy row of dots.
+ *
+ * Each star drifts toward the cursor by a different amount, so the asterism
+ * parallaxes as though the three lay at different depths — which they do.
  */
+
+/* x/y in a 44-unit box, r = relative magnitude. Alnilam is the anchor. */
+const BELT = [
+  { id: "mintaka", x: 9.5, y: 29.5, r: 2.5, depth: 1.0 },
+  { id: "alnilam", x: 21.5, y: 22.5, r: 3.4, depth: 0.55 },
+  { id: "alnitak", x: 33.5, y: 16.5, r: 2.9, depth: 1.45 },
+] as const;
+
 export default function LogoMark({ className, instanceId }: LogoMarkProps) {
-  const edge = `orion-edge-${instanceId}`;
-  const face = `orion-face-${instanceId}`;
+  const glow = `orion-glow-${instanceId}`;
+  const core = `orion-core-${instanceId}`;
+  const ref = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const svg = ref.current;
+    if (!svg) return;
+
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!fine || still) return;
+
+    const stars = BELT.map((s) =>
+      svg.querySelector<SVGGElement>(`[data-star="${s.id}"]`),
+    );
+    const cur = { x: 0, y: 0 };
+    const tgt = { x: 0, y: 0 };
+    let frame = 0;
+    let last = performance.now();
+
+    const onMove = (event: PointerEvent) => {
+      const r = svg.getBoundingClientRect();
+      const dx = event.clientX - (r.left + r.width / 2);
+      const dy = event.clientY - (r.top + r.height / 2);
+      const reach = 150;
+      const dist = Math.hypot(dx, dy);
+      if (dist > reach) {
+        tgt.x = tgt.y = 0;
+        return;
+      }
+      const eased = (1 - dist / reach) ** 2;
+      tgt.x = (dx / reach) * 3.4 * eased;
+      tgt.y = (dy / reach) * 3.4 * eased;
+    };
+
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      cur.x = damp(cur.x, tgt.x, 0.08, dt);
+      cur.y = damp(cur.y, tgt.y, 0.08, dt);
+      stars.forEach((node, i) => {
+        if (!node) return;
+        const d = BELT[i].depth;
+        node.setAttribute(
+          "transform",
+          `translate(${(cur.x * d).toFixed(2)} ${(cur.y * d).toFixed(2)})`,
+        );
+      });
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, []);
 
   return (
     <span
@@ -25,51 +98,48 @@ export default function LogoMark({ className, instanceId }: LogoMarkProps) {
         className,
       )}
     >
-      <span className="absolute inset-0 rounded-full bg-white/[0.07] blur-md transition-all duration-500 group-hover/logo:bg-white/15" />
-
-      <svg viewBox="0 0 44 44" className="absolute inset-0 size-full" fill="none">
+      <svg ref={ref} viewBox="0 0 44 44" className="size-full overflow-visible" fill="none">
         <defs>
-          <linearGradient id={edge} x1="6" y1="4" x2="38" y2="40" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-            <stop offset="38%" stopColor="#a9b2c1" stopOpacity="0.5" />
-            <stop offset="70%" stopColor="#6f7889" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.7" />
-          </linearGradient>
-          <linearGradient id={face} x1="10" y1="6" x2="34" y2="38" gradientUnits="userSpaceOnUse">
+          <radialGradient id={glow}>
+            <stop offset="0%" stopColor="var(--accent, #9fc4ff)" stopOpacity="0.9" />
+            <stop offset="45%" stopColor="var(--accent, #9fc4ff)" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="var(--accent, #9fc4ff)" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={core}>
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="45%" stopColor="#c3cad6" />
-            <stop offset="100%" stopColor="#6f7889" />
-          </linearGradient>
+            <stop offset="55%" stopColor="#ffffff" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="var(--accent, #9fc4ff)" stopOpacity="0.75" />
+          </radialGradient>
         </defs>
 
-        {/* Aperture ring, brightest where the light lands */}
-        <circle cx="22" cy="22" r="20" stroke={`url(#${edge})`} strokeWidth="1" />
-        <circle
-          cx="22"
-          cy="22"
-          r="16.5"
-          stroke="#6f7889"
-          strokeOpacity="0.35"
+        {/* The belt line — drawn faintly, the way an asterism is charted. */}
+        <line
+          x1={BELT[0].x}
+          y1={BELT[0].y}
+          x2={BELT[2].x}
+          y2={BELT[2].y}
+          stroke="var(--accent, #9fc4ff)"
+          strokeOpacity="0.28"
           strokeWidth="0.75"
-          strokeDasharray="1.5 6"
+          strokeLinecap="round"
         />
-      </svg>
 
-      <svg viewBox="0 0 32 32" className="relative size-5 sm:size-[22px]" fill="none">
-        <path
-          d="M16 3 28 10v14L16 31 4 24V10L16 3Z"
-          stroke={`url(#${face})`}
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M4 10l12 7 12-7M16 17v14"
-          stroke={`url(#${face})`}
-          strokeWidth="1.2"
-          strokeLinejoin="round"
-          opacity="0.55"
-        />
-        <circle cx="16" cy="17" r="1.9" fill="#ffffff" />
+        {BELT.map((star) => (
+          <g key={star.id} data-star={star.id}>
+            <circle cx={star.x} cy={star.y} r={star.r * 3.1} fill={`url(#${glow})`} />
+            <circle cx={star.x} cy={star.y} r={star.r} fill={`url(#${core})`} />
+            {/* Diffraction spikes: what makes a point of light read as a star
+                rather than as a dot. */}
+            <path
+              d={`M${star.x - star.r * 3.6} ${star.y} H${star.x + star.r * 3.6}
+                  M${star.x} ${star.y - star.r * 3.6} V${star.y + star.r * 3.6}`}
+              stroke="#ffffff"
+              strokeOpacity="0.5"
+              strokeWidth="0.5"
+              strokeLinecap="round"
+            />
+          </g>
+        ))}
       </svg>
     </span>
   );

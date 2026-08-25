@@ -7,6 +7,7 @@ import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
 import { accentAt } from "@/lib/zone-accents";
+import { routeState } from "@/lib/routes";
 import { createSpatialUniforms } from "./shaders/uniforms";
 import { createLiquidMetalMaterial } from "./shaders/materials";
 
@@ -51,7 +52,7 @@ export default function LiquidMetal({
     // never competes with the section content further down.
     const zoneFade = 1 - Math.min(1, Math.max(0, scrollState.zone / 0.85));
     uniforms.uIntensity.value = qualityState.intensity * zoneFade;
-    const [ar, ag, ab] = accentAt(scrollState.zone);
+    const [ar, ag, ab] = accentAt(routeState.u);
     uniforms.uAccent.value.setRGB(ar, ag, ab);
 
     const group = groupRef.current;

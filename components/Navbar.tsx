@@ -1,48 +1,51 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { navLinks, site } from "@/lib/site";
-import { ZONE_ACCENT_CLASS } from "@/lib/zone-accents";
-import { cn } from "@/lib/utils";
+import { ACCENT_CLASS, ROUTES, routeFor } from "@/lib/routes";
+import { site } from "@/lib/site";
 import { lockScroll, unlockScroll } from "@/lib/scroll-lock";
+import { cn } from "@/lib/utils";
 import CtaLink from "@/components/ui/CtaLink";
 import LogoMark from "@/components/ui/LogoMark";
 
+/**
+ * Primary navigation.
+ *
+ * The route list is rendered as a constellation: each page is a numbered node
+ * on a single hairline, and the active one lights in that page's own colour.
+ * Because the bar is fixed it sits outside every page's accent scope, so it
+ * adopts the active route's accent explicitly.
+ */
 export default function Navbar() {
+  const pathname = usePathname();
+  const active = routeFor(pathname);
+  const accentClass = ACCENT_CLASS[active.accent];
+
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [activeId, setActiveId] = useState<string>("");
-  /* The bar is fixed, so it sits outside every section and inherits no zone
-     accent of its own. Adopting the active section's colour keeps it part of
-     the same light as the content scrolling beneath it. */
-  const accentClass =
-    ZONE_ACCENT_CLASS[activeId.replace("#", "")] ?? "zone-rigel";
   const [menuOpen, setMenuOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  /* Condensed chrome + reading-progress rail --------------------------- */
+  /* Condensed chrome + per-page reading progress. */
   useEffect(() => {
     let frame = 0;
-
     const update = () => {
       frame = 0;
-      const scrollTop = window.scrollY;
-      const track =
-        document.documentElement.scrollHeight - window.innerHeight || 1;
-      setScrolled(scrollTop > 24);
-      setProgress(Math.min(100, Math.max(0, (scrollTop / track) * 100)));
+      const top = window.scrollY;
+      const track = document.documentElement.scrollHeight - window.innerHeight || 1;
+      setScrolled(top > 24);
+      setProgress(Math.min(100, Math.max(0, (top / track) * 100)));
     };
-
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(update);
     };
-
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
-
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
@@ -50,34 +53,14 @@ export default function Navbar() {
     };
   }, []);
 
-  /* Scrollspy ---------------------------------------------------------- */
+  /* Close the drawer whenever the route actually changes. */
   useEffect(() => {
-    const sections = navLinks
-      .map((link) => document.querySelector<HTMLElement>(link.href))
-      .filter((node): node is HTMLElement => node !== null);
+    setMenuOpen(false);
+  }, [pathname]);
 
-    if (sections.length === 0 || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveId(`#${visible.target.id}`);
-      },
-      { rootMargin: "-45% 0px -50% 0px", threshold: [0, 0.25, 0.5, 1] },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  /* Mobile drawer: lock scroll, trap focus, close on Escape ------------- */
+  /* Drawer: lock scroll (Lenis included), trap focus, close on Escape. */
   useEffect(() => {
     if (!menuOpen) return;
-
     lockScroll();
 
     const panel = panelRef.current;
@@ -85,7 +68,7 @@ export default function Navbar() {
     const focusables = () =>
       Array.from(
         panel?.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ) ?? [],
       ).filter((node) => node.offsetParent !== null);
 
@@ -97,24 +80,20 @@ export default function Navbar() {
         return;
       }
       if (event.key !== "Tab") return;
-
       const nodes = focusables();
       if (nodes.length === 0) return;
       const first = nodes[0];
       const last = nodes[nodes.length - 1];
-      const active = document.activeElement;
-
-      if (event.shiftKey && (active === first || !panel?.contains(active))) {
+      if (event.shiftKey && (document.activeElement === first || !panel?.contains(document.activeElement))) {
         event.preventDefault();
         last.focus();
-      } else if (!event.shiftKey && active === last) {
+      } else if (!event.shiftKey && document.activeElement === last) {
         event.preventDefault();
         first.focus();
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
-
     return () => {
       unlockScroll();
       window.removeEventListener("keydown", onKeyDown);
@@ -125,14 +104,16 @@ export default function Navbar() {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <header className={cn("fixed inset-x-0 top-0 z-50 transition-colors duration-700", accentClass)}>
-      {/* Reading progress rail */}
-      <div
-        aria-hidden="true"
-        className="h-px w-full bg-transparent"
-      >
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 transition-colors duration-700",
+        accentClass,
+      )}
+    >
+      {/* Reading progress for the current page */}
+      <div aria-hidden="true" className="h-px w-full bg-transparent">
         <div
-          className="h-px bg-linear-to-r from-accent via-steel to-steel shadow-[0_0_12px_color-mix(in_oklab,var(--accent)_74%,transparent)] transition-[width] duration-150 ease-out"
+          className="h-px bg-linear-to-r from-transparent via-accent to-accent transition-[width] duration-150 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -141,29 +122,17 @@ export default function Navbar() {
         className={cn(
           "relative transition-all duration-500 ease-out",
           scrolled
-            ? "border-b border-edge/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-30px_color-mix(in_oklab,var(--accent)_49%,transparent)]"
+            ? "border-b border-edge/70 bg-abyss/72 backdrop-blur-2xl backdrop-saturate-150"
             : "border-b border-transparent bg-transparent",
         )}
       >
-        {/* Cyber edge with travelling highlight */}
-        <span
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-px overflow-hidden transition-opacity duration-500",
-            scrolled ? "opacity-100" : "opacity-0",
-          )}
-        >
-          <span className="absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-accent/90 to-transparent animate-sheen" />
-        </span>
-
         <nav
           aria-label="Primary"
           className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:h-20 sm:px-8 lg:px-10"
         >
-          {/* Floating logo marker */}
-          <a
-            href="#top"
-            className="group/logo relative flex shrink-0 items-center gap-3 rounded-xl py-1 pr-2 transition-transform duration-300 hover:scale-[1.02]"
+          <Link
+            href="/"
+            className="group/logo relative flex shrink-0 items-center gap-3 rounded-xl py-1 pr-2"
           >
             <LogoMark instanceId="nav" />
             <span className="flex flex-col leading-none">
@@ -174,88 +143,67 @@ export default function Navbar() {
                 {site.tagline}
               </span>
             </span>
-          </a>
+          </Link>
 
-          {/* Desktop links */}
-          <ul className="hidden items-center gap-1 lg:flex">
-            {navLinks.map((link) => {
-              const isActive = activeId === link.href;
+          {/* Desktop: the routes as a constellation of nodes on one line */}
+          <ul className="relative hidden items-center gap-1 lg:flex">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-3 top-1/2 h-px -translate-y-1/2 bg-linear-to-r from-transparent via-edge to-transparent"
+            />
+            {ROUTES.map((route) => {
+              const isActive = route.path === active.path;
               return (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    aria-current={isActive ? "true" : undefined}
+                <li key={route.path} className="relative">
+                  <Link
+                    href={route.path}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "group/nav relative block rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300",
-                      isActive
-                        ? "text-ink"
-                        : "text-ink-muted hover:text-ink",
+                      "group/nav relative flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-300",
+                      isActive ? "text-ink" : "text-ink-muted hover:text-ink",
                     )}
                   >
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "absolute inset-0 rounded-full border transition-all duration-300",
+                        "relative size-1.5 shrink-0 rounded-full transition-all duration-500",
                         isActive
-                          ? "border-accent/40 bg-accent/[0.07] shadow-[0_0_22px_-6px_color-mix(in_oklab,var(--accent)_68%,transparent)]"
-                          : "border-transparent group-hover/nav:border-edge group-hover/nav:bg-white/[0.04]",
+                          ? "bg-accent shadow-[0_0_10px_2px_color-mix(in_oklab,var(--accent)_65%,transparent)]"
+                          : "bg-steel/60 group-hover/nav:bg-steel",
                       )}
                     />
-                    <span className="relative z-10">{link.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "absolute -bottom-px left-1/2 h-px -translate-x-1/2 bg-linear-to-r from-transparent via-accent to-transparent transition-all duration-300",
-                        isActive ? "w-3/5" : "w-0 group-hover/nav:w-2/5",
-                      )}
-                    />
-                  </a>
+                    <span className="relative z-10">{route.label}</span>
+                  </Link>
                 </li>
               );
             })}
           </ul>
 
-          {/* Desktop CTA */}
           <div className="hidden items-center gap-3 lg:flex">
-            <a
-              href={`mailto:${site.email}`}
-              className="rounded-full px-3 py-2 text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-accent"
-            >
-              {site.email}
-            </a>
             <CtaLink
-              href="#packages"
+              href="/contact"
               size="sm"
               trailingIcon={<ArrowUpRight className="size-4" strokeWidth={2.4} />}
             >
-              Launch Your Site
+              Start a Project
             </CtaLink>
           </div>
 
-          {/* Mobile trigger */}
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
             aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            className="flex size-11 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:text-accent hover:shadow-[0_0_24px_-6px_color-mix(in_oklab,var(--accent)_74%,transparent)] lg:hidden"
+            className="flex size-11 items-center justify-center rounded-xl border border-edge bg-white/[0.04] text-ink backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:text-accent lg:hidden"
           >
-            {menuOpen ? (
-              <X className="size-5" strokeWidth={2} />
-            ) : (
-              <Menu className="size-5" strokeWidth={2} />
-            )}
+            {menuOpen ? <X className="size-5" strokeWidth={2} /> : <Menu className="size-5" strokeWidth={2} />}
           </button>
         </nav>
       </div>
 
       {/* Mobile drawer */}
-      <div
-        id="mobile-navigation"
-        hidden={!menuOpen}
-        className="lg:hidden"
-      >
+      <div id="mobile-navigation" hidden={!menuOpen} className="lg:hidden">
         <div
           className="fixed inset-0 top-16 z-40 bg-void/80 backdrop-blur-xs sm:top-20"
           onClick={closeMenu}
@@ -263,29 +211,45 @@ export default function Navbar() {
         />
         <div
           ref={panelRef}
-          className="fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto overscroll-contain border-b border-edge bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:max-h-[calc(100dvh-5rem)] sm:px-8">
-          <div aria-hidden="true" className="absolute inset-0 grid-mesh-fine-fine opacity-40" />
+          className="fixed inset-x-0 top-16 z-50 max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto overscroll-contain border-b border-edge bg-abyss/95 px-5 pb-8 pt-6 backdrop-blur-2xl sm:top-20 sm:max-h-[calc(100dvh-5rem)] sm:px-8"
+        >
           <ul className="relative flex flex-col gap-1">
-            {navLinks.map((link, index) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={closeMenu}
-                  style={{ animationDelay: `${index * 55}ms` }}
-                  className="flex items-center justify-between rounded-xl border border-transparent px-4 py-4 text-lg font-medium text-ink-muted transition-all duration-300 animate-rise hover:border-accent/30 hover:bg-white/[0.04] hover:text-ink"
-                >
-                  <span>{link.label}</span>
-                  <span className="font-mono text-xs text-ink-dim">
-                    0{index + 1}
-                  </span>
-                </a>
-              </li>
-            ))}
+            {ROUTES.map((route, index) => {
+              const isActive = route.path === active.path;
+              return (
+                <li key={route.path}>
+                  <Link
+                    href={route.path}
+                    onClick={closeMenu}
+                    aria-current={isActive ? "page" : undefined}
+                    style={{ animationDelay: `${index * 45}ms` }}
+                    className={cn(
+                      "flex items-center justify-between rounded-xl border px-4 py-4 text-lg font-medium transition-all duration-300 animate-rise",
+                      isActive
+                        ? "border-accent/40 bg-accent/10 text-ink"
+                        : "border-transparent text-ink-muted hover:border-edge hover:bg-white/[0.04] hover:text-ink",
+                    )}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "size-1.5 rounded-full",
+                          isActive ? "bg-accent" : "bg-steel/60",
+                        )}
+                      />
+                      {route.label}
+                    </span>
+                    <span className="font-mono text-xs text-ink-dim">{route.node}</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="relative mt-6 flex flex-col gap-3">
-            <CtaLink href="#packages" size="md" onClick={closeMenu} className="w-full">
-              Launch Your Site
+            <CtaLink href="/contact" size="md" onClick={closeMenu} className="w-full">
+              Start a Project
             </CtaLink>
             <CtaLink
               href={`mailto:${site.email}`}

@@ -7,6 +7,7 @@ import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
 import { accentAt } from "@/lib/zone-accents";
+import { routeState } from "@/lib/routes";
 import { createSpatialUniforms } from "./shaders/uniforms";
 import { createGridMaterial } from "./shaders/materials";
 
@@ -42,7 +43,7 @@ export default function GridFloor({ y = -6 }: { y?: number }) {
       size.height * viewport.dpr,
     );
     uniforms.uIntensity.value = qualityState.intensity;
-    const [ar, ag, ab] = accentAt(scrollState.zone);
+    const [ar, ag, ab] = accentAt(routeState.u);
     uniforms.uAccent.value.setRGB(ar, ag, ab);
 
     const mesh = meshRef.current;

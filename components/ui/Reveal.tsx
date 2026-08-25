@@ -32,10 +32,22 @@ export default function Reveal({
 }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
+  /* Above-the-fold content is shown instantly, with no transition at all.
+     An element that starts at opacity 0 does not count as painted until it is
+     opaque, so animating in something the visitor can already see delays
+     Largest Contentful Paint by the length of the fade and gains nothing —
+     there is no scroll for it to reward. */
+  const [instant, setInstant] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+
+    if (node.getBoundingClientRect().top < window.innerHeight * 0.95) {
+      setInstant(true);
+      setVisible(true);
+      return;
+    }
 
     if (typeof IntersectionObserver === "undefined") {
       setVisible(true);
@@ -62,8 +74,8 @@ export default function Reveal({
     <Tag
       ref={ref as React.RefObject<never>}
       data-visible={visible ? "true" : "false"}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={cn("reveal", className)}
+      style={instant ? undefined : { transitionDelay: `${delay}ms` }}
+      className={cn("reveal", instant && "reveal-instant", className)}
     >
       {children}
     </Tag>

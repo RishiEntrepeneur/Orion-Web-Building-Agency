@@ -4,11 +4,14 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { pointerState } from "@/lib/pointer-state";
-import { scrollState } from "@/lib/scroll-state";
-import { CAMERA_CURVE, TARGET_CURVE } from "@/lib/zones";
+import { CAMERA_CURVE, TARGET_CURVE, routeState } from "@/lib/routes";
 
 /**
- * Flies the camera along the spline as the page scrolls.
+ * Flies the camera along the global route spline.
+ *
+ * Position comes from `routeState.u`, which scrolling advances within a route
+ * and a GSAP tween carries between routes — so navigation and scrolling are
+ * the same motion to the camera and it never cuts.
  *
  * Position and aim come from two independent curves. Following the tangent of
  * a single path makes the camera behave like a rollercoaster carriage — always
@@ -45,7 +48,9 @@ export default function CameraRig({
 
   useFrame((_, delta) => {
     const dt = Math.min(0.05, delta);
-    const t = Math.min(1, Math.max(0, scrollState.progress));
+    /* One value drives the camera whether it got there by scrolling or by a
+       navigation tween, so both read as the same continuous move. */
+    const t = Math.min(1, Math.max(0, routeState.u));
 
     // getPointAt is arc-length parameterised, so the camera's speed along the
     // path stays even instead of surging through the gentler curves.

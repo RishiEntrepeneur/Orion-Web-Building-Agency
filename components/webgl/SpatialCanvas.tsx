@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { AdaptiveDpr, PerformanceMonitor } from "@react-three/drei";
 import { prefersReducedMotion, supportsWebGL } from "@/lib/webgl-support";
-import { qualityState, targetIntensity } from "@/lib/quality-state";
+import { detectDensity, qualityState, targetIntensity } from "@/lib/quality-state";
 import {
   pointerState,
   stepPointer,
@@ -34,12 +34,35 @@ export default function SpatialCanvas({ children }: { children: ReactNode }) {
   useEffect(() => {
     setCapable(supportsWebGL());
     setStill(prefersReducedMotion());
-    setReady(true);
+    qualityState.density = detectDensity();
+
+    /* Deferred hydration.
+       The canvas is decorative and expensive: compiling shaders and building
+       the scene on the critical path delays the largest contentful element for
+       no user benefit. So it waits for the page to finish loading and then for
+       the main thread to go idle — LCP is painted from the DOM alone. */
+    let idle = 0;
+    let timer = 0;
+    const mount = () => {
+      const schedule = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1));
+      idle = schedule(() => setReady(true), { timeout: 1200 }) as unknown as number;
+    };
+
+    if (document.readyState === "complete") {
+      timer = window.setTimeout(mount, 0);
+    } else {
+      window.addEventListener("load", mount, { once: true });
+    }
 
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onMotionChange = () => setStill(motion.matches);
     motion.addEventListener("change", onMotionChange);
-    return () => motion.removeEventListener("change", onMotionChange);
+    return () => {
+      motion.removeEventListener("change", onMotionChange);
+      window.removeEventListener("load", mount);
+      if (timer) window.clearTimeout(timer);
+      if (idle && window.cancelIdleCallback) window.cancelIdleCallback(idle);
+    };
   }, []);
 
   /* Pointer feed. Lives here rather than in each shader so every consumer —

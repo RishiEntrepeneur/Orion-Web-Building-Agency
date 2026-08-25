@@ -37,7 +37,7 @@ export default function Process() {
     <section
       id="process"
       aria-labelledby="process-heading"
-      className="zone-ember relative scroll-mt-24 overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
+      className="relative scroll-mt-24 overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-36"
     >
       <div
         aria-hidden="true"

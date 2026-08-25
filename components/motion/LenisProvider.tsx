@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { scrollState, ZONE_IDS } from "@/lib/scroll-state";
+import { scrollState } from "@/lib/scroll-state";
+import { routeState, routeU } from "@/lib/routes";
 import { registerLenis } from "@/lib/scroll-lock";
 
 /**
@@ -108,11 +109,8 @@ export default function LenisProvider() {
 }
 
 /**
- * Publishes progress, normalised velocity and the fractional zone index.
- *
- * `zone` is measured from the real section elements rather than from a fixed
- * fraction of the page, so the camera stays locked to the content even as
- * sections change height across breakpoints.
+ * Publishes scroll progress, normalised velocity, and the camera's position on
+ * the global route path.
  */
 function writeScrollState(scroll: number, velocity: number) {
   const doc = document.documentElement;
@@ -121,32 +119,12 @@ function writeScrollState(scroll: number, velocity: number) {
   // 40 px/frame is a hard flick; clamp so a trackpad fling cannot spike this.
   scrollState.velocity = Math.max(-1, Math.min(1, velocity / 40));
 
-  const midline = scroll + window.innerHeight * 0.5;
-  const tops: number[] = [];
-  for (const id of ZONE_IDS) {
-    const el = document.getElementById(id);
-    tops.push(el ? el.getBoundingClientRect().top + scroll : Number.NaN);
+  /* Scroll advances the camera within the current route's span — but only
+     when a navigation tween is not already driving it, or the landing scroll
+     position would fight the flight and the camera would stutter on arrival. */
+  if (!routeState.flying) {
+    routeState.u = routeU(routeState.index, scrollState.progress);
   }
-
-  /* One slot per ZONE_ID is kept even when a section is absent, so the index
-     here is always the true zone index. Compacting the array instead would
-     silently shift every later section onto the wrong vantage point. */
-  let zone = 0;
-  for (let i = 0; i < tops.length; i++) {
-    const start = tops[i];
-    if (!Number.isFinite(start) || midline < start) continue;
-
-    // Look ahead past any missing sections for the next real boundary.
-    let next = doc.scrollHeight;
-    for (let j = i + 1; j < tops.length; j++) {
-      if (Number.isFinite(tops[j])) {
-        next = tops[j];
-        break;
-      }
-    }
-
-    const span = Math.max(1, next - start);
-    zone = i + Math.min(1, (midline - start) / span);
-  }
-  scrollState.zone = Number.isFinite(zone) ? zone : 0;
+  scrollState.zone = routeState.index + scrollState.progress;
 }
+

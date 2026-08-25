@@ -7,6 +7,7 @@ import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
 import { accentAt } from "@/lib/zone-accents";
+import { routeState } from "@/lib/routes";
 
 /**
  * Cursor constellation.
@@ -22,7 +23,7 @@ import { accentAt } from "@/lib/zone-accents";
  * a frame, and only the buffer's draw range is updated, never its allocation.
  */
 
-const NODE_COUNT = 90;
+const BASE_NODES = 90;
 const MAX_LINKS = 260;
 
 export default function Constellation({
@@ -42,9 +43,14 @@ export default function Constellation({
   const { camera, size } = useThree();
 
   /* Nodes live in the group's local XY plane. Generated once. */
+  const nodeCount = useMemo(
+    () => Math.max(28, Math.round(BASE_NODES * qualityState.density)),
+    [],
+  );
+
   const nodes = useMemo(() => {
     const arr: { x: number; y: number; z: number; sx: number; sy: number; seed: number }[] = [];
-    for (let i = 0; i < NODE_COUNT; i++) {
+    for (let i = 0; i < nodeCount; i++) {
       arr.push({
         x: (Math.random() - 0.5) * 2,
         y: (Math.random() - 0.5) * 2,
@@ -55,7 +61,7 @@ export default function Constellation({
       });
     }
     return arr;
-  }, []);
+  }, [nodeCount]);
 
   const lineGeometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
@@ -67,10 +73,10 @@ export default function Constellation({
 
   const starGeometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(NODE_COUNT * 3), 3));
-    g.setAttribute("color", new THREE.BufferAttribute(new Float32Array(NODE_COUNT * 3), 3));
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(nodeCount * 3), 3));
+    g.setAttribute("color", new THREE.BufferAttribute(new Float32Array(nodeCount * 3), 3));
     return g;
-  }, []);
+  }, [nodeCount]);
 
   const lineMaterial = useMemo(
     () =>
@@ -118,7 +124,7 @@ export default function Constellation({
     const halfH = Math.tan((perspective.fov * Math.PI) / 360) * distance;
     const halfW = halfH * (size.width / Math.max(1, size.height));
 
-    const [ar, ag, ab] = accentAt(scrollState.zone);
+    const [ar, ag, ab] = accentAt(routeState.u);
     scratch.accent.setRGB(ar, ag, ab);
 
     // Pointer, projected onto the same plane.
@@ -136,7 +142,7 @@ export default function Constellation({
     const starCol = starGeometry.attributes.color.array as Float32Array;
     const live: { x: number; y: number; z: number; w: number }[] = [];
 
-    for (let i = 0; i < NODE_COUNT; i++) {
+    for (let i = 0; i < nodeCount; i++) {
       const n = nodes[i];
       n.x += n.sx * dt;
       n.y += n.sy * dt;

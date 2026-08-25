@@ -7,6 +7,7 @@ import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
 import { accentAt } from "@/lib/zone-accents";
+import { routeState } from "@/lib/routes";
 import { createSpatialUniforms } from "./shaders/uniforms";
 import { particlesFragment, particlesVertex } from "./shaders/particles";
 
@@ -21,7 +22,9 @@ export default function ParticleField({ count }: { count?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
   const { size, viewport } = useThree();
 
-  const resolvedCount = count ?? (qualityState.tier === "high" ? 4200 : 1600);
+  // Density is decided once, before the buffer is allocated: resizing it
+  // mid-scroll would stall the GPU and pop visibly.
+  const resolvedCount = count ?? Math.round(4200 * qualityState.density);
 
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
@@ -80,7 +83,7 @@ export default function ParticleField({ count }: { count?: number }) {
       size.height * viewport.dpr,
     );
     uniforms.uIntensity.value = qualityState.intensity;
-    const [ar, ag, ab] = accentAt(scrollState.zone);
+    const [ar, ag, ab] = accentAt(routeState.u);
     uniforms.uAccent.value.setRGB(ar, ag, ab);
     void state;
   });

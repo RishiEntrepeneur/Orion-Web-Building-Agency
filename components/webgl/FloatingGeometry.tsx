@@ -7,7 +7,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { pointerState } from "@/lib/pointer-state";
 import { qualityState } from "@/lib/quality-state";
 import { scrollState } from "@/lib/scroll-state";
-import { ZONES } from "@/lib/zones";
+import { ROUTES } from "@/lib/routes";
 
 /**
  * The solid objects the camera flies past.
@@ -33,28 +33,30 @@ type Piece = {
 };
 
 const PIECES: Piece[] = [
-  // Hero — one dominant form, held slightly off-centre.
+  // One cluster per route, anchored to the same coordinates the camera path
+  // uses, so an object is always in frame when its page is on screen.
+  // Home — one dominant form, held slightly off-centre.
   { zone: 0, shape: "knot", offset: [2.6, 0.4, -3.5], scale: 1.35, roughness: 0.18, spin: [0.03, 0.05, 0.01] },
   { zone: 0, shape: "octahedron", offset: [-4.2, -1.8, -6.0], scale: 0.75, roughness: 0.32, spin: [0.05, -0.03, 0.02] },
 
-  // Capabilities — planes and shards, echoing the depth-layer idea.
+  // Services — planes and shards.
   { zone: 1, shape: "monolith", offset: [1.4, 0.8, -2.0], scale: 1.0, roughness: 0.22, spin: [0.01, 0.06, 0.0] },
   { zone: 1, shape: "icosahedron", offset: [-3.4, -1.2, 1.5], scale: 0.62, roughness: 0.4, spin: [0.04, 0.03, -0.02] },
 
-  // Packages — boxes, three of them.
+  // Work — boxes, three of them.
   { zone: 2, shape: "box", offset: [-1.8, 1.1, -1.2], scale: 0.78, roughness: 0.15, spin: [0.02, 0.045, 0.015] },
   { zone: 2, shape: "box", offset: [2.4, -0.9, -3.4], scale: 0.55, roughness: 0.3, spin: [-0.03, 0.05, 0.01] },
   { zone: 2, shape: "box", offset: [0.4, 2.6, -5.0], scale: 0.42, roughness: 0.45, spin: [0.05, -0.02, 0.03] },
 
-  // Process — rings, for a cycle.
+  // About — rings, for a cycle.
   { zone: 3, shape: "torus", offset: [-2.2, 0.6, -1.0], scale: 1.05, roughness: 0.2, spin: [0.05, 0.02, 0.0] },
   { zone: 3, shape: "torus", offset: [3.0, -1.6, -4.2], scale: 0.68, roughness: 0.35, spin: [-0.04, 0.03, 0.02] },
 
-  // FAQ — a scattered, unresolved cluster.
+  // Pricing — a scattered cluster.
   { zone: 4, shape: "icosahedron", offset: [1.9, 1.4, -1.6], scale: 0.85, roughness: 0.26, spin: [0.03, 0.04, 0.01] },
   { zone: 4, shape: "octahedron", offset: [-2.6, -1.0, -3.8], scale: 0.6, roughness: 0.38, spin: [0.05, -0.04, 0.0] },
 
-  // Footer — a single monolith to close on.
+  // Contact — a single monolith to close on.
   { zone: 5, shape: "monolith", offset: [0, 0.2, -2.5], scale: 1.6, roughness: 0.14, spin: [0.0, 0.02, 0.0] },
 ];
 
@@ -131,7 +133,7 @@ function StudioEnvironment() {
 
 function MetalPiece({ piece, index }: { piece: Piece; index: number }) {
   const ref = useRef<THREE.Mesh>(null);
-  const zone = ZONES[piece.zone];
+  const route = ROUTES[piece.zone];
 
   const geometry = useMemo(() => geometryFor(piece.shape), [piece.shape]);
   const material = useMemo(
@@ -148,11 +150,11 @@ function MetalPiece({ piece, index }: { piece: Piece; index: number }) {
   const base = useMemo(
     () =>
       new THREE.Vector3(
-        zone.anchor.x + piece.offset[0],
-        zone.anchor.y + piece.offset[1],
-        zone.anchor.z + piece.offset[2],
+        route.anchor[0] + piece.offset[0],
+        route.anchor[1] + piece.offset[1],
+        route.anchor[2] + piece.offset[2],
       ),
-    [zone, piece.offset],
+    [route, piece.offset],
   );
 
   const phase = index * 1.37;

@@ -17,11 +17,11 @@
    ================================================================== */
 @theme {
   /* Grounds, darkest to lightest */
-  --color-void: #07080b;
-  --color-abyss: #0b0d12;
-  --color-surface: #12151c;
-  --color-raised: #191d26;
-  --color-edge: #232833;
+  --color-void: #0b0d12; /* substrate — deep obsidian charcoal */
+  --color-abyss: #10131a;
+  --color-surface: #171b23;
+  --color-raised: #1e232d;
+  --color-edge: #2b3140;
 
   /* Metal + ink */
   --color-steel: #6f7889; /* cool: strokes and icon fills — never body text */
@@ -462,6 +462,13 @@
   .reveal[data-visible="true"] {
     opacity: 1;
     transform: translate3d(0, 0, 0);
+  }
+
+  /* Already in view at mount: paint it, do not animate it. */
+  .reveal-instant {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

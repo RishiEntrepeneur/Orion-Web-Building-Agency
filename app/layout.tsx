@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Martian_Mono, Syne } from "next/font/google";
 import { site } from "@/lib/site";
 import LenisProvider from "@/components/motion/LenisProvider";
+import RouteAccentShell from "@/components/motion/RouteAccentShell";
+import RouteTransition from "@/components/motion/RouteTransition";
 import SceneScrim from "@/components/webgl/SceneScrim";
 import SpatialCanvas from "@/components/webgl/SpatialCanvas";
 import SpatialScene from "@/components/webgl/SpatialScene";
@@ -137,15 +139,21 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        {/* The canvas lives here, above the route boundary, so it survives every
+            navigation — a route change moves the camera, it does not rebuild
+            the scene. */}
         <LenisProvider />
+        <RouteTransition />
         <SpatialCanvas>
           <SpatialScene />
         </SpatialCanvas>
         <SceneScrim />
         <SpatialCrosshair />
-        <Navbar />
-        {children}
-        <Footer />
+        <RouteAccentShell>
+          <Navbar />
+          {children}
+          <Footer />
+        </RouteAccentShell>
         <CookieConsent />
         <script
           type="application/ld+json"

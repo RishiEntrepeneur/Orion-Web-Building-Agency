@@ -14,7 +14,7 @@ export default function Hero() {
     <section
       id="top"
       aria-labelledby="hero-heading"
-      className="zone-rigel relative isolate overflow-hidden px-5 pb-20 pt-28 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10 lg:pb-36 lg:pt-44"
+      className="relative isolate overflow-hidden px-5 pb-20 pt-28 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10 lg:pb-36 lg:pt-44"
     >
       {/* Sectional glow */}
       <div

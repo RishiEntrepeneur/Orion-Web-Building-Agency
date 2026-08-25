@@ -10,7 +10,7 @@ export default function Footer() {
     <footer
       id="site-footer"
       aria-labelledby="footer-heading"
-      className="zone-rigel relative overflow-hidden border-t border-edge bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
+      className="relative overflow-hidden border-t border-edge bg-abyss/40 px-5 pb-10 pt-20 sm:px-8 sm:pb-12 sm:pt-24 lg:px-10"
     >
       <h2 id="footer-heading" className="sr-only">
         Site footer, contact details and legal information
