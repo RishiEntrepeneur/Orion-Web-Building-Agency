@@ -9,7 +9,8 @@ const fs = require("fs"), path = require("path");
 const R = path.resolve(__dirname, "..");
 /* Where the demo stills live. Regenerate them with tools/demo-stills.mjs
    whenever a demo page changes, or the machine will show a stale screen. */
-const SP = process.env.SP || path.join(R, "tools", "stills");
+const STILLS = process.env.STILLS || path.join(R, "tools", "stills");
+const OUT = process.env.OUT || path.join(R, "tools", "orion-preview.html");
 let html = fs.readFileSync(path.join(R, "home.html"), "utf8");
 let css = fs.readFileSync(path.join(R, "assets/css/styles.css"), "utf8");
 const js = fs.readFileSync(path.join(R, "assets/js/app.js"), "utf8");
@@ -47,7 +48,7 @@ const demos = fs.readFileSync(path.join(R, "demos.html"), "utf8");
 let lab = section(demos, '<section class="section lab"');
 
 const shot = (name) =>
-  "data:image/jpeg;base64," + fs.readFileSync(path.join(SP, "full-" + name + ".jpg")).toString("base64");
+  "data:image/jpeg;base64," + fs.readFileSync(path.join(STILLS, "full-" + name + ".jpg")).toString("base64");
 
 /* the iframe and its glare go; a stack of stills takes their place */
 lab = lab.replace(/<iframe class="mach__frame"[\s\S]*?<\/iframe>/,
@@ -156,7 +157,13 @@ const overlayCss = `
 #intro-overlay .intro { min-height: 100svh; }
 `;
 
-const jsPatched = js.replace('location.href = "home.html"', 'window.__introGo && window.__introGo()');
+let jsPatched = js.replace('location.href = "home.html"', 'window.__introGo && window.__introGo()');
+/* the site remembers that you have seen the intro and skips it next time;
+   a preview should play every single time it is opened */
+jsPatched = jsPatched.replace(
+  'try { alreadySeen = sessionStorage.getItem("orion-intro") === "1"; } catch (e) {}',
+  '/* artifact: always play */');
+if (jsPatched.indexOf("artifact: always play") < 0) throw new Error("intro skip not neutralised");
 const shim = `
 /* artifact only: dismiss the intro overlay rather than navigating */
 (function () {
@@ -180,7 +187,8 @@ const shim = `
 `;
 
 const out = `<title>Orion</title>\n${jsonld}\n<style>\n${css}\n${overlayCss}\n${labCss}\n</style>\n${body}\n<script>\n${jsPatched}\n${shim}\n${labShim}\n<\/script>\n`;
-fs.writeFileSync(SP + "/orion.html", out);
+fs.writeFileSync(OUT, out);
+console.log("wrote " + OUT);
 
 console.log(`artifact ${Math.round(out.length / 1024)}KB`);
 const dead = [...out.matchAll(/href="([^"]*\.html[^"]*)"/g)].map(m => m[1]);

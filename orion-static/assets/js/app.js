@@ -2736,18 +2736,20 @@
     var SCR_H = parseFloat(cs.getPropertyValue("--scr-h")) || 750;
     var PERSP = parseFloat(cs.perspective) || 1700;
 
-    var small = function () { return S.vw < 901; };
+    var narrow = function () { return S.vw < 901; };
 
-    if (REDUCED || small()) {
+    if (REDUCED) {
       /* No flight: sit it open and mid-distance, and let the list below do
          the work. The track collapses in CSS. */
       lid.style.transform = "rotateX(0deg)";
       rig.style.transform = "translate3d(0,0,-980px) rotateX(9deg) rotateY(-12deg)";
-      if (mach) mach.setAttribute("data-live", "true");
+      mach.setAttribute("data-live", "true");
       return;
     }
 
-    track.style.height = "340svh";
+    /* A narrow screen gets less track: the payoff is smaller, so the journey
+       to it should be shorter. */
+    track.style.height = (narrow() ? 240 : 340) + "svh";
 
     var progress = 0, live = false;
     var cam = { p: 0 };
@@ -2776,15 +2778,22 @@
 
       /* Scale is expressed as a dolly: solve the perspective divide for the
          z that produces the scale we want, so this is a camera move rather
-         than a transform: scale(). */
-      var sStart = 0.52;
-      var sEnd = Math.max(S.vw / SCR_W, S.vh / SCR_H) * 1.02;
+         than a transform: scale().
+
+         Wide screens end on a cover fit, so the page fills the view. Narrow
+         ones end on a width fit instead — covering a tall thin viewport with
+         a 1200px-wide page would crop most of it away. */
+      var thin = narrow();
+      var sEnd = thin
+        ? (S.vw / SCR_W) * 1.02
+        : Math.max(S.vw / SCR_W, S.vh / SCR_H) * 1.02;
+      var sStart = thin ? sEnd * 0.55 : 0.52;
       var sc = sStart + (sEnd - sStart) * e;
       var z = PERSP * (1 - 1 / sc);
 
-      var rx = 13 * (1 - e);
-      var ry = -17 * (1 - e);
-      var ty = -70 * (1 - e);
+      var rx = (thin ? 9 : 13) * (1 - e);
+      var ry = (thin ? -9 : -17) * (1 - e);
+      var ty = (thin ? -20 : -70) * (1 - e);
 
       rig.style.transform =
         "translate3d(0," + ty.toFixed(1) + "px," + z.toFixed(1) + "px)" +

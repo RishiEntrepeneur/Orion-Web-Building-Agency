@@ -152,9 +152,16 @@ flight is 96% done, so it can never swallow the scroll that is driving it.
 The laptop is unbranded on purpose: it is an aluminium shape, not anyone's
 product, and it carries no maker's mark.
 
-Under `prefers-reduced-motion`, or below 900px where a 1200px screen would be
-illegible anyway, the flight is dropped entirely and the three builds are a
-plain list of links.
+The flight runs at **every width**. A narrow screen gets a shorter track and
+ends on a *width* fit rather than a cover fit, because covering a tall thin
+viewport with a 1200px-wide page crops most of it away. Only
+`prefers-reduced-motion` drops the flight, and then the machine sits open at
+mid-distance instead.
+
+This was wrong once: the machine was hidden below 900px on the theory that it
+would be illegible, which meant anyone reading the preview in a side panel saw
+the tabs and an empty stage — they never saw the one thing the page exists for.
+A breakpoint that hides your centrepiece is not a responsive design.
 
 ## The single-file preview
 
@@ -171,10 +178,14 @@ the flight lands. The camera move is identical; only the interactivity inside
 the screen is lost.
 
 ```sh
-python3 -m http.server 8765      # serve the site
-node tools/demo-stills.mjs       # recapture the stills after a demo changes
-SP=tools/stills node tools/make-artifact.js
+python3 -m http.server 8765                    # serve the site
+node tools/demo-stills.mjs                     # recapture the stills
+OUT=/tmp/orion.html node tools/make-artifact.js
 ```
+
+It also neutralises the intro's own skip: the site records in `sessionStorage`
+that you have seen the sequence and lands you on the final frame next time,
+which is right for a website and wrong for a preview somebody just opened.
 
 ## Motion
 

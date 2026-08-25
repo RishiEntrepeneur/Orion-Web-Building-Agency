@@ -1963,13 +1963,14 @@ a.work__card:hover .work__name { color: var(--accent); }
 .lab__note { display: flex; gap: .5rem; align-items: baseline; margin-top: .9rem; pointer-events: auto; }
 .lab__note a { color: var(--accent); border-bottom: 1px solid var(--edge); }
 
-/* Under reduced motion, or on a screen too small for a 1200px machine to
-   mean anything, the stage stops flying and the cards below carry it. */
+/* The machine flies at every width. A narrow screen gets a shorter track and
+   an end scale that fits the width rather than covering the viewport — see
+   initLab. It used to be hidden below 900px, which meant anyone reading this
+   in a side panel never saw the one thing the page is for. */
 @media (max-width: 900px) {
-  .lab__track { height: auto !important; }
-  .lab__stage { position: static; height: auto; padding-block: clamp(2rem, 6vw, 3rem); }
-  .lab__view { display: none; }
-  .lab__hud { position: static; opacity: 1 !important; }
+  .lab__hud { padding-block: clamp(1rem, 3vw, 1.6rem); }
+  .lab__tab { padding: .5rem .7rem; }
+  .lab__tabt { font-size: .8125rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .lab__track { height: auto !important; }
