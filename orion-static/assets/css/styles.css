@@ -1535,7 +1535,7 @@ a.wx__item { transition: none; }
   margin-bottom: clamp(1.5rem, 4vh, 2.75rem);
   opacity: 0; transform: translateY(8px);
 }
-.ask[data-in="true"] .ask__eyebrow { opacity: 1; transform: none; transition: opacity 0.6s var(--ease-out) 0.1s, transform 0.7s var(--ease-out) 0.1s; }
+.ask[data-in="true"] .ask__eyebrow { opacity: 1; transform: none; transition: opacity 0.35s var(--ease-out), transform 0.5s var(--ease-out); }
 
 .srch { width: min(100%, 44rem); position: relative; }
 
@@ -1622,7 +1622,7 @@ a.wx__item { transition: none; }
   transition: opacity 0.3s var(--ease-out), height 0.4s var(--ease-io), margin-top 0.4s var(--ease-io);
 }
 
-.ask[data-in="true"] .srch__keys { opacity: 1; transform: none; transition: opacity 0.6s var(--ease-out) 0.35s, transform 0.7s var(--ease-out) 0.35s; }
+.ask[data-in="true"] .srch__keys { opacity: 1; transform: none; transition: opacity 0.5s var(--ease-out) 0.3s, transform 0.6s var(--ease-out) 0.3s; }
 .srch__key {
   font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--l-muted); background: var(--paper); border: 1px solid var(--l-hair);
@@ -1682,7 +1682,7 @@ a.wx__item { transition: none; }
   margin-bottom: clamp(1.25rem, 3vh, 2rem);
   opacity: 0; transform: translateY(10px);
 }
-.ask[data-in="true"] .ask__mark { opacity: 0.16; transform: none; transition: opacity 0.9s var(--ease-out) 0.05s, transform 1s var(--ease-out) 0.05s; }
+.ask[data-in="true"] .ask__mark { opacity: 0.16; transform: none; transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out); }
 .ask[data-searched="true"] .ask__mark { opacity: 0; transform: translateY(-8px); }
 .ask__mark line { stroke: var(--l-ink); stroke-width: 1; }
 .ask__mark circle { fill: var(--l-ink); }
@@ -1701,3 +1701,11 @@ a.wx__item { transition: none; }
 .ask[data-searched="true"] .ask__mark { opacity: 0; transform: translateY(-8px); }
 .ask[data-searched="true"] .srch__pill { height: 3.25rem; }
 .ask[data-searched="true"] .srch__drop { opacity: 0; pointer-events: none; }
+
+/* The light act has to leave once the circle has handed over — otherwise the
+   search field is still sitting there, in light colours, over the title card. */
+.ask[data-done="true"], .serp[data-done="true"] {
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.45s var(--ease-out);
+}
+.ask[data-done="true"] { visibility: hidden; transition: opacity 0.45s var(--ease-out), visibility 0s linear 0.45s; }

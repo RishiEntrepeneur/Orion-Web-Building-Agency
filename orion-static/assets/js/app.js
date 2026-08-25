@@ -2213,6 +2213,8 @@
       rows.forEach(function (r) { r.setAttribute("data-in", "true"); });
       serp.setAttribute("data-in", "true");
       serp.removeAttribute("aria-hidden");
+      ask.setAttribute("data-done", "true");
+      serp.setAttribute("data-done", "true");
       flipChrome();
       dropPaper();
       if (invert) { invert.setAttribute("data-on", "true"); invert.setAttribute("data-off", "true"); }
@@ -2229,6 +2231,14 @@
     }
 
     root.setAttribute("data-act", "ask");
+
+    /* As the landing page this runs on every visit to the root, which gets old
+       fast. Once it has played, later visits in the same session land on the
+       final frame instead. Not a redirect: bouncing the root to another page
+       traps the back button. */
+    var alreadySeen = false;
+    try { alreadySeen = sessionStorage.getItem("orion-intro") === "1"; } catch (e) {}
+    function remember() { try { sessionStorage.setItem("orion-intro", "1"); } catch (e) {} }
 
     /* --- typing with human-ish rhythm ------------------------------- */
     var typed = 0;
@@ -2250,8 +2260,10 @@
     var DONE_AT = 8550;
     var typing = false;
     var cues = [
-      [0,    function () { if (status) status.textContent = "Listening"; }],
-      [260,  function () { ask.setAttribute("data-in", "true"); }],
+      /* Reveal on the first frame, not a quarter of a second in: as the landing
+         page this element is the LCP candidate, and anything held at opacity 0
+         does not count as painted. */
+      [0,    function () { ask.setAttribute("data-in", "true"); if (status) status.textContent = "Listening"; }],
       [760,  function () { typing = true; box.setAttribute("data-state", "typing"); if (status) status.textContent = "Typing"; }],
       [2500, function () {
         typing = false;
@@ -2287,6 +2299,9 @@
       [5600, function () { flipChrome(); }],
       [5760, function () {
         dropPaper();
+        /* the whole light act leaves with the paper */
+        ask.setAttribute("data-done", "true");
+        serp.setAttribute("data-done", "true");
         serp.removeAttribute("data-in");
         if (invert) invert.setAttribute("data-off", "true");
         build.setAttribute("data-in", "true");
@@ -2334,10 +2349,11 @@
       }
 
       if (prog) prog.style.transform = "scaleX(" + clamp(ms / DONE_AT, 0, 1).toFixed(4) + ")";
-      if (ms >= DONE_AT && !finished) { finished = true; removeTicker(tick); }
+      if (ms >= DONE_AT && !finished) { finished = true; remember(); removeTicker(tick); }
     });
 
     function skip() {
+      remember();
       typing = false;
       typed = QUERY.length;
       text.textContent = QUERY;
@@ -2348,6 +2364,8 @@
       finished = true;
     }
 
+    if (alreadySeen) { skip(); }
+
     /* "Skip" means skip to the site, so it stays an ordinary link and the page
        curtain handles it. Escape jumps to the end of the sequence instead, for
        anyone who wants to see where it lands without leaving. */
@@ -2356,7 +2374,7 @@
       if (e.key === "Escape") { e.preventDefault(); skip(); return; }
       if (e.key === "Enter" && !onControl) {
         e.preventDefault();
-        if (finished) location.href = "index.html"; else skip();
+        if (finished) location.href = "home.html"; else skip();
       }
     });
   }

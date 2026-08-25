@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------
    Page generator.
-   index.html is the source of truth for the shared chrome (head,
+   home.html is the source of truth for the shared chrome (head,
    preloader, HUD, nav, drawer, footer). This lifts everything
    outside <main> from it and re-emits the other pages around their
    own bodies, so the chrome can never drift between pages.
@@ -11,12 +11,12 @@ const fs = require("fs");
 const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 
-const index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+const index = fs.readFileSync(path.join(ROOT, "home.html"), "utf8");
 const openTag = '<main id="main">';
 const closeTag = "</main>";
 const a = index.indexOf(openTag);
 const b = index.lastIndexOf(closeTag);
-if (a < 0 || b < 0) throw new Error("cannot locate <main> in index.html");
+if (a < 0 || b < 0) throw new Error("cannot locate <main> in home.html");
 
 const head = index.slice(0, a);
 const tail = index.slice(b + closeTag.length);
@@ -27,11 +27,11 @@ function chrome(page, opts) {
   h = h.replace(/(<meta name="description" content=")[^"]*(")/, `$1${opts.desc}$2`);
   h = h.replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${opts.title}$2`);
   h = h.replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${opts.desc}$2`);
-  h = h.replace(/(<link rel="canonical" href="https:\/\/orion\.build\/)[^"]*(")/, `$1${page === "index.html" ? "" : page}$2`);
-  h = h.replace(/(<meta property="og:url" content="https:\/\/orion\.build\/)[^"]*(")/, `$1${page === "index.html" ? "" : page}$2`);
+  h = h.replace(/(<link rel="canonical" href="https:\/\/orion\.build\/)[^"]*(")/, `$1${page}$2`);
+  h = h.replace(/(<meta property="og:url" content="https:\/\/orion\.build\/)[^"]*(")/, `$1${page}$2`);
   h = h.replace(/<body data-page="[^"]*">/, `<body data-page="${opts.slug}">`);
   /* in-page anchors in the shared chrome must point back at the homepage */
-  h = h.replace(/href="#(services|method|work|contact)"/g, 'href="index.html#$1"');
+  h = h.replace(/href="#(services|method|work|contact)"/g, 'href="home.html#$1"');
   /* mark the current page in the primary nav */
   if (opts.current) {
     const re = new RegExp(`(<a class="nav__link" href="${opts.current}")`, "g");
@@ -65,7 +65,7 @@ function chrome(page, opts) {
 
 function footTail(page) {
   let t = tail;
-  t = t.replace(/href="#(services|method|work|contact)"/g, 'href="index.html#$1"');
+  t = t.replace(/href="#(services|method|work|contact)"/g, 'href="home.html#$1"');
   return t;
 }
 

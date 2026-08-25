@@ -43,8 +43,8 @@ why the type holds together on a dark ground.
 ## Pages
 
 ```
-intro.html                        the typed question, then the answer building
-index.html                        home
+index.html                        LANDING — the typed question, then the answer
+home.html                         home — hero, services, position, method, work
 about.html                        studio — principles, shape, working here
 services.html                     capabilities, engagement models, FAQ
 work.html                         six builds, long form, each linking to its case study
@@ -83,9 +83,10 @@ tools/                  page generator, templates and content data
 
 ### Editing
 
-`index.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. Every other page is generated from it, so the
-chrome cannot drift.
+`home.html` is the source of truth for the shared chrome: `<head>`, preloader,
+HUD, nav, drawer and footer. Every other generated page is built from it, so the
+chrome cannot drift. `index.html` (the landing sequence) is hand-written and has
+its own minimal chrome on purpose.
 
 ```sh
 node tools/build.js     # regenerates all generated pages, plus sitemap and robots
@@ -273,13 +274,19 @@ That is what makes it skippable: Escape simply fires every cue that has not run
 yet and lands on the final frame. Skip is an ordinary link, so the page curtain
 carries it into the site.
 
-`index.html` is still the front door. To make the intro the site's landing page
-instead, swap the two filenames and update the handful of `index.html` links:
+It **is** the site's landing page: the root is the sequence, and it hands over
+to `home.html` through the page curtain.
 
-```sh
-mv index.html home.html && mv intro.html index.html
-# then point the intro's two exits and the nav/footer at home.html
-```
+Because a gate that replays on every visit gets old fast, the sequence records
+itself in `sessionStorage` once it has run. Later visits in the same session
+land straight on the final frame rather than replaying eight seconds. It is
+deliberately **not** a redirect — bouncing the root to another page traps the
+back button.
 
-Bear in mind the trade: an intro is a gate, and returning visitors will meet it
-every time unless you remember a dismissal in `localStorage`.
+The root still carries a real `<h1>` and its own canonical, and its first paint
+is on frame one rather than behind the reveal, so the landing page keeps an LCP
+inside the studio's own budget (692ms measured) despite being an animation.
+
+To put the plain home page back at the root, reverse the two filenames and
+repoint the links — the generator reads its chrome from `home.html`, so that
+reference moves too.

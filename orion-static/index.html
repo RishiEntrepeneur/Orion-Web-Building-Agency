@@ -26,37 +26,10 @@
 </script>
 </head>
 
-<body data-page="home">
+<body data-page="intro">
 
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" href="#intro-enter">Skip to the site</a>
 
-<!-- ============ PRELOADER ============ -->
-<div class="boot" id="boot" role="status" aria-live="polite" aria-label="Loading Orion">
-  <div class="boot__slats" aria-hidden="true">
-    <span class="boot__slat"></span><span class="boot__slat"></span><span class="boot__slat"></span>
-    <span class="boot__slat"></span><span class="boot__slat"></span><span class="boot__slat"></span>
-  </div>
-  <div class="boot__core">
-    <svg class="boot__mark" viewBox="0 0 320 120" aria-hidden="true" fill="none">
-      <line x1="34" y1="86" x2="286" y2="34" style="--len:258;--d:0" />
-      <line x1="34" y1="86" x2="46" y2="20" style="--len:68;--d:120" />
-      <line x1="286" y1="34" x2="272" y2="100" style="--len:68;--d:200" />
-      <circle cx="34" cy="86" r="9" style="--len:58;--d:320" />
-      <circle cx="160" cy="60" r="12" style="--len:76;--d:400" />
-      <circle cx="286" cy="34" r="9" style="--len:58;--d:480" />
-      <circle cx="46" cy="20" r="4.5" style="--len:29;--d:560" />
-      <circle cx="272" cy="100" r="4.5" style="--len:29;--d:620" />
-      <path d="M160 60 L160 116" style="--len:58;--d:680" />
-    </svg>
-  </div>
-  <div class="boot__foot">
-    <span class="boot__pct" id="boot-pct" aria-hidden="true">000</span>
-    <span class="boot__log mono" id="boot-log">INITIALISING RENDER TARGET</span>
-  </div>
-  <div class="boot__bar" id="boot-bar" aria-hidden="true"><i></i></div>
-</div>
-
-<!-- ============ PAGE CURTAIN ============ -->
 <div class="curtain" id="curtain" data-state="idle" aria-hidden="true">
   <span class="curtain__slat" style="--i:0"></span>
   <span class="curtain__slat" style="--i:1"></span>
@@ -67,800 +40,154 @@
   <span class="curtain__word">Orion</span>
 </div>
 
-<!-- ============ FILM ============ -->
 <div class="grain" aria-hidden="true"></div>
 <div class="scan" aria-hidden="true"></div>
 <div class="vignette" aria-hidden="true"></div>
 
-<!-- ============ CURSOR ============ -->
 <div class="cur" id="cursor" aria-hidden="true">
   <div class="cur__ring"><span class="cur__label"></span></div>
   <div class="cur__dot"></div>
 </div>
 
-<!-- ============ PROGRESS ============ -->
-<div class="progress" id="progress" aria-hidden="true"><i></i></div>
+<header class="intro__bar">
+  <a class="brand" href="home.html" data-curtain="Orion" aria-label="Orion — home">
+    <svg class="brand__belt" data-belt viewBox="0 0 46 22" aria-hidden="true">
+      <line x1="6" y1="16.5" x2="40" y2="5.5" />
+      <circle cx="6" cy="16.5" r="2.9" />
+      <circle cx="23" cy="11" r="3.2" />
+      <circle cx="40" cy="5.5" r="2.5" />
+    </svg>
+    <span class="brand__word">Orion</span>
+  </a>
 
-<!-- ============ HUD ============ -->
-<div class="hud" aria-hidden="true">
-  <span class="hud__corner hud__corner--tl"></span>
-  <span class="hud__corner hud__corner--tr"></span>
-  <span class="hud__corner hud__corner--bl"></span>
-  <span class="hud__corner hud__corner--br"></span>
-  <div class="hud__rail hud__rail--l">ORION — ARCHITECTING ELITE DIGITAL EXPERIENCES</div>
-  <div class="hud__rail hud__rail--r"><span id="hud-index">01 / 07</span><span id="hud-clock">00:00:00 UTC</span></div>
-  <div class="hud__read">
-    SEC <b id="read-sec">INDEX</b> &nbsp;·&nbsp; X <span id="read-x">0.500</span> &nbsp; Y <span id="read-y">0.500</span> &nbsp;·&nbsp; SCROLL <span id="read-p">000</span>%
-  </div>
-</div>
-
-<!-- ============ NAV ============ -->
-<header class="nav" id="nav" data-stuck="false">
-  <div class="shell nav__in">
-    <a class="brand" href="index.html" data-curtain="Orion" aria-label="Orion — home">
-      <svg class="brand__belt" data-belt viewBox="0 0 46 22" aria-hidden="true">
-        <line x1="6" y1="16.5" x2="40" y2="5.5" />
-        <circle cx="6" cy="16.5" r="2.9" />
-        <circle cx="23" cy="11" r="3.2" />
-        <circle cx="40" cy="5.5" r="2.5" />
-      </svg>
-      <span class="brand__word">Orion</span>
-      <span class="brand__tag">Architecting elite digital experiences</span>
-    </a>
-
-    <nav class="nav__links" aria-label="Primary">
-      <a class="nav__link" href="about.html" data-curtain="Studio" data-scramble-host><span data-scramble>Studio</span></a>
-      <a class="nav__link" href="services.html" data-curtain="Capabilities" data-scramble-host><span data-scramble>Capabilities</span></a>
-      <a class="nav__link" href="work.html" data-curtain="Work" data-scramble-host><span data-scramble>Work</span></a>
-      <a class="nav__link" href="journal.html" data-curtain="Journal" data-scramble-host><span data-scramble>Journal</span></a>
-      <a class="nav__link" href="contact.html" data-curtain="Contact" data-scramble-host><span data-scramble>Contact</span></a>
-    </nav>
-
-    <div class="row" style="gap:.6rem">
-      <button class="sound" type="button" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
-        <span class="sound__bars" aria-hidden="true"><i style="--b:0"></i><i style="--b:1"></i><i style="--b:2"></i><i style="--b:3"></i></span>
-        <span class="sound__label" data-sound-label>Sound off</span>
-      </button>
-      <a class="btn btn--solid nav__cta" href="contact.html" data-curtain="Contact" data-magnetic="0.3">
-        <span class="btn__lab"><span>Launch project</span><span>Let's talk</span></span>
-      </a>
-      <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open navigation menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</header>
-
-<!-- ============ DRAWER ============ -->
-<div class="drawer" id="drawer" data-open="false">
-  <div></div>
-  <nav class="drawer__list" aria-label="Mobile">
-    <ul>
-      <li class="drawer__item"><a class="drawer__a" style="--i:0" href="about.html" data-curtain="Studio"><i>01</i>Studio</a></li>
-      <li class="drawer__item"><a class="drawer__a" style="--i:1" href="services.html" data-curtain="Capabilities"><i>02</i>Capabilities</a></li>
-      <li class="drawer__item"><a class="drawer__a" style="--i:2" href="work.html" data-curtain="Work"><i>03</i>Work</a></li>
-      <li class="drawer__item"><a class="drawer__a" style="--i:3" href="journal.html" data-curtain="Journal"><i>04</i>Journal</a></li>
-      <li class="drawer__item"><a class="drawer__a" style="--i:4" href="contact.html" data-curtain="Contact"><i>05</i>Contact</a></li>
-    </ul>
-  </nav>
-  <div class="drawer__foot">
-    <a class="mono mono--bright" href="mailto:studio@orion.build">studio@orion.build</a>
+  <div class="row" style="gap:.6rem;align-items:center">
+    <span class="mono" aria-live="polite" id="intro-status">Listening</span>
     <button class="sound" type="button" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
       <span class="sound__bars" aria-hidden="true"><i style="--b:0"></i><i style="--b:1"></i><i style="--b:2"></i><i style="--b:3"></i></span>
       <span class="sound__label" data-sound-label>Sound off</span>
     </button>
+    <a class="intro__skip" id="intro-skip" href="home.html" data-curtain="Orion" data-magnetic="0.28">
+      Skip
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
+    </a>
   </div>
-</div>
+</header>
 
 <main id="main">
-
-  <!-- ============ HERO ============ -->
-  <section class="hero" id="index" data-sec="INDEX" data-zone-set="gold">
-    <div class="hero__field" aria-hidden="true"><canvas id="flow"></canvas></div>
-    <div class="hero__grid" aria-hidden="true"></div>
+  <section class="intro" data-sec="ASK" data-zone-set="gold">
+    <div class="intro__field" aria-hidden="true"><canvas id="flow"></canvas></div>
     <div class="wash" aria-hidden="true"></div>
-    <div class="floor" aria-hidden="true"><div class="floor__plane"></div></div>
+    <div class="paper" id="paper" aria-hidden="true"></div>
 
-    <div class="shell hero__in tilt-scene" data-tilt-amount="3.4">
-      <div data-layer="1">
-        <div class="hero__meta rv">
-          <span class="hero__meta-dot" aria-hidden="true"></span>
-          <span class="mono mono--bright">Taking briefs for Q4 2026</span>
-          <span class="mono">London · Remote · Worldwide</span>
-        </div>
+    <div class="intro__stage" id="intro-stage">
 
-        <h1 class="hero__h1 chroma" data-kin="word" data-layer="2">
-          We build<br />websites that<br />define
-          <span class="cycler" id="cycler" aria-hidden="true">
-            <span class="cycler__track">
-              <span class="cycler__item">industries</span>
-              <span class="cycler__item">categories</span>
-              <span class="cycler__item">decades</span>
-              <span class="cycler__item">markets</span>
-            </span>
-          </span>
-          <span class="sr-only">industries</span>
-        </h1>
+      <!-- act one: the question, on a light search surface -->
+      <div id="ask" class="ask">
+        <svg class="ask__mark" viewBox="0 0 200 74" aria-hidden="true" fill="none">
+          <line x1="18" y1="58" x2="182" y2="16" />
+          <line x1="18" y1="58" x2="30" y2="10" />
+          <line x1="182" y1="16" x2="170" y2="64" />
+          <circle cx="18" cy="58" r="5" />
+          <circle cx="100" cy="37" r="6.5" />
+          <circle cx="182" cy="16" r="4.5" />
+          <circle cx="30" cy="10" r="2.5" />
+          <circle cx="170" cy="64" r="2.5" />
+        </svg>
+        <p class="ask__eyebrow">Somebody, somewhere, right now</p>
 
-        <p class="lede rv mt-lg" style="--d:220">
-          Orion is a web studio for companies that refuse to look like everyone else.
-          Strategy, design, engineering and motion — one team, one standard, no hand-offs.
-        </p>
-
-        <div class="hero__foot rv" style="--d:320">
-          <a class="btn btn--solid" href="contact.html" data-curtain="Contact" data-magnetic="0.32">
-            <span class="btn__lab"><span>Start a project</span><span>Brief us</span></span>
-          </a>
-          <a class="btn btn--ghost" href="#work" data-magnetic="0.24">
-            <span class="btn__lab"><span>See the work</span><span>Six builds</span></span>
-          </a>
-        </div>
-
-        <div class="hero__stats mt-lg rv" style="--d:400">
-          <div class="hero__stat" data-count="48" data-count-dur="1400">
-            <b><span data-count-val>48</span>h</b>
-            <span class="mono">First concept</span>
-          </div>
-          <div class="hero__stat" data-count="100" data-count-dur="1700">
-            <b><span data-count-val>100</span></b>
-            <span class="mono">Lighthouse target</span>
-          </div>
-          <div class="hero__stat" data-count="0.9" data-count-dec="1" data-count-dur="1500">
-            <b><span data-count-val>0.9</span>s</b>
-            <span class="mono">LCP budget</span>
-          </div>
-          <div class="hero__stat" data-count="4.5" data-count-dec="1" data-count-dur="1600">
-            <b><span data-count-val>4.5</span>:1</b>
-            <span class="mono">Contrast floor</span>
-          </div>
-        </div>
-      </div>
-
-      <aside class="hero__aside rv" style="--d:260" data-layer="4" aria-hidden="true">
-        <div class="orbit">
-          <canvas id="orbit"></canvas>
-          <div class="orbit__hud">
-            <span class="mono">FIG. 01 — ARMILLARY, ORIONIS</span>
-            <span class="mono mono--accent">LIVE / 3D</span>
-          </div>
-        </div>
-      </aside>
-    </div>
-
-  </section>
-
-  <!-- ============ MARQUEE ============ -->
-  <div class="marq" data-marquee="ltr" data-marquee-speed="0.05" aria-hidden="true">
-    <div class="marq__track">
-      <div class="marq__grp">
-        <span class="marq__item">Web design</span><span class="marq__star">✳</span>
-        <span class="marq__item marq__item--out">E-commerce</span><span class="marq__star">✳</span>
-        <span class="marq__item">AI applications</span><span class="marq__star">✳</span>
-        <span class="marq__item marq__item--out">WebGL &amp; motion</span><span class="marq__star">✳</span>
-        <span class="marq__item">Design systems</span><span class="marq__star">✳</span>
-        <span class="marq__item marq__item--out">Performance</span><span class="marq__star">✳</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ SERVICES ============ -->
-  <section class="section" id="services" data-sec="SERVICES" data-zone-set="violet" aria-labelledby="services-h" data-3d="6">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell">
-      <div class="sec-head">
-        <span class="sec-head__idx">01</span>
-        <span class="sec-head__label" data-scramble-in>What we do</span>
-        <span class="sec-head__spacer"></span>
-        <span class="sec-head__label">Four disciplines</span>
-      </div>
-
-      <div class="between">
-        <h2 id="services-h" class="display" style="font-size:clamp(2.1rem,6.2vw,4.75rem);max-width:16ch" data-kin="word">
-          Built end to end, by one team
-        </h2>
-        <p class="lede rv" style="--d:120;max-width:34ch">
-          No sub-contracted design. No thrown-over-the-wall build. The people who draw it are the people who ship it.
-        </p>
-      </div>
-
-      <div class="svc mt-xl">
-
-        <article class="svc__row">
-          <span class="svc__idx">01 / 04</span>
-          <h3 class="svc__title">Premium web<br />design &amp; build</h3>
-          <div>
-            <p class="svc__body">
-              Bespoke marketing sites and brand platforms. Art direction first, then a design system
-              engineered so the hundredth page looks as considered as the first.
-            </p>
-            <div class="svc__tags">
-              <span class="svc__tag">Art direction</span><span class="svc__tag">Design systems</span>
-              <span class="svc__tag">Next.js</span><span class="svc__tag">Headless CMS</span>
-            </div>
-          </div>
-          <div class="svc__glyph" aria-hidden="true">
-            <svg class="draw-svg" viewBox="0 0 100 100">
-              <rect x="10" y="14" width="80" height="72" />
-              <line x1="10" y1="32" x2="90" y2="32" />
-              <line x1="34" y1="32" x2="34" y2="86" />
-              <line x1="44" y1="46" x2="80" y2="46" />
-              <line x1="44" y1="58" x2="72" y2="58" />
-              <line x1="44" y1="70" x2="80" y2="70" />
+        <div class="srch" id="srch">
+          <div class="srch__pill" id="ask-box" data-state="idle">
+            <svg class="srch__glass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" /><path d="M12.6 12.6 17 17" stroke-linecap="round" />
+            </svg>
+            <span class="srch__q" id="ask-text" data-placeholder="Search" role="textbox" aria-readonly="true" aria-label="Search query being typed"></span>
+            <span class="srch__caret" aria-hidden="true"></span>
+            <span class="srch__clear" aria-hidden="true">&times;</span>
+            <span class="srch__div" aria-hidden="true"></span>
+            <svg class="srch__act" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M3 10h13" stroke-linecap="round" /><path d="M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </div>
-        </article>
 
-        <article class="svc__row">
-          <span class="svc__idx">02 / 04</span>
-          <h3 class="svc__title">E-commerce<br />ecosystems</h3>
-          <div>
-            <p class="svc__body">
-              Storefronts that merchandise like a flagship. Headless checkout, editorial product pages,
-              and a conversion loop instrumented from first click to repeat order.
-            </p>
-            <div class="svc__tags">
-              <span class="svc__tag">Shopify Hydrogen</span><span class="svc__tag">Headless checkout</span>
-              <span class="svc__tag">Merchandising</span><span class="svc__tag">CRO</span>
+          <div class="srch__drop" id="sugg" role="listbox" aria-label="Suggestions">
+            <div class="srch__row" style="--i:0" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> free</b></span>
+            </div>
+            <div class="srch__row" style="--i:1" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> from scratch</b></span>
+            </div>
+            <div class="srch__row" style="--i:2" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="7" cy="7" r="5" /><path d="M10.6 10.6 14 14" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> that people remember</b></span>
+            </div>
+            <div class="srch__row srch__row--us" style="--i:3" role="option" aria-selected="true">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2.5 12 13.5 4" /><circle cx="2.5" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.9" fill="currentColor" stroke="none" /><circle cx="13.5" cy="4" r="1.4" fill="currentColor" stroke="none" /></svg>
+              <span><b>orion</b><i> — websites that define categories</i></span>
+              <span class="srch__badge">Answer</span>
             </div>
           </div>
-          <div class="svc__glyph" aria-hidden="true">
-            <svg class="draw-svg" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="34" class="svc__spin" />
-              <circle cx="50" cy="50" r="20" />
-              <line x1="50" y1="16" x2="50" y2="84" />
-              <line x1="16" y1="50" x2="84" y2="50" />
-              <circle cx="50" cy="16" r="4" />
-              <circle cx="84" cy="50" r="4" />
-            </svg>
-          </div>
-        </article>
+        </div>
 
-        <article class="svc__row">
-          <span class="svc__idx">03 / 04</span>
-          <h3 class="svc__title">AI-driven<br />applications</h3>
-          <div>
-            <p class="svc__body">
-              Retrieval, generation and automation wired into products people actually use —
-              with the evaluation harness and guardrails that keep them trustworthy in production.
-            </p>
-            <div class="svc__tags">
-              <span class="svc__tag">RAG pipelines</span><span class="svc__tag">LLM tooling</span>
-              <span class="svc__tag">Semantic search</span><span class="svc__tag">Evals</span>
-            </div>
-          </div>
-          <div class="svc__glyph" aria-hidden="true">
-            <svg class="draw-svg" viewBox="0 0 100 100">
-              <circle cx="24" cy="26" r="6" /><circle cx="24" cy="74" r="6" />
-              <circle cx="76" cy="50" r="6" /><circle cx="50" cy="38" r="6" /><circle cx="50" cy="66" r="6" />
-              <line x1="30" y1="26" x2="44" y2="36" /><line x1="30" y1="74" x2="44" y2="64" />
-              <line x1="56" y1="38" x2="70" y2="48" /><line x1="56" y1="66" x2="70" y2="52" />
-              <line x1="50" y1="44" x2="50" y2="60" />
-            </svg>
-          </div>
-        </article>
-
-        <article class="svc__row">
-          <span class="svc__idx">04 / 04</span>
-          <h3 class="svc__title">Motion &amp;<br />3D systems</h3>
-          <div>
-            <p class="svc__body">
-              Scroll choreography, WebGL scenes and interface motion built as a system —
-              budgeted for frame rate, gated behind reduced-motion, never bolted on at the end.
-            </p>
-            <div class="svc__tags">
-              <span class="svc__tag">WebGL / GLSL</span><span class="svc__tag">Scroll systems</span>
-              <span class="svc__tag">Interface motion</span><span class="svc__tag">Prototyping</span>
-            </div>
-          </div>
-          <div class="svc__glyph" aria-hidden="true">
-            <svg class="draw-svg" viewBox="0 0 100 100">
-              <polyline points="10,74 26,74 34,40 46,86 58,24 70,62 78,50 90,50" />
-              <line x1="10" y1="14" x2="10" y2="86" /><line x1="10" y1="86" x2="90" y2="86" />
-            </svg>
-          </div>
-        </article>
-
+        <div class="srch__keys" aria-hidden="true">
+          <span class="srch__key srch__key--go">Search</span>
+          <span class="srch__key">Press Enter</span>
+        </div>
       </div>
 
-      <div class="mt-xl">
-        <a class="arrow-link" href="services.html" data-curtain="Capabilities">
-          Full capability index
-          <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
+      <!-- the one result that matters -->
+      <div class="serp" id="serp" aria-hidden="true">
+        <p class="serp__stat">About 4,120,000,000 results (0.38 seconds)</p>
+        <a class="serp__hit" href="home.html" data-curtain="Orion">
+          <span class="serp__crumb"><span class="serp__fav" aria-hidden="true">✳</span> orion.build &rsaquo; studio</span>
+          <span class="serp__title">Orion — websites that define categories</span>
+          <span class="serp__snip">A web studio for companies that refuse to look like everyone else. Strategy, design, engineering and motion — <b>one team, one standard, no hand-offs</b>. First concept in 48 hours.</span>
         </a>
       </div>
-    </div>
-  </section>
 
-  <!-- ============ STATEMENT ============ -->
-  <section class="section" data-sec="POSITION" data-zone-set="teal" data-3d="7">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell">
-      <p class="stmt__q chroma" data-kin="word">
-        <span class="hi">Most websites are forgettable.</span>
-        That is a decision somebody made —
-        <span class="sig">and so is this.</span>
-      </p>
-      <div class="stmt__by">
-        <span class="mono">Orion — studio position, 001</span>
-        <span class="mono mono--bright">Est. London</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ METHOD (pinned) ============ -->
-  <section class="section method" id="method" data-sec="METHOD" data-zone-set="blue" aria-labelledby="method-h" style="padding-block:0">
-    <div class="method__track" id="method-track">
-      <div class="method__stage">
-        <div class="wash" aria-hidden="true"></div>
-        <div class="shell method__inner">
-          <div class="sec-head">
-            <span class="sec-head__idx">02</span>
-            <span class="sec-head__label" data-scramble-in>The Orion method</span>
-            <span class="sec-head__spacer"></span>
-            <span class="sec-head__label">Four steps</span>
+      <!-- act two: the answer assembling itself -->
+      <div class="build" id="build" aria-hidden="true">
+        <div class="build__frame">
+          <div class="build__wire">
+          <span class="wire wire--line" style="--i:0;top:6%;left:0;width:100%"></span>
+          <span class="wire" style="--i:1;top:11%;left:0;width:16%;height:5%"></span>
+          <span class="wire" style="--i:2;top:11%;right:0;width:22%;height:5%"></span>
+          <span class="wire" style="--i:3;top:28%;left:0;width:58%;height:13%"></span>
+          <span class="wire" style="--i:4;top:44%;left:0;width:44%;height:13%"></span>
+          <span class="wire" style="--i:5;top:62%;left:0;width:30%;height:7%"></span>
+          <span class="wire" style="--i:6;top:30%;right:0;width:34%;height:39%"></span>
+          <span class="wire" style="--i:7;bottom:8%;left:0;width:19%;height:11%"></span>
+          <span class="wire" style="--i:8;bottom:8%;left:20.5%;width:19%;height:11%"></span>
+          <span class="wire" style="--i:9;bottom:8%;left:41%;width:19%;height:11%"></span>
+          <span class="wire wire--line" style="--i:10;bottom:0;left:0;width:100%"></span>
           </div>
-
-          <h2 id="method-h" class="sr-only">The Orion Method</h2>
-
-          <div class="method__grid">
-            <div class="method__nums" aria-hidden="true">
-              <span class="method__num" data-active="true">01</span>
-              <span class="method__num">02</span>
-              <span class="method__num">03</span>
-              <span class="method__num">04</span>
-            </div>
-
-            <div class="method__panels">
-              <article class="method__panel" data-active="true">
-                <span class="mono mono--accent">Step 01 — Week 1</span>
-                <h3 class="mt-lg">Discovery<br />&amp; strategy</h3>
-                <p>We start with the commercial problem, not the moodboard. Stakeholder interviews, analytics forensics, competitor teardown — then a written position we both sign off before a pixel moves.</p>
-                <ul class="method__list">
-                  <li>Audience &amp; intent mapping</li>
-                  <li>Analytics and funnel forensics</li>
-                  <li>Written creative position</li>
-                </ul>
-              </article>
-
-              <article class="method__panel" aria-hidden="true">
-                <span class="mono mono--accent">Step 02 — Weeks 2–3</span>
-                <h3 class="mt-lg">Architecture<br />&amp; design</h3>
-                <p>Information architecture, then art direction. You see a real, interactive design system in the browser — type scale, motion rules, states and edge cases — not a flat picture of a homepage.</p>
-                <ul class="method__list">
-                  <li>Sitemap and content model</li>
-                  <li>Art direction and type system</li>
-                  <li>Interactive component library</li>
-                </ul>
-              </article>
-
-              <article class="method__panel" aria-hidden="true">
-                <span class="mono mono--accent">Step 03 — Weeks 4–6</span>
-                <h3 class="mt-lg">Development<br />&amp; optimisation</h3>
-                <p>Built on a modern framework with a performance budget enforced in CI. Accessibility is checked continuously, not audited at the end when it is expensive to fix.</p>
-                <ul class="method__list">
-                  <li>Component build and CMS wiring</li>
-                  <li>Performance budget in CI</li>
-                  <li>WCAG 2.2 AA verification</li>
-                </ul>
-              </article>
-
-              <article class="method__panel" aria-hidden="true">
-                <span class="mono mono--accent">Step 04 — Week 7</span>
-                <h3 class="mt-lg">Deployment<br />&amp; launch</h3>
-                <p>Staged rollout, redirect maps, analytics and monitoring live from hour one. You get the repository, the documentation and a team that answers the phone afterwards.</p>
-                <ul class="method__list">
-                  <li>Staged release and redirect map</li>
-                  <li>Monitoring and alerting</li>
-                  <li>Handover, docs and training</li>
-                </ul>
-              </article>
-            </div>
-          </div>
-
-          <div class="method__rail" aria-hidden="true">
-            <div class="method__tick" data-fill="true"><span>Discovery</span></div>
-            <div class="method__tick"><span>Design</span></div>
-            <div class="method__tick"><span>Build</span></div>
-            <div class="method__tick"><span>Launch</span></div>
+          <div class="build__label" aria-hidden="true">
+            <span class="mono">FIG. 02 — ASSEMBLING</span>
+            <span class="mono mono--accent">ORION / HOME</span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ============ WORK (horizontal) ============ -->
-  <section class="section work" id="work" data-sec="WORK" data-zone-set="magenta" aria-labelledby="work-h" style="padding-block:0">
-    <div class="work__track" id="work-track">
-      <div class="work__stage">
-        <div class="wash" aria-hidden="true"></div>
-        <div class="work__lane" id="work-lane" data-cursor-text="Scroll" data-cursor-state="drag">
-
-          <div class="work__intro">
-            <div class="sec-head" style="margin-bottom:2rem">
-              <span class="sec-head__idx">03</span>
-              <span class="sec-head__label">Selected work</span>
-            </div>
-            <h2 id="work-h" class="display" style="font-size:clamp(2rem,4.6vw,3.4rem)">Six builds,<br />six industries</h2>
-            <p class="lede mt-lg" style="font-size:1rem">
-              A representative sample set showing range of sector and problem. Named client work is shared under NDA on request.
-            </p>
-            <div class="work__hint">
-              <i aria-hidden="true"></i>
-              <span class="mono">Keep scrolling</span>
-            </div>
-          </div>
-
-          <a class="work__card" href="case-northwind.html" data-curtain="Northwind" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="1.4" data-tint="76,141,255" data-mode="dots"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">SaaS</span>
-              <span class="work__no">01 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Northwind Analytics</h3>
-              <p class="work__desc">A data platform marketing site where every claim is backed by a live, interactive chart rather than a stock illustration.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>0.7s</b><span class="mono">LCP</span></span>
-                <span class="work__metric"><b>100</b><span class="mono">Perf</span></span>
-                <span class="work__metric"><b>12</b><span class="mono">Templates</span></span>
-              </div>
-            </div>
-          </a>
-
-          <a class="work__card" href="case-maison-verre.html" data-curtain="Maison Verre" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="2.7" data-tint="233,201,121" data-mode="cross"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">Luxury retail</span>
-              <span class="work__no">02 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Maison Verre</h3>
-              <p class="work__desc">Headless commerce for a glassware house — editorial product stories, made-to-order configurator, one-page checkout.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>3</b><span class="mono">Markets</span></span>
-                <span class="work__metric"><b>1</b><span class="mono">Page checkout</span></span>
-                <span class="work__metric"><b>AA</b><span class="mono">Contrast</span></span>
-              </div>
-            </div>
-          </a>
-
-          <a class="work__card" href="case-halden.html" data-curtain="Halden" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="3.9" data-tint="217,255,74" data-mode="bars"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">Industrial</span>
-              <span class="work__no">03 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Halden Systems</h3>
-              <p class="work__desc">A 4,000-SKU technical catalogue made genuinely searchable, with spec sheets generated straight from the PIM.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>4k</b><span class="mono">SKUs</span></span>
-                <span class="work__metric"><b>40ms</b><span class="mono">Search</span></span>
-                <span class="work__metric"><b>6</b><span class="mono">Languages</span></span>
-              </div>
-            </div>
-          </a>
-
-          <a class="work__card" href="case-arden.html" data-curtain="Arden" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="5.1" data-tint="63,217,192" data-mode="dots"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">Finance</span>
-              <span class="work__no">04 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Arden Capital</h3>
-              <p class="work__desc">Investor-grade restraint with a compliance-safe content model — every disclosure versioned, dated and auditable.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>100%</b><span class="mono">Audit trail</span></span>
-                <span class="work__metric"><b>2</b><span class="mono">Regulators</span></span>
-                <span class="work__metric"><b>0</b><span class="mono">Blocking JS</span></span>
-              </div>
-            </div>
-          </a>
-
-          <a class="work__card" href="case-kestrel.html" data-curtain="Kestrel" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="6.3" data-tint="169,123,255" data-mode="cross"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">Manufacturing</span>
-              <span class="work__no">05 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Kestrel Manufacturing</h3>
-              <p class="work__desc">A quote-to-order pipeline replacing a PDF-and-email process, with a WebGL configurator for tolerances and finishes.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>9d→2h</b><span class="mono">Quote time</span></span>
-                <span class="work__metric"><b>3D</b><span class="mono">Configurator</span></span>
-                <span class="work__metric"><b>ERP</b><span class="mono">Integrated</span></span>
-              </div>
-            </div>
-          </a>
-
-          <a class="work__card" href="case-meridian.html" data-curtain="Meridian" data-cursor-text="View" data-cursor-state="view">
-            <div class="work__media">
-              <canvas data-halftone="7.8" data-tint="255,111,176" data-mode="dots"></canvas>
-              <span class="work__scrim"></span>
-              <span class="work__tag">Healthcare</span>
-              <span class="work__no">06 / 06</span>
-            </div>
-            <div class="work__body">
-              <h3 class="work__name">Meridian Care</h3>
-              <p class="work__desc">Patient-facing booking built for the hardest case first: low bandwidth, older devices, screen readers, one hand.</p>
-              <div class="work__metrics">
-                <span class="work__metric"><b>AA</b><span class="mono">WCAG 2.2</span></span>
-                <span class="work__metric"><b>2G</b><span class="mono">Tested on</span></span>
-                <span class="work__metric"><b>48kb</b><span class="mono">First load</span></span>
-              </div>
-            </div>
-          </a>
-
-          <div class="work__intro" style="align-self:center">
-            <h3 class="display" style="font-size:clamp(1.6rem,3.4vw,2.6rem)">Your sector<br />is next</h3>
-            <p class="lede mt-lg" style="font-size:1rem">Tell us the commercial problem. We will tell you, honestly, whether we are the right studio for it.</p>
-            <div class="mt-lg row">
-              <a class="btn btn--solid" href="contact.html" data-curtain="Contact" data-magnetic="0.3">
-                <span class="btn__lab"><span>Start a project</span><span>Brief us</span></span>
-              </a>
-              <a class="btn btn--ghost" href="work.html" data-curtain="Work" data-magnetic="0.24">
-                <span class="btn__lab"><span>Full index</span><span>All six</span></span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ STANDARDS ============ -->
-  <section class="section" data-sec="STANDARDS" data-zone-set="acid" aria-labelledby="std-h" data-3d="5">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell">
-      <div class="sec-head">
-        <span class="sec-head__idx">04</span>
-        <span class="sec-head__label" data-scramble-in>Non-negotiables</span>
-        <span class="sec-head__spacer"></span>
-        <span class="sec-head__label">Every build</span>
-      </div>
-
-      <h2 id="std-h" class="display" style="font-size:clamp(2.1rem,6.2vw,4.75rem);max-width:18ch" data-kin="word">
-        The bar does not move for the budget
-      </h2>
-
-      <div class="stds mt-xl">
-        <div class="std" data-count="100" data-count-dur="1800">
-          <span class="std__n"><span data-count-val>100</span></span>
-          <p class="std__l mono mono--bright">Lighthouse performance</p>
-          <p class="std__d">Measured on a throttled mobile profile, not a desktop fibre connection.</p>
-        </div>
-        <div class="std" data-count="0.9" data-count-dec="1" data-count-dur="1600">
-          <span class="std__n"><span data-count-val>0.9</span><small>s</small></span>
-          <p class="std__l mono mono--bright">Largest contentful paint</p>
-          <p class="std__d">A hard budget enforced in CI. A build that misses it does not ship.</p>
-        </div>
-        <div class="std" data-count="4.5" data-count-dec="1" data-count-dur="1700">
-          <span class="std__n"><span data-count-val>4.5</span><small>:1</small></span>
-          <p class="std__l mono mono--bright">Minimum text contrast</p>
-          <p class="std__d">WCAG 2.2 AA, computed numerically for every token pairing — never eyeballed.</p>
-        </div>
-        <div class="std" data-count="48" data-count-dur="1500">
-          <span class="std__n"><span data-count-val>48</span><small>h</small></span>
-          <p class="std__l mono mono--bright">To first concept</p>
-          <p class="std__d">Real direction in the browser within two working days of the kick-off call.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ MARQUEE 2 ============ -->
-  <div class="marq marq--mono" data-marquee="rtl" data-marquee-speed="0.04" aria-hidden="true">
-    <div class="marq__track">
-      <div class="marq__grp">
-        <span class="marq__item">Next.js</span><span class="marq__star">·</span>
-        <span class="marq__item">TypeScript</span><span class="marq__star">·</span>
-        <span class="marq__item">Shopify Hydrogen</span><span class="marq__star">·</span>
-        <span class="marq__item">WebGL / GLSL</span><span class="marq__star">·</span>
-        <span class="marq__item">Sanity</span><span class="marq__star">·</span>
-        <span class="marq__item">Postgres</span><span class="marq__star">·</span>
-        <span class="marq__item">Vercel</span><span class="marq__star">·</span>
-        <span class="marq__item">Playwright</span><span class="marq__star">·</span>
-        <span class="marq__item">Retrieval augmented generation</span><span class="marq__star">·</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ CONTACT ============ -->
-  <section class="section" id="contact" data-sec="CONTACT" data-zone-set="flare" aria-labelledby="contact-h" data-3d="4">
-      <div class="wash wash--alt" aria-hidden="true"></div>
-    <div class="shell contact__grid">
-      <div>
-        <div class="sec-head">
-          <span class="sec-head__idx">05</span>
-          <span class="sec-head__label" data-scramble-in>Start here</span>
-        </div>
-        <h2 id="contact-h" class="contact__h" data-kin="word">Let's build<br />something<br />permanent</h2>
-        <p class="lede mt-lg">
-          Tell us what you are trying to achieve commercially. You will hear back from a person who
-          will actually work on it, within one business day.
+      <!-- the way in -->
+      <div class="intro__enter" id="intro-enter">
+        <p class="mono mono--accent">Answer ready</p>
+        <h1 class="display intro__word">Orion</h1>
+        <p class="lede intro__tag">
+          Websites that define categories. Strategy, design, engineering and
+          motion — one team, one standard, no hand-offs.
         </p>
-
-        <dl class="contact__dl">
-          <div class="contact__row"><dt class="mono">Email</dt><dd><a href="mailto:studio@orion.build">studio@orion.build</a></dd></div>
-          <div class="contact__row"><dt class="mono">Studio</dt><dd>London, United Kingdom — working worldwide</dd></div>
-          <div class="contact__row"><dt class="mono">Response</dt><dd>Within one business day, always from a human</dd></div>
-          <div class="contact__row"><dt class="mono">Engagements</dt><dd>Project builds, retainers and rescue work</dd></div>
-        </dl>
+        <a class="btn btn--solid mt-lg" href="home.html" data-curtain="Orion" data-magnetic="0.32">
+          <span class="btn__lab"><span>Enter the site</span><span>See the answer</span></span>
+        </a>
       </div>
 
-      <div>
-        <p class="form__alert" id="brief-alert" role="alert" hidden></p>
-
-        <form class="form" id="brief" novalidate>
-          <div class="form__row">
-            <div class="field">
-              <input class="field__input" type="text" id="brief-name" name="name" autocomplete="name" required />
-              <label class="field__label" for="brief-name">Name</label>
-              <span class="field__bar" aria-hidden="true"></span>
-              <span class="field__err" id="brief-name-err" aria-live="polite"></span>
-            </div>
-            <div class="field">
-              <input class="field__input" type="email" id="brief-email" name="email" autocomplete="email" required />
-              <label class="field__label" for="brief-email">Business email</label>
-              <span class="field__bar" aria-hidden="true"></span>
-              <span class="field__err" aria-live="polite"></span>
-            </div>
-          </div>
-
-          <div class="form__row">
-            <div class="field">
-              <input class="field__input" type="text" id="brief-company" name="company" autocomplete="organization" />
-              <label class="field__label" for="brief-company">Company (optional)</label>
-              <span class="field__bar" aria-hidden="true"></span>
-              <span class="field__err" aria-live="polite"></span>
-            </div>
-            <div class="field">
-              <select class="field__select" id="brief-budget" name="budget" required>
-                <option value="" selected disabled></option>
-                <option value="£10k – £25k">£10k – £25k</option>
-                <option value="£25k – £50k">£25k – £50k</option>
-                <option value="£50k – £100k">£50k – £100k</option>
-                <option value="£100k+">£100k+</option>
-                <option value="Retainer">Ongoing retainer</option>
-              </select>
-              <label class="field__label" for="brief-budget">Budget tier</label>
-              <svg class="field__chev" width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5" /></svg>
-              <span class="field__bar" aria-hidden="true"></span>
-              <span class="field__err" aria-live="polite"></span>
-            </div>
-          </div>
-
-          <div class="field">
-            <textarea class="field__area" id="brief-details" name="details" rows="5" required></textarea>
-            <label class="field__label" for="brief-details">Project details</label>
-            <span class="field__bar" aria-hidden="true"></span>
-            <span class="field__err" aria-live="polite"></span>
-          </div>
-
-          <div class="row" style="justify-content:space-between;align-items:center">
-            <button class="btn btn--solid" type="submit" data-magnetic="0.26">
-              <span class="btn__lab"><span>Assemble brief</span><span>Transmit</span></span>
-            </button>
-            <p class="form__note" style="max-width:22ch">No tracking, no autoresponder, no sales sequence.</p>
-          </div>
-        </form>
-
-        <div id="brief-success" tabindex="-1" hidden>
-          <div class="terminal">
-            <div class="terminal__bar">
-              <span class="terminal__dot terminal__dot--live"></span>
-              <span class="terminal__dot"></span>
-              <span class="terminal__dot"></span>
-              <span class="mono" style="margin-left:.5rem">brief.txt — assembled locally</span>
-            </div>
-            <pre class="terminal__out" id="brief-out"></pre>
-          </div>
-          <p class="form__note mt-lg">
-            This page has no server. Your brief was assembled in the browser — open it in your mail
-            client to send it, or copy it anywhere you like.
-          </p>
-          <div class="row mt-lg">
-            <a class="btn btn--solid" id="brief-mail" href="#">
-              <span class="btn__lab"><span>Open in mail app</span><span>Send it</span></span>
-            </a>
-            <button class="btn btn--ghost" id="brief-reset" type="button">
-              <span class="btn__lab"><span>Edit brief</span><span>Go back</span></span>
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
+    <div class="invert" id="invert" aria-hidden="true"></div>
   </section>
-
 </main>
 
-<!-- ============ ASCII BAND ============ -->
-<div class="band" aria-hidden="true">
-  <pre class="band__pre" id="ascii" data-rows="22"></pre>
-</div>
-
-<!-- ============ FOOTER ============ -->
-<footer class="foot">
-  <div class="shell">
-    <div class="foot__cols">
-      <div>
-        <a class="brand" href="index.html" data-curtain="Orion" aria-label="Orion — home">
-          <svg class="brand__belt" data-belt viewBox="0 0 46 22" aria-hidden="true">
-            <line x1="6" y1="16.5" x2="40" y2="5.5" />
-            <circle cx="6" cy="16.5" r="2.9" />
-            <circle cx="23" cy="11" r="3.2" />
-            <circle cx="40" cy="5.5" r="2.5" />
-          </svg>
-          <span class="brand__word">Orion</span>
-        </a>
-        <p class="lede mt-lg" style="font-size:.9375rem;max-width:32ch">
-          A web studio for companies that refuse to look like everyone else.
-        </p>
-        <a class="arrow-link mt-lg" href="mailto:studio@orion.build">
-          studio@orion.build
-          <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
-        </a>
-      </div>
-
-      <nav aria-label="Sections">
-        <h2 class="foot__h mono">Index</h2>
-        <ul>
-          <li class="foot__li"><a href="#services">Services</a></li>
-          <li class="foot__li"><a href="#method">Method</a></li>
-          <li class="foot__li"><a href="#work">Work</a></li>
-          <li class="foot__li"><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-
-      <nav aria-label="Pages">
-        <h2 class="foot__h mono">Pages</h2>
-        <ul>
-          <li class="foot__li"><a href="intro.html" data-curtain="Ask">Intro sequence</a></li>
-          <li class="foot__li"><a href="index.html" data-curtain="Orion">Home</a></li>
-          <li class="foot__li"><a href="about.html" data-curtain="Studio">Studio</a></li>
-          <li class="foot__li"><a href="services.html" data-curtain="Capabilities">Capabilities</a></li>
-          <li class="foot__li"><a href="work.html" data-curtain="Work">Work</a></li>
-          <li class="foot__li"><a href="journal.html" data-curtain="Journal">Journal</a></li>
-          <li class="foot__li"><a href="contact.html" data-curtain="Contact">Contact</a></li>
-        </ul>
-      </nav>
-
-      <nav aria-label="Selected work">
-        <h2 class="foot__h mono">Selected work</h2>
-        <ul>
-          <li class="foot__li"><a href="case-northwind.html" data-curtain="Northwind">Northwind Analytics</a></li>
-          <li class="foot__li"><a href="case-maison-verre.html" data-curtain="Maison Verre">Maison Verre</a></li>
-          <li class="foot__li"><a href="case-halden.html" data-curtain="Halden">Halden Systems</a></li>
-          <li class="foot__li"><a href="case-arden.html" data-curtain="Arden">Arden Capital</a></li>
-          <li class="foot__li"><a href="case-kestrel.html" data-curtain="Kestrel">Kestrel Manufacturing</a></li>
-          <li class="foot__li"><a href="case-meridian.html" data-curtain="Meridian">Meridian Care</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-
-  <span class="foot__word" aria-hidden="true">Orion</span>
-
-  <div class="shell">
-    <div class="foot__legal">
-      <span class="mono">© <span data-year>2026</span> Orion Studio Ltd. · Registered in England &amp; Wales</span>
-      <span class="row" style="gap:1.5rem">
-        <a class="mono" href="privacy.html" data-curtain="Privacy" style="color:var(--ash)">Privacy</a>
-        <a class="mono" href="terms.html" data-curtain="Terms" style="color:var(--ash)">Terms</a>
-        <a class="mono" href="mailto:studio@orion.build" style="color:var(--ash)">studio@orion.build</a>
-      </span>
-      <span class="mono">Built by hand — no framework, no tracker</span>
-    </div>
-  </div>
-</footer>
+<div class="intro__prog" id="intro-prog" aria-hidden="true"><i></i></div>
 
 <script src="assets/js/app.js" defer></script>
 </body>

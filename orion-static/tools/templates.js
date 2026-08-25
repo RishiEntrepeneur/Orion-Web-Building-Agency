@@ -7,7 +7,7 @@ function head(opts) {
     <div class="wash" aria-hidden="true"></div>
     <div class="shell">
       <nav class="crumb mono" aria-label="Breadcrumb">
-        <a href="index.html" data-curtain="Orion">Orion</a><span aria-hidden="true">/</span>${
+        <a href="home.html" data-curtain="Orion">Orion</a><span aria-hidden="true">/</span>${
           opts.parent ? `<a href="${opts.parent.href}" data-curtain="${opts.parent.label}">${opts.parent.label}</a><span aria-hidden="true">/</span>` : ""
         }<span class="mono--bright">${opts.crumb}</span>
       </nav>

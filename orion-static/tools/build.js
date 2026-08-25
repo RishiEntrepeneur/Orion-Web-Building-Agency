@@ -1,4 +1,5 @@
-/* Regenerates every page except index.html, which is the source of truth for
+/* Regenerates every page except index.html (the intro landing page) and
+   home.html, which is the source of truth for
    the shared chrome. Run: node tools/build.js */
 const fs = require("fs");
 const path = require("path");
@@ -9,12 +10,12 @@ const CASES = require("./data/cases.js");
 const JOURNAL = require("./data/journal.js");
 const body = (f) => fs.readFileSync(path.join(__dirname, "bodies", f), "utf8");
 
-/* the contact form is lifted straight out of index.html so it never drifts */
-const index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+/* the contact form is lifted straight out of home.html so it never drifts */
+const index = fs.readFileSync(path.join(ROOT, "home.html"), "utf8");
 const start = index.indexOf('<section class="section" id="contact"');
 const endMark = "\n  </section>";
 const end = index.indexOf(endMark, start);
-if (start < 0 || end < 0) throw new Error("cannot lift the contact section from index.html");
+if (start < 0 || end < 0) throw new Error("cannot lift the contact section from home.html");
 const contactBlock = index.slice(start, end + endMark.length)
   .replace('<span class="sec-head__idx">05</span>', '<span class="sec-head__idx">01</span>')
   .replace('data-sec="CONTACT"', 'data-sec="BRIEF"')
@@ -97,7 +98,7 @@ const PAGES = fs.readdirSync(ROOT).filter((f) => f.endsWith(".html") && f !== "4
 const today = process.env.BUILD_DATE || "2026-08-25";
 const urls = PAGES.map((f) => {
   const loc = "https://orion.build/" + (f === "index.html" ? "" : f);
-  const pri = f === "index.html" ? "1.0" : f.startsWith("case-") || f.startsWith("journal-") ? "0.7" : "0.8";
+  const pri = f === "index.html" ? "1.0" : f === "home.html" ? "0.9" : f.startsWith("case-") || f.startsWith("journal-") ? "0.7" : "0.8";
   return `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><priority>${pri}</priority></url>`;
 }).join("\n");
 fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
@@ -113,4 +114,4 @@ Allow: /
 Sitemap: https://orion.build/sitemap.xml
 `);
 console.log("wrote sitemap.xml (" + PAGES.length + " urls) and robots.txt");
-console.log("\n" + (PAGES.length + 1) + " pages generated from index.html's chrome");
+console.log("\n" + (PAGES.length + 1) + " pages generated from home.html's chrome");
