@@ -2169,6 +2169,168 @@
     });
   }
 
+
+  /* ============================================================
+     33. INTRO — the typed question, then the build
+     A cue list evaluated against elapsed time, so "skip" is just
+     "run every cue that has not fired yet and jump to the end".
+     ============================================================ */
+  function initIntro() {
+    var stage = $("#intro-stage");
+    if (!stage) return;
+
+    var QUERY = "How to build a website";
+    var box = $("#ask-box");
+    var text = $("#ask-text");
+    var rule = $("#ask-rule");
+    var ask = $("#ask");
+    var sugg = $("#sugg");
+    var rows = $$(".sugg__row", sugg);
+    var build = $("#build");
+    var wires = $$(".wire", build);
+    var enter = $("#intro-enter");
+    var prog = $("#intro-prog i");
+    var status = $("#intro-status");
+
+    var ZONE_FILL = ["--gold", "--violet", "--teal", "--blue", "--magenta", "--acid", "--flare"];
+
+    /* Reduced motion gets the destination, not the journey. */
+    if (REDUCED) {
+      text.textContent = QUERY;
+      ask.setAttribute("data-in", "true");
+      rule.setAttribute("data-in", "true");
+      box.setAttribute("data-state", "sent");
+      rows.forEach(function (r) { r.setAttribute("data-in", "true"); });
+      build.setAttribute("data-in", "true");
+      wires.forEach(function (w, i) {
+        w.setAttribute("data-in", "true");
+        w.setAttribute("data-fill", "true");
+        w.style.setProperty("--wire-fill", "var(" + ZONE_FILL[i % ZONE_FILL.length] + ")");
+      });
+      enter.setAttribute("data-in", "true");
+      if (prog) prog.style.transform = "scaleX(1)";
+      if (status) status.textContent = "Ready";
+      return;
+    }
+
+    /* --- typing with human-ish rhythm ------------------------------- */
+    var typed = 0;
+    var nextKeyAt = 0;
+    function keyDelay(ch, prev) {
+      if (prev === " ") return 40 + hash2(typed, 3.1) * 40;       /* first letter of a word is quick */
+      if (ch === " ") return 90 + hash2(typed, 7.7) * 70;          /* the space before it is not */
+      return 45 + hash2(typed, 1.3) * 75;
+    }
+
+    /* --- the cue list ------------------------------------------------ */
+    var DONE_AT = 7600;
+    var cues = [
+      [0,    function () { rule.setAttribute("data-in", "true"); if (status) status.textContent = "Listening"; }],
+      [420,  function () { ask.setAttribute("data-in", "true"); }],
+      [900,  function () { typing = true; if (status) status.textContent = "Typing"; }],
+      [2500, function () {
+        typing = false;
+        text.textContent = QUERY;
+        showSuggestions(QUERY.length);
+        box.setAttribute("data-state", "armed");
+      }],
+      [2900, function () {
+        rows.forEach(function (r, i) { if (i < rows.length - 1) r.setAttribute("data-gone", "true"); });
+        var us = rows[rows.length - 1];
+        if (us) us.setAttribute("data-hit", "true");
+      }],
+      [3250, function () {
+        box.setAttribute("data-state", "sent");
+        if (status) status.textContent = "Answering";
+        if (window.OrionAudio) window.OrionAudio.chord([392.00, 523.25, 659.25], 0.05);
+      }],
+      [3850, function () {
+        ask.setAttribute("data-out", "true");
+        sugg.setAttribute("data-out", "true");
+        sugg.style.opacity = "0";
+      }],
+      [4250, function () {
+        build.setAttribute("data-in", "true");
+        wires.forEach(function (w) { w.setAttribute("data-in", "true"); });
+        if (window.OrionAudio) window.OrionAudio.whoosh();
+      }],
+      [5500, function () {
+        wires.forEach(function (w, i) {
+          w.setAttribute("data-fill", "true");
+          w.style.setProperty("--wire-fill", "var(" + ZONE_FILL[i % ZONE_FILL.length] + ")");
+        });
+        if (status) status.textContent = "Building";
+        if (window.OrionAudio) window.OrionAudio.chord([220.00, 329.63, 440.00, 659.25], 0.08);
+      }],
+      [6600, function () { build.setAttribute("data-rush", "true"); }],
+      [7100, function () {
+        enter.setAttribute("data-in", "true");
+        if (status) status.textContent = "Ready";
+        if (window.OrionAudio) window.OrionAudio.success();
+      }]
+    ];
+
+    var typing = false;
+    var fired = 0;
+    var start = 0;
+    var finished = false;
+
+    function fireThrough(ms) {
+      while (fired < cues.length && cues[fired][0] <= ms) {
+        try { cues[fired][1](); } catch (e) {}
+        fired++;
+      }
+    }
+
+    var tick = addWriter(function (dt, t) {
+      if (!start) start = t;
+      var ms = t - start;
+      fireThrough(ms);
+
+      if (typing && typed < QUERY.length && ms >= nextKeyAt) {
+        var ch = QUERY[typed];
+        typed++;
+        text.textContent = QUERY.slice(0, typed);
+        nextKeyAt = ms + keyDelay(ch, QUERY[typed - 2]);
+        if (window.OrionAudio && window.OrionAudio.on) window.OrionAudio.hover();
+        showSuggestions(typed);
+      }
+
+      if (prog) prog.style.transform = "scaleX(" + clamp(ms / DONE_AT, 0, 1).toFixed(4) + ")";
+      if (ms >= DONE_AT && !finished) { finished = true; removeTicker(tick); }
+    });
+
+    /* rows appear as the query gets specific enough to autocomplete */
+    var shown = 0;
+    function showSuggestions(len) {
+      var want = len < 8 ? 0 : Math.min(rows.length, Math.floor((len - 6) / 3));
+      while (shown < want) { rows[shown].setAttribute("data-in", "true"); shown++; }
+    }
+
+    function skip() {
+      typing = false;
+      typed = QUERY.length;
+      text.textContent = QUERY;
+      showSuggestions(QUERY.length);
+      fireThrough(DONE_AT);
+      if (prog) prog.style.transform = "scaleX(1)";
+      removeTicker(tick);
+      finished = true;
+    }
+
+    /* "Skip" means skip to the site, so it stays an ordinary link and the page
+       curtain handles it. Escape jumps to the end of the sequence instead, for
+       anyone who wants to see where it lands without leaving. */
+    on(document, "keydown", function (e) {
+      var onControl = e.target && e.target.closest && e.target.closest("a, button, input, textarea, select");
+      if (e.key === "Escape") { e.preventDefault(); skip(); return; }
+      if (e.key === "Enter" && !onControl) {
+        e.preventDefault();
+        if (finished) location.href = "index.html"; else skip();
+      }
+    });
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -2202,6 +2364,7 @@
     initFaq();
     initAudio();
     initToc();
+    initIntro();
     init3D();
     initCard3D();
     initOrbit();
