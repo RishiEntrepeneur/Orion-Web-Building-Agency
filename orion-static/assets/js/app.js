@@ -2179,13 +2179,16 @@
     var stage = $("#intro-stage");
     if (!stage) return;
 
-    var QUERY = "How to build a website";
+    var QUERY = "how to build a website";
+    var root = document.documentElement;
     var box = $("#ask-box");
     var text = $("#ask-text");
-    var rule = $("#ask-rule");
     var ask = $("#ask");
-    var sugg = $("#sugg");
-    var rows = $$(".sugg__row", sugg);
+    var srch = $("#srch");
+    var rows = $$(".srch__row", $("#sugg"));
+    var serp = $("#serp");
+    var paper = $("#paper");
+    var invert = $("#invert");
     var build = $("#build");
     var wires = $$(".wire", build);
     var enter = $("#intro-enter");
@@ -2194,13 +2197,25 @@
 
     var ZONE_FILL = ["--gold", "--violet", "--teal", "--blue", "--magenta", "--acid", "--flare"];
 
+    /* Two separate things: the fixed chrome has to flip while the circle is
+       mid-sweep (it paints above the invert layer), but the light ground must
+       survive until the circle has actually covered it — otherwise the paper
+       fades out underneath and there is nothing left to sweep over. */
+    function flipChrome() { root.removeAttribute("data-act"); }
+    function dropPaper() { if (paper) paper.setAttribute("data-gone", "true"); }
+
     /* Reduced motion gets the destination, not the journey. */
     if (REDUCED) {
       text.textContent = QUERY;
       ask.setAttribute("data-in", "true");
-      rule.setAttribute("data-in", "true");
       box.setAttribute("data-state", "sent");
+      ask.setAttribute("data-searched", "true");
       rows.forEach(function (r) { r.setAttribute("data-in", "true"); });
+      serp.setAttribute("data-in", "true");
+      serp.removeAttribute("aria-hidden");
+      flipChrome();
+      dropPaper();
+      if (invert) { invert.setAttribute("data-on", "true"); invert.setAttribute("data-off", "true"); }
       build.setAttribute("data-in", "true");
       wires.forEach(function (w, i) {
         w.setAttribute("data-in", "true");
@@ -2213,64 +2228,86 @@
       return;
     }
 
+    root.setAttribute("data-act", "ask");
+
     /* --- typing with human-ish rhythm ------------------------------- */
     var typed = 0;
     var nextKeyAt = 0;
     function keyDelay(ch, prev) {
-      if (prev === " ") return 40 + hash2(typed, 3.1) * 40;       /* first letter of a word is quick */
-      if (ch === " ") return 90 + hash2(typed, 7.7) * 70;          /* the space before it is not */
-      return 45 + hash2(typed, 1.3) * 75;
+      if (prev === " ") return 38 + hash2(typed, 3.1) * 42;
+      if (ch === " ") return 85 + hash2(typed, 7.7) * 70;
+      return 42 + hash2(typed, 1.3) * 78;
     }
 
-    /* --- the cue list ------------------------------------------------ */
-    var DONE_AT = 7600;
+    /* rows appear once the query is specific enough to complete */
+    var shown = 0;
+    function showSuggestions(len) {
+      if (len >= 6) srch.setAttribute("data-open", "true");
+      var want = len < 6 ? 0 : Math.min(rows.length, Math.floor((len - 4) / 4));
+      while (shown < want) { rows[shown].setAttribute("data-in", "true"); shown++; }
+    }
+
+    var DONE_AT = 8550;
+    var typing = false;
     var cues = [
-      [0,    function () { rule.setAttribute("data-in", "true"); if (status) status.textContent = "Listening"; }],
-      [420,  function () { ask.setAttribute("data-in", "true"); }],
-      [900,  function () { typing = true; if (status) status.textContent = "Typing"; }],
+      [0,    function () { if (status) status.textContent = "Listening"; }],
+      [260,  function () { ask.setAttribute("data-in", "true"); }],
+      [760,  function () { typing = true; box.setAttribute("data-state", "typing"); if (status) status.textContent = "Typing"; }],
       [2500, function () {
         typing = false;
         text.textContent = QUERY;
         showSuggestions(QUERY.length);
         box.setAttribute("data-state", "armed");
+        ask.setAttribute("data-armed", "true");
       }],
-      [2900, function () {
+      [2950, function () {
         rows.forEach(function (r, i) { if (i < rows.length - 1) r.setAttribute("data-gone", "true"); });
-        var us = rows[rows.length - 1];
-        if (us) us.setAttribute("data-hit", "true");
       }],
       [3250, function () {
         box.setAttribute("data-state", "sent");
-        if (status) status.textContent = "Answering";
-        if (window.OrionAudio) window.OrionAudio.chord([392.00, 523.25, 659.25], 0.05);
+        if (status) status.textContent = "Searching";
+        if (window.OrionAudio) window.OrionAudio.click();
       }],
-      [3850, function () {
-        ask.setAttribute("data-out", "true");
-        sugg.setAttribute("data-out", "true");
-        sugg.style.opacity = "0";
+      [3700, function () {
+        /* the query stays in the field — a results page never empties it */
+        ask.setAttribute("data-searched", "true");
+        srch.removeAttribute("data-open");
+        serp.setAttribute("data-in", "true");
+        serp.removeAttribute("aria-hidden");
+        if (status) status.textContent = "One result";
       }],
-      [4250, function () {
-        build.setAttribute("data-in", "true");
-        wires.forEach(function (w) { w.setAttribute("data-in", "true"); });
+      [5000, function () {
+        if (invert) invert.setAttribute("data-on", "true");
         if (window.OrionAudio) window.OrionAudio.whoosh();
       }],
-      [5500, function () {
+      /* The bar paints above the invert layer, so it has to flip — but only once
+         the circle has actually reached the top corners, or it is grey-on-white
+         for half a second. Centre is 50%/45%, so the corners fall at about 81%
+         of the final radius, which the eased tween reaches around here. */
+      [5600, function () { flipChrome(); }],
+      [5760, function () {
+        dropPaper();
+        serp.removeAttribute("data-in");
+        if (invert) invert.setAttribute("data-off", "true");
+        build.setAttribute("data-in", "true");
+        wires.forEach(function (w) { w.setAttribute("data-in", "true"); });
+        if (status) status.textContent = "Building";
+      }],
+      [6950, function () {
         wires.forEach(function (w, i) {
           w.setAttribute("data-fill", "true");
           w.style.setProperty("--wire-fill", "var(" + ZONE_FILL[i % ZONE_FILL.length] + ")");
         });
-        if (status) status.textContent = "Building";
         if (window.OrionAudio) window.OrionAudio.chord([220.00, 329.63, 440.00, 659.25], 0.08);
       }],
-      [6600, function () { build.setAttribute("data-rush", "true"); }],
-      [7100, function () {
+      [7850, function () { build.setAttribute("data-rush", "true"); }],
+      [8300, function () {
         enter.setAttribute("data-in", "true");
         if (status) status.textContent = "Ready";
         if (window.OrionAudio) window.OrionAudio.success();
       }]
     ];
 
-    var typing = false;
     var fired = 0;
     var start = 0;
     var finished = false;
@@ -2299,13 +2336,6 @@
       if (prog) prog.style.transform = "scaleX(" + clamp(ms / DONE_AT, 0, 1).toFixed(4) + ")";
       if (ms >= DONE_AT && !finished) { finished = true; removeTicker(tick); }
     });
-
-    /* rows appear as the query gets specific enough to autocomplete */
-    var shown = 0;
-    function showSuggestions(len) {
-      var want = len < 8 ? 0 : Math.min(rows.length, Math.floor((len - 6) / 3));
-      while (shown < want) { rows[shown].setAttribute("data-in", "true"); shown++; }
-    }
 
     function skip() {
       typing = false;

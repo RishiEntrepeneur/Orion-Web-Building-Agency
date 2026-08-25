@@ -77,29 +77,73 @@
   <section class="intro" data-sec="ASK" data-zone-set="gold">
     <div class="intro__field" aria-hidden="true"><canvas id="flow"></canvas></div>
     <div class="wash" aria-hidden="true"></div>
+    <div class="paper" id="paper" aria-hidden="true"></div>
 
     <div class="intro__stage" id="intro-stage">
 
-      <!-- act one: the question -->
+      <!-- act one: the question, on a light search surface -->
       <div id="ask" class="ask">
-        <span class="ask__rule" id="ask-rule" aria-hidden="true"></span>
+        <svg class="ask__mark" viewBox="0 0 200 74" aria-hidden="true" fill="none">
+          <line x1="18" y1="58" x2="182" y2="16" />
+          <line x1="18" y1="58" x2="30" y2="10" />
+          <line x1="182" y1="16" x2="170" y2="64" />
+          <circle cx="18" cy="58" r="5" />
+          <circle cx="100" cy="37" r="6.5" />
+          <circle cx="182" cy="16" r="4.5" />
+          <circle cx="30" cy="10" r="2.5" />
+          <circle cx="170" cy="64" r="2.5" />
+        </svg>
+        <p class="ask__eyebrow">Somebody, somewhere, right now</p>
 
-        <p class="mono" style="margin-top:1.5rem">Somebody, somewhere, right now</p>
+        <div class="srch" id="srch">
+          <div class="srch__pill" id="ask-box" data-state="idle">
+            <svg class="srch__glass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" /><path d="M12.6 12.6 17 17" stroke-linecap="round" />
+            </svg>
+            <span class="srch__q" id="ask-text" data-placeholder="Search" role="textbox" aria-readonly="true" aria-label="Search query being typed"></span>
+            <span class="srch__caret" aria-hidden="true"></span>
+            <span class="srch__clear" aria-hidden="true">&times;</span>
+            <span class="srch__div" aria-hidden="true"></span>
+            <svg class="srch__act" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+              <path d="M3 10h13" stroke-linecap="round" /><path d="M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
 
-        <div class="ask__box" id="ask-box" data-state="idle">
-          <span class="ask__chev" aria-hidden="true">&gt;</span>
-          <span class="ask__text" id="ask-text" data-placeholder="Ask anything" role="textbox" aria-readonly="true" aria-label="Search query being typed"></span>
-          <span class="ask__caret" aria-hidden="true"></span>
-          <span class="ask__key" aria-hidden="true">Enter</span>
-          <span class="ask__scan" aria-hidden="true"><i></i></span>
+          <div class="srch__drop" id="sugg" role="listbox" aria-label="Suggestions">
+            <div class="srch__row" style="--i:0" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> free</b></span>
+            </div>
+            <div class="srch__row" style="--i:1" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> from scratch</b></span>
+            </div>
+            <div class="srch__row" style="--i:2" role="option" aria-selected="false">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="7" cy="7" r="5" /><path d="M10.6 10.6 14 14" stroke-linecap="round" /></svg>
+              <span><i>how to build a website</i><b> that people remember</b></span>
+            </div>
+            <div class="srch__row srch__row--us" style="--i:3" role="option" aria-selected="true">
+              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2.5 12 13.5 4" /><circle cx="2.5" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.9" fill="currentColor" stroke="none" /><circle cx="13.5" cy="4" r="1.4" fill="currentColor" stroke="none" /></svg>
+              <span><b>orion</b><i> — websites that define categories</i></span>
+              <span class="srch__badge">Answer</span>
+            </div>
+          </div>
         </div>
 
-        <div class="sugg" id="sugg" role="listbox" aria-label="Suggestions">
-          <div class="sugg__row" style="--i:0" role="option" aria-selected="false"><span class="sugg__ico">↗</span>how to build a website free</div>
-          <div class="sugg__row" style="--i:1" role="option" aria-selected="false"><span class="sugg__ico">↗</span>how to build a website from scratch</div>
-          <div class="sugg__row" style="--i:2" role="option" aria-selected="false"><span class="sugg__ico">↗</span>how to build a website that does not look like every other website</div>
-          <div class="sugg__row sugg__row--us" style="--i:3" role="option" aria-selected="true"><span class="sugg__ico">✳</span>orion — websites that define categories<span class="sugg__badge">Answer</span></div>
+        <div class="srch__keys" aria-hidden="true">
+          <span class="srch__key srch__key--go">Search</span>
+          <span class="srch__key">Press Enter</span>
         </div>
+      </div>
+
+      <!-- the one result that matters -->
+      <div class="serp" id="serp" aria-hidden="true">
+        <p class="serp__stat">About 4,120,000,000 results (0.38 seconds)</p>
+        <a class="serp__hit" href="index.html" data-curtain="Orion">
+          <span class="serp__crumb"><span class="serp__fav" aria-hidden="true">✳</span> orion.build &rsaquo; studio</span>
+          <span class="serp__title">Orion — websites that define categories</span>
+          <span class="serp__snip">A web studio for companies that refuse to look like everyone else. Strategy, design, engineering and motion — <b>one team, one standard, no hand-offs</b>. First concept in 48 hours.</span>
+        </a>
       </div>
 
       <!-- act two: the answer assembling itself -->
@@ -139,6 +183,7 @@
       </div>
 
     </div>
+    <div class="invert" id="invert" aria-hidden="true"></div>
   </section>
 </main>
 
