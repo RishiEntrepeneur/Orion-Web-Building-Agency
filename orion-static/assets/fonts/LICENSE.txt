@@ -1,0 +1,11 @@
+Fonts in this directory are licensed under the SIL Open Font License, Version 1.1.
+
+  Anton            — Copyright (c) The Anton Project Authors
+  Inter Tight      — Copyright (c) The Inter Project Authors
+  JetBrains Mono   — Copyright (c) The JetBrains Mono Project Authors
+
+Full licence text: https://openfontlicense.org/open-font-license-official-text/
+
+These are the Latin subsets served by Google Fonts, redistributed here so the site
+makes no third-party network request. Redistribution is permitted under the OFL
+provided this notice is retained.
