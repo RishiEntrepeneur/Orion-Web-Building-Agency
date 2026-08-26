@@ -173,7 +173,9 @@
   font-size: clamp(1.4rem, 3.2vw, 2.4rem);
   white-space: nowrap;
 }
-.strip__dot { color: var(--accent); }
+/* the ember is a signature on bone; on the near-black strip it needs to be
+   a lighter tint of itself to stay legible */
+.strip__dot { color: #d4794f; }
 
 .quotes { position: relative; min-height: clamp(9rem, 20vh, 12rem); }
 .quote {

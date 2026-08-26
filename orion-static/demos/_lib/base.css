@@ -60,6 +60,10 @@
   --accent:  #1f3a2e;
   --on-accent: #f7f5ef;
   --deep:    #101317;
+  /* The footer sits on --deep whatever the rest of the palette does, so its
+     text derives from its own token. A dark demo setting --paper to near
+     black was otherwise painting the footer black on black. */
+  --foot-ink: #f4f2ec;
 
   --f-display: "Fraunces", Georgia, "Times New Roman", serif;
   --f-body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -312,22 +316,25 @@ p { max-width: 68ch; text-wrap: pretty; }
 .mark__name em { font-style: italic; display: block; font-size: 0.78em; color: var(--muted); }
 
 .nav { display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.2rem); }
-.nav a {
+.nav a:not(.btn) {
   font-family: var(--f-mono); font-size: 0.6875rem;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
   padding-block: 0.3rem; position: relative;
   transition: color 0.3s var(--ease);
 }
-.nav a::after {
+.nav a:not(.btn)::after {
   content: ""; position: absolute; inset: auto 0 0 0; height: 1px;
   background: var(--accent); transform: scaleX(0); transform-origin: right;
   transition: transform 0.45s var(--ease);
 }
-.nav a:hover, .nav a[aria-current="page"], .nav a[aria-current="true"] { color: var(--ink); }
-.nav a:hover::after, .nav a[aria-current="page"]::after, .nav a[aria-current="true"]::after {
+.nav a:not(.btn):hover,
+.nav a:not(.btn)[aria-current="page"],
+.nav a:not(.btn)[aria-current="true"] { color: var(--ink); }
+.nav a:not(.btn):hover::after,
+.nav a:not(.btn)[aria-current="page"]::after,
+.nav a:not(.btn)[aria-current="true"]::after {
   transform: scaleX(1); transform-origin: left;
 }
-.nav .btn { color: var(--ink); }
 
 .burger {
   display: none; width: 2.6rem; height: 2.6rem;
@@ -362,10 +369,10 @@ p { max-width: 68ch; text-wrap: pretty; }
 }
 
 .foot {
-  background: var(--deep); color: color-mix(in srgb, var(--paper) 78%, transparent);
+  background: var(--deep); color: color-mix(in srgb, var(--foot-ink) 80%, transparent);
   padding-block: clamp(3rem, 7vw, 5.5rem) 2rem;
 }
-.foot a:hover { color: var(--paper); }
+.foot a:hover { color: var(--foot-ink); }
 .foot__grid {
   display: grid; gap: clamp(2rem, 5vw, 3.5rem);
   grid-template-columns: 1fr;
@@ -374,17 +381,17 @@ p { max-width: 68ch; text-wrap: pretty; }
 .foot__h {
   font-family: var(--f-mono); font-size: 0.5625rem;
   letter-spacing: 0.24em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--paper) 52%, transparent);
+  color: color-mix(in srgb, var(--foot-ink) 62%, transparent);
   margin-bottom: 1rem;
 }
 .foot__list { list-style: none; padding: 0; display: grid; gap: 0.5rem; font-size: 0.9375rem; }
 .foot__end {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;
   margin-top: clamp(2.5rem, 6vw, 4rem); padding-top: 1.5rem;
-  border-top: 1px solid color-mix(in srgb, var(--paper) 14%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--foot-ink) 16%, transparent);
   font-family: var(--f-mono); font-size: 0.625rem;
   letter-spacing: 0.14em; text-transform: uppercase;
-  color: color-mix(in srgb, var(--paper) 52%, transparent);
+  color: color-mix(in srgb, var(--foot-ink) 62%, transparent);
 }
 
 /* ---------- 10. lightbox ------------------------------------------------ */

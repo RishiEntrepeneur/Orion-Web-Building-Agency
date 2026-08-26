@@ -58,6 +58,17 @@ function shell(page, o) {
 <link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
+<noscript><style>
+  /* every reveal starts hidden and is turned on by script; with script off
+     none of that applies, and the page is simply a page */
+  [data-rev], .wd, .tide__cap, .quote, .sign {
+    opacity: 1 !important; transform: none !important; clip-path: none !important; visibility: visible !important;
+  }
+  .curtain, .brw__ptr { display: none !important; }
+  .tide__cap, .quote { position: static !important; }
+  [data-seq] { height: auto !important; }
+  .seq__pin { position: static !important; height: auto !important; min-height: 60svh; }
+</style></noscript>
 </head>
 <body${o.body || ""}>
 

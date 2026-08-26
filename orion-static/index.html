@@ -18,6 +18,20 @@
 
 <link rel="stylesheet" href="assets/css/styles.css" />
 
+<noscript><style>
+/* Every reveal starts at opacity 0 and is turned on by script. With script
+   off that is a blank page, and the preloader never lifts — so with script
+   off, none of it applies. A site that boasts about being hand-written
+   should still be readable when the hand-written part does not run. */
+  .boot, .curtain { display: none !important; }
+  .rv, .brw, [data-rev], [data-kin] span, .intro__enter, .asm__step, .wd {
+    opacity: 1 !important; transform: none !important; clip-path: none !important; visibility: visible !important;
+  }
+  .intro__enter { position: static !important; pointer-events: auto !important; }
+  .asm__step { position: static !important; }
+  .brw__ptr, .burst, .asm__burst { display: none !important; }
+</style></noscript>
+
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"Orion","description":"Websites designed and built by hand by one developer in England.","inLanguage":"en-GB"}
 </script>

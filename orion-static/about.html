@@ -19,6 +19,20 @@
 
 <link rel="stylesheet" href="assets/css/styles.css" />
 
+<noscript><style>
+/* Every reveal starts at opacity 0 and is turned on by script. With script
+   off that is a blank page, and the preloader never lifts — so with script
+   off, none of it applies. A site that boasts about being hand-written
+   should still be readable when the hand-written part does not run. */
+  .boot, .curtain { display: none !important; }
+  .rv, .brw, [data-rev], [data-kin] span, .intro__enter, .asm__step, .wd {
+    opacity: 1 !important; transform: none !important; clip-path: none !important; visibility: visible !important;
+  }
+  .intro__enter { position: static !important; pointer-events: auto !important; }
+  .asm__step { position: static !important; }
+  .brw__ptr, .burst, .asm__burst { display: none !important; }
+</style></noscript>
+
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"Orion","description":"Websites designed and built by hand by one developer in England.","inLanguage":"en-GB"}
 </script>
@@ -88,11 +102,6 @@
   <span class="hud__corner hud__corner--tr"></span>
   <span class="hud__corner hud__corner--bl"></span>
   <span class="hud__corner hud__corner--br"></span>
-  <div class="hud__rail hud__rail--l">ORION — WEBSITES BUILT BY HAND, IN ENGLAND</div>
-  <div class="hud__rail hud__rail--r"><span id="hud-index">01 / 07</span><span id="hud-clock">00:00:00 UTC</span></div>
-  <div class="hud__read">
-    SEC <b id="read-sec">INDEX</b> &nbsp;·&nbsp; X <span id="read-x">0.500</span> &nbsp; Y <span id="read-y">0.500</span> &nbsp;·&nbsp; SCROLL <span id="read-p">000</span>%
-  </div>
 </div>
 
 <!-- ============ NAV ============ -->
@@ -106,20 +115,18 @@
         <circle cx="40" cy="5.5" r="2.5" />
       </svg>
       <span class="brand__word">Orion</span>
-      <span class="brand__tag">Websites built by hand</span>
     </a>
 
     <nav class="nav__links" aria-label="Primary">
       <a class="nav__link nav__link--first" href="prices.html" data-curtain="Prices" data-scramble-host><span data-scramble>Prices</span></a>
       <a class="nav__link" href="demos.html" data-curtain="Demos" data-scramble-host><span data-scramble>Demos</span></a>
       <a class="nav__link" href="services.html" data-curtain="What I build" data-scramble-host><span data-scramble>What I build</span></a>
-      <a class="nav__link" href="work.html" data-curtain="This site" data-scramble-host><span data-scramble>This site</span></a>
       <a class="nav__link" href="about.html" aria-current="page" data-curtain="About" data-scramble-host><span data-scramble>About</span></a>
       <a class="nav__link" href="contact.html" data-curtain="Contact" data-scramble-host><span data-scramble>Contact</span></a>
     </nav>
 
     <div class="row" style="gap:.6rem">
-      <button class="sound" type="button" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+      <button class="sound sound--bare" type="button" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
         <span class="sound__bars" aria-hidden="true"><i style="--b:0"></i><i style="--b:1"></i><i style="--b:2"></i><i style="--b:3"></i></span>
         <span class="sound__label" data-sound-label>Sound off</span>
       </button>

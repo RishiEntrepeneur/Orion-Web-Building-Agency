@@ -96,13 +96,13 @@ const TICK = '<svg class="lad__mk" viewBox="0 0 14 14" fill="none" stroke="curre
 const CROSS = '<svg class="lad__mk" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3.4 3.4 10.6 10.6M10.6 3.4 3.4 10.6"/></svg>';
 
 const LADDER_ROWS = [
-  ["Pages", "One", "Up to five", "As many as it needs"],
+  ["Pages", "Three", "Up to five", "As many as it needs"],
   ["Hand-written — no framework, no template", 1, 1, 1],
   ["Works on a phone, and on a bad connection", 1, 1, 1],
   ["Contrast computed, keyboard tested", 1, 1, 1],
   ["A contact form that validates properly", 1, 1, 1],
   ["Prints properly — menus, price lists, notices", 1, 1, 1],
-  ["Multi-page navigation", 0, 1, 1],
+  ["A gallery you can click into", 0, 1, 1],
   ["Artwork generated for you, not bought in", 0, 1, 1],
   ["A map, and local search set up", 0, 1, 1],
   ["Booking or ordering, built in", 0, 0, 1],

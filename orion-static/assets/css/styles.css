@@ -107,9 +107,9 @@ body {
   background: var(--void);
   color: var(--bone);
   font-family: var(--f-sans);
-  font-size: 1rem;
+  font-size: clamp(1rem, 0.28vw + 0.94rem, 1.125rem);
   font-variation-settings: "wdth" 100;
-  line-height: 1.62;
+  line-height: 1.72;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -311,26 +311,11 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 
 /* ---------- 8. HUD FRAME ---------- */
 .hud { position: fixed; inset: 0; z-index: 300; pointer-events: none; }
-.hud__corner { position: absolute; width: 14px; height: 14px; border: 1px solid var(--rule-hi); }
+.hud__corner { position: absolute; width: 13px; height: 13px; border: 1px solid var(--rule); }
 .hud__corner--tl { top: 12px; left: 12px; border-right: 0; border-bottom: 0; }
 .hud__corner--tr { top: 12px; right: 12px; border-left: 0; border-bottom: 0; }
 .hud__corner--bl { bottom: 12px; left: 12px; border-right: 0; border-top: 0; }
 .hud__corner--br { bottom: 12px; right: 12px; border-left: 0; border-top: 0; }
-.hud__rail {
-  position: absolute; top: 50%; display: flex; align-items: center; gap: 0.75rem;
-  font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.22em;
-  text-transform: uppercase; color: var(--slate); white-space: nowrap;
-}
-.hud__rail--l { left: 14px; transform: translateY(-50%) rotate(180deg); writing-mode: vertical-rl; }
-.hud__rail--r { right: 14px; transform: translateY(-50%); writing-mode: vertical-rl; }
-.hud__read {
-  position: absolute; left: 14px; bottom: 14px;
-  font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.14em;
-  color: var(--slate); font-variant-numeric: tabular-nums;
-}
-.hud__read b { color: var(--accent); font-weight: 500; }
-@media (max-width: 1180px) { .hud__rail { display: none; } }
-@media (max-width: 640px) { .hud__read { display: none; } }
 
 .progress {
   position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 320;
@@ -611,7 +596,7 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 .
 .
 .
-.svc__body { color: var(--ash); font-size: 0.9375rem; line-height: 1.65; max-width: 44ch; }
+.svc__body { color: var(--ash); font-size: 1rem; line-height: 1.72; max-width: 46ch; }
 .
 .
 .
@@ -855,6 +840,7 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 .hair-t { border-top: 1px solid var(--rule); }
 .pt-lg { padding-top: clamp(1.5rem, 3vw, 2.5rem); }
 .mt-lg { margin-top: clamp(1.5rem, 3vw, 2.5rem); }
+.mb-lg { margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
 .mt-xl { margin-top: clamp(2.5rem, 5vw, 4rem); }
 
 /* ---------- 23. REDUCED MOTION ---------- */
@@ -1201,6 +1187,9 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
 }
 .sound__label { display: none; }
 @media (min-width: 1180px) { .sound__label { display: inline; } }
+/* in the top bar it is an icon: the label is a word nobody needed to read */
+.sound--bare { padding-inline: 0.8rem; }
+.sound--bare .sound__label { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .sound[aria-pressed="true"] .sound__bars i { animation: none; height: 8px; }
 }
