@@ -19,14 +19,34 @@ for (const [page, out] of [
   await p.goto("http://127.0.0.1:8765/" + page, { waitUntil: "load" });
   /* let every canvas paint and every reveal settle before the capture */
   await p.evaluate(async () => {
+    /* A pinned scroll track is three screens of scrolling that occupy one
+       screen of picture. In a full-length still it is three screens of
+       nothing, so it is collapsed for the capture. */
+    const st = document.createElement("style");
+    st.textContent = "[data-seq]{height:100svh!important}.seq__pin{position:static!important;height:100svh!important}";
+    document.head.appendChild(st);
+
     /* The demos reveal on scroll and one of them sets scroll-behavior: smooth,
        so a still has to walk the whole page first or half of it captures at
        opacity 0. */
     document.documentElement.style.scrollBehavior = "auto";
-    window.scrollTo(0, document.body.scrollHeight);
-    await new Promise(r => setTimeout(r, 900));
+    for (let y = 0; y <= document.body.scrollHeight; y += Math.round(window.innerHeight * 0.7)) {
+      window.scrollTo(0, y);
+      await new Promise(r => setTimeout(r, 120));
+    }
     window.scrollTo(0, 0);
     await new Promise(r => setTimeout(r, 700));
+
+    /* A canvas only paints when it comes near the viewport, and a full-page
+       screenshot does not move the viewport. Walk the list and paint them all
+       at the size they will actually be captured at. */
+    if (window.Art) {
+      document.querySelectorAll("canvas[data-art]").forEach((c) => {
+        const opts = JSON.parse(c.getAttribute("data-art-opts") || "{}");
+        window.Art.paintInto(c, c.getAttribute("data-art"), opts);
+      });
+    }
+    await new Promise(r => setTimeout(r, 500));
   });
   await p.waitForTimeout(900);
   const h = await p.evaluate(() => document.documentElement.scrollHeight);

@@ -1,1596 +1,443 @@
 # Orion — static site
 
-A fourteen-page site for Orion — one person, in England — plus three complete
-demo sites built to show what each package looks like finished. **Zero dependencies, zero third-party network requests.** Hand-written
-HTML, CSS and ES2020.
-
-Nothing on this site is placeholder content. There are no invented clients, no
-invented metrics, no invented company and no invented contact details. Facts
-about Orion live in exactly one file, `tools/data/site.js`, and the rule there
-is that an unknown value stays empty rather than becoming something plausible —
-the build then omits whatever depended on it.
-
-Open `index.html` in a browser, or serve the folder:
+A sixteen-page site for Orion — one person, in England — plus three complete
+demo sites that show what each package buys. Hand-written HTML, CSS and
+JavaScript. No framework, no bundler, no third-party request at runtime, and
+nothing on any page that was not typed.
 
 ```sh
 python3 -m http.server 8000
 # then http://localhost:8000
 ```
 
+There is no build step for the browser. There *is* a generator, which is not
+the same thing: `home.html` is the source of truth for the shared chrome, and
+`node tools/build.js` re-emits the other pages around their own bodies so the
+header, footer and head can never drift between them. Ship the folder as it is.
+
+```sh
+node tools/build.js         # the site: 16 pages from home.html's chrome
+node tools/demos/build.js   # the demos: 12 pages across three sites
+node tools/make-artifact.js # fold the whole thing into one HTML file
+```
+
+---
+
 ## Art direction
 
-**Couture observatory** — luxury editorial typography inside a technical
-instrument frame, flying through coloured space.
+**A luxury editorial, at night.** Very few things on screen at once, a lot of
+air, one accent per zone, and display type large enough to be the picture.
 
-Bodoni Moda, a high-contrast didone, set in mixed case at billboard scale with
-italic for emphasis. Archivo carries the interface, IBM Plex Mono the data
-labels. The ground is a violet-black rather than a neutral one.
+The site is dark — Orion is a constellation — and the three demos are not, on
+purpose: an agency site that only knows one register is a portfolio of one.
 
-Colour is zoned across **seven** signals — champagne gold for the index, violet
-for services, teal for the position statement, blue for the method, magenta for
-the work, acid for the standards, flare for contact. Each section carries an
-ambient two-hue wash in its own accent, so colour is present throughout rather
-than saved for a single pop. Every one of the seven clears 4.5:1 against the
-ground as text, which is what allows them all to be used for type.
+| | ground | display | accent |
+|---|---|---|---|
+| Orion | `#08070e` | Bodoni Moda | seven zone colours, one per section |
+| Alderley Chess Club | `#f2f0e8` ivory | Fraunces | `#22493a` board green |
+| Fairweather Barbers | `#14110f` warm black | Bebas Neue | `#d3ac2e` brass |
+| Saltmarsh | `#efece4` bone | Fraunces | `#8b3517` ember |
 
-Zone utilities redeclare literal colour values rather than chaining `var()`
-indirections, because a custom property that references another resolves where
-it is *declared*, not where it is used.
+### Optical size, pinned
 
-### The didone problem, and the fix
+A didone reversed out of a dark ground loses its hairlines. Every display face
+sets `font-optical-sizing: none` and pins `opsz` **below** the rendered size, so
+the strokes thicken enough to survive:
 
-A high-contrast serif reversed out of near-black loses its hairlines: at the
-sizes used here the hyphen in "E-commerce" and the diagonal of a "4" dropped
-below one device pixel and disappeared outright. The fix is optical-size
-compensation — `font-optical-sizing` is switched off and `opsz` is pinned
-*below* the rendered size in three bands (26 for display, 15 for headings, 9 for
-small numerals), because lower optical sizes carry sturdier hairlines. This is
-why the type holds together on a dark ground.
+```css
+font-optical-sizing: none;
+font-variation-settings: "opsz" 26;   /* on type rendered at 60–160px */
+```
+
+Three bands: `opsz 26` for display, `15` for headings, `9` for numerals.
+
+### Zones
+
+Seven colour zones, switched by `data-zone-set` on each section and read from
+`[data-zone]` on the root. The zone blocks **redeclare literal values** rather
+than aliasing one custom property to another: a custom property that references
+another resolves where it is *declared*, not where it is used, so aliasing
+silently pins every zone to the first one.
+
+---
 
 ## Pages
 
-```
-index.html                        LANDING — the typed question, then the answer
-home.html                         home — six quiet screens, one idea each
-about.html                        about — who I am, what I argue for
-services.html                     what I build, the three package cards, FAQ
-work.html                         THIS SITE — the teardown, with the measured numbers
-journal.html                      build-notes index
-contact.html                      brief form, what happens next
+**Prices · Demos · What I build · About · Contact** in the bar, in that order,
+because that is the order somebody deciding whether to hire you wants them in.
+`This site`, `Build notes` and `Pay` are in the footer; they are pages about
+the pages.
 
-journal-read-think-write.html     \  three build notes, generated from
-journal-didone-on-dark.html        |  tools/data/journal.js
-journal-performance-budget.html   /
+| page | what it is |
+|---|---|
+| `index.html` | the intro: a browser, a search, and Orion opening in a new tab |
+| `home.html` | the argument, in six screens and under 300 words |
+| `prices.html` | the three packages and the comparison table — the only place prices live |
+| `demos.html` | the three demo sites, and a machine you can climb into |
+| `services.html` | what each package actually involves |
+| `work.html` | this site, taken apart: budgets, measurements, decisions |
+| `about.html` | who is doing it |
+| `contact.html` | a brief, assembled in the browser |
+| `pay.html` | a checkout that handles no money |
+| `journal*.html` | four build notes |
+| `privacy.html` `terms.html` `404.html` | the rest |
 
-privacy.html                      privacy notice
-terms.html                        site terms
-404.html                          not found, with nine ways back
+### Restraint
 
-robots.txt                        generated
-sitemap.xml                       generated only once site.js has an origin
+The home page runs to just under **300 words** across six screens. It used to
+be 974 across nine and it read as a brochure: every section carried body copy,
+tag lists, metrics and descriptions, so nothing had room to land.
 
-demos/chess/                      \  three demo sites, nine pages, each with
-demos/barbers/                     |  its own palette, typefaces and voice.
-demos/saltmarsh/                  /  generated by tools/demos/build.js
-```
+The detail did not get deleted, it moved to the pages built for it. The budget
+that produced it: **a heading of six words or fewer, and at most one supporting
+line of about eighteen.** Anything that needed more became a link.
 
-Every build note links to the other two. Nothing on the site is a dead end: no
-element that looks clickable fails to lead somewhere, which is verified by
-crawling the built output rather than by inspection.
+---
 
-```
-assets/css/styles.css   design tokens, components, motion primitives
-assets/js/app.js        the whole motion system, one rAF loop
-assets/fonts/           Bodoni Moda, Archivo, IBM Plex Mono (OFL, latin subsets)
-tools/                  page generator, templates and content data
-```
+## The intro
 
-### Editing
+`index.html` opens inside somebody else's browser.
 
-`home.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. Every other generated page is built from it, so the
-chrome cannot drift. `index.html` (the landing sequence) is hand-written and has
-its own minimal chrome on purpose.
+A drawn window — tab strip, traffic lights, an address bar that navigates —
+sits on a desk. A pointer moves to the search field, somebody types *how to
+build a website*, autocomplete offers the usual three, and the fourth is Orion.
+The results page swaps in, the address bar and the tab title follow it, the
+pointer clicks the one result, and **Orion opens in a second tab** — which then
+zooms until the tab is the screen.
 
-```sh
-node tools/build.js     # regenerates all generated pages, plus sitemap and robots
-```
+Two things it deliberately does not do:
 
-- Chrome → edit `home.html`
-- Demo sites → `tools/demos/*.js`, then `node tools/demos/build.js`
-- Facts about Orion (domain, email, location) → `tools/data/site.js`
-- Package names and prices → `tools/data/packages.js`
-- One-off page bodies → `tools/bodies/`
-- Build notes → `tools/data/journal.js`
-- Repeated page shapes → `tools/templates.js`
+- **It claims no domain.** The search engine's address uses `.example`, the TLD
+  IANA reserves for documentation, so it can never be anybody's real site. Orion's
+  own address is its name rather than a domain nobody owns. An earlier version
+  used `orion.build` and an invented result count, and the truth sweep caught
+  both — a domain you do not own printed in an address bar is a claim, not a
+  drawing.
+- **It is not a real browser's chrome.** The layout follows the conventions
+  everybody knows; the wordmark and the name are nobody's.
 
-The contact form lives in `tools/bodies/contact-form.html`, so there is only
-ever one copy of it. The build fills its package options from
-`tools/data/packages.js` and its `data-inbox` from `tools/data/site.js`.
+It runs off a **cue list evaluated against elapsed time**, not chained timeouts.
+That is what makes it skippable: Escape fires every cue that has not run yet and
+lands on the final frame. Skip is an ordinary link, so the page curtain carries
+it into the site.
+
+Because a gate that replays on every visit gets old fast, the sequence records
+itself in `sessionStorage` once it has run, and later visits in the same session
+land on the final frame. It is deliberately **not** a redirect — bouncing the
+root to another page traps the back button.
+
+The root carries a real `<h1>`, and its first paint is on frame one rather than
+behind a reveal, so the landing page keeps an LCP inside the site's budget
+despite being an animation.
+
+---
+
+## The detonation
+
+`makeBurst(canvas)` is a real explosion on a 2D canvas: a white-hot core, a
+pressure ring, a pane of glass cut into shards and thrown outward, sparks, and
+smoke for the light to hang in.
+
+The shards are the part that matters. A rectangle is cut on a **jittered lattice
+that neighbouring cells share**, so every fragment edge matches the fragment
+beside it and the pane reads as one thing breaking rather than a grid of
+rectangles flying apart. Speed falls off with distance from the blast, which is
+what puts the hole in the middle first and peels the edges away after.
+
+Sparks are biased into uneven lobes by a slow wave over the angle. An even fan
+reads as a firework; a detonation is lopsided.
+
+It fires twice on this site: at the end of the intro, when the page becomes
+Orion, and on the home page's assembly — once when the scroll reaches the end of
+the track, and again whenever you press **Detonate**.
+
+The kick it gives the assembly is added **at draw time and never written back
+into the damped camera**. A damped value that is also being added to every frame
+converges on the wrong number rather than on its target: with a 110ms half-life
+and a constant addition, the steady state is about twenty-five times the kick.
+
+---
+
+## The Assembly
+
+A scroll-driven exploded view, in software 3D on a 2D canvas. Five layers of a
+web page — grid, structure, type, colour, motion — built as sets of primitives
+in local space and separated along z. A camera of six keyframes is sampled by
+scroll position rather than by a clock, so the object is wherever your scroll
+says it is.
+
+Layers are depth-sorted per frame and the one being described reads brightest,
+so exactly one thing is legible at a time.
+
+Under reduced motion the track collapses, the stage stops pinning, and the
+object renders once as a static three-quarter frame with every caption shown.
+
+---
 
 ## The demo sites
 
-Three complete sites for businesses that do not exist, one per package, so the
-prices on `services.html` point at something you can actually click:
+Three complete sites, one per package. Every business is invented and every
+page says so in a bar across the top. They are not case studies; they are what
+each package looks like finished.
 
-| | Package | Pages | Palette | Type | The interesting part |
-|---|---|---|---|---|---|
-| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening, and a league table |
-| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | halftone profiles, and a street map drawn on canvas |
-| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | contour topography, and a three-step booking system |
+| | package | pages | what it demonstrates |
+|---|---|---|---|
+| **Alderley Chess Club** | Starter Launch | 3 | one interactive thing, done properly |
+| **Fairweather Barbers** | Business Growth | 5 | a real business, running |
+| **Saltmarsh** | Premium Custom | 4 | a site that behaves like an application |
 
-They are deliberately nothing like each other, and nothing like this site. That
-is the point: a builder who only has one look is a builder with a template.
+The ladder has to be visible or the prices are arbitrary. Starter gets a
+steppable chess opening and nothing else moving. Growth adds a filterable
+gallery on a lightbox, a drawn street map, and a sign in the header that reads
+the clock. Premium adds a scroll film and a working booking system.
 
-Every page carries a bar across the top saying the business is not real, is
-`noindex`, and links back here. The build fails if one of them loses that bar.
-Where a demo cannot show something honestly it says so on the page — the
-barbers' map is drawn rather than embedded, because an embedded map means a
-third-party script and this site does not make third-party requests.
+### `demos/_lib/` — the shared floor
 
-### Drawing what you cannot photograph
+`base.css`, `motion.js` and `art.js`. What separates a Starter site from a
+Premium one is how much of this it uses, not how well it is built.
 
-None of these businesses exist, so none of them have photographs, and putting
-stock imagery on them would be the same lie the rest of this site exists to
-avoid. Both image-led demos generate their own instead — and both took more
-than one attempt, because the first version of each read as noise rather than
-as art direction.
+**`art.js` — pictures, drawn rather than photographed.**
+There are no photographs and no rights to any, and a site for a restaurant with
+no pictures reads as a wireframe. So the pictures are generated:
 
-**The barbers** are real halftones. A profile is drawn as a silhouette on an
-offscreen canvas, the pixels are read back, and a dot grid is sized by the
-coverage of each cell — the process a newspaper used, done in code. The head is
-a **point outline**, not hand-placed bezier handles: a nose is four coordinates
-you can reason about and two control points you cannot. What changes between
-the six plates is the hair, built by pushing the skull run outwards by an
-amount that varies along it, so a crop is a crop and a fade is a fade rather
-than a hat. The profile is deliberately stylised, the way a barber's shop sign
-is: at this dot pitch a nose is four cells across, and an anatomically
-ambitious one renders as a dent.
+- `marsh` — an estuary where the light and the tide are both parameters. Sky,
+  sun, cloud bands stretched by fBm, two banks, water with a broken specular
+  path, groyne posts with reflections, channels cut into the mud, reeds, birds,
+  mist.
+- `interior` — a room at night. The first version drew the whole room and read
+  as a diagram of a restaurant; a dark room photographs as almost entirely black
+  with three things catching the light, so that is what it draws.
+- `portrait` — a head in profile as a halftone. Front-on ovals read as the
+  placeholder avatar every piece of software draws when it has no photograph; a
+  profile reads as a person, and it shows the shape of the cut.
+- `board` — a chess board under one lamp, in perspective, with turned pieces.
+- `map` — a plausible town, generated from a seed. A real street plan on a demo
+  for a shop that does not exist would be claiming an address.
+- `field` — a quiet full-bleed texture with contour threads.
 
-**Saltmarsh** is a survey sheet. A height field of three octaves of value noise
-is sampled on a grid, then **marching squares** walks it to find where each
-contour level crosses. Every fifth line is an index contour and is drawn
-heavier, which is the thing that makes a set of curves read as a map instead of
-as decoration. Everything below the lowest level is water.
+A canvas paints the first time it comes near the viewport, repaints on resize,
+and is driven by the frame loop only while it is on screen and animated.
 
-### The machine
+**`motion.js` — one frame loop, split read-then-write.** Interleaving a layout
+read after a style write forces a synchronous layout, and with a dozen animated
+elements that is dozens of layouts a frame. Everything is opt-in by attribute:
+`data-rev`, `data-par`, `data-mag`, `data-count`, `data-marquee`, `data-seq`,
+`data-lift`, `data-lb`, `data-split`.
 
-`demos.html` opens with a laptop built out of CSS 3D, with a demo site running
-live inside the screen in an iframe. Scrolling flies the camera into it: the lid
-comes up over the first fifth of the track, then the camera pushes in until the
-screen fills the viewport and the site inside becomes interactive.
+It also publishes `--chrome`: the measured height of the demo notice plus the
+sticky header. A hero that asks for `100svh` on top of that pushes its own call
+to action off the bottom of the first screen, so heroes subtract it.
 
-**Click it and it opens.** A click, or Enter on the focused machine, flies you
-all the way in; a "come back out" control flies you back. Both do it by
-scrolling the track rather than by overriding the camera — the flight is
-already a pure function of scroll position, so driving the scroll keeps one
-source of truth and leaves the page exactly where the viewer expects it when
-they take over again. Once you are inside, the iframe is live and the site in
-it is yours to use.
+### Saltmarsh's tide film
 
-The push is a **dolly, not a scale**. The scale you want is solved backwards for
-the z that produces it under the page's own perspective:
+A pinned track of 340svh. Scroll position sets the hour and the water level on
+one canvas, and the four captions are keyed to the *same* number — so the words
+and the picture can never drift. The landscape repaints at 30fps rather than
+every frame, which is more than the eye asks of a sunset.
 
-```js
-var sc = sStart + (sEnd - sStart) * e;
-var z  = PERSP * (1 - 1 / sc);      // perspective divide, inverted
-```
+### Saltmarsh's booking system
 
-so the machine genuinely travels toward the camera and foreshortens on the way,
-rather than growing. The glare on the screen and the shadow on the ground fade
-out as it arrives, because both belong to an object in a room and by then you
-are looking at a website. The iframe stays `pointer-events: none` until the
-flight is 96% done, so it can never swallow the scroll that is driving it.
+Three steps: a date, a time and a party size, then who is coming.
 
-The laptop is unbranded on purpose: it is an aluminium shape, not anyone's
-product, and it carries no maker's mark.
+Availability is **derived from the date** rather than stored, so it is stable
+across reloads without a server: the same Tuesday is always shut and the same
+Friday is always nearly full. A real build would ask the restaurant's system.
+Every step but the final write is live, and the confirmation says plainly that
+nothing was sent.
 
-The flight runs at **every width**. A narrow screen gets a shorter track and
-ends on a *width* fit rather than a cover fit, because covering a tall thin
-viewport with a 1200px-wide page crops most of it away. Only
-`prefers-reduced-motion` drops the flight, and then the machine sits open at
-mid-distance instead.
+### The barbers' sign
 
-This was wrong once: the machine was hidden below 900px on the theory that it
-would be illegible, which meant anyone reading the preview in a side panel saw
-the tabs and an empty stage — they never saw the one thing the page exists for.
-A breakpoint that hides your centrepiece is not a responsive design.
+The header sign reads the clock: *Open until 18:00*, *Open, closing at 18:00*
+in the last hour, or *Closed · open Thursday 09:00*. It repaints once a minute
+and marks today in the printed hours table.
 
-### Proving the ladder
-
-Three demos are only an argument if they visibly escalate, so they do:
-
-- **Starter** is one clean page. It is not the careless one — same contrast
-  discipline, same hand-written markup — it is simply *one page*, and it looks
-  it.
-- **Growth** adds four more pages, artwork generated for the shop, a drawn map
-  and a booking request.
-- **Premium** adds a working booking system *and* a signature moment neither of
-  the others has: a pinned sequence where the tide comes in over the survey
-  sheet. The height field and every contour are computed once; per frame all
-  that changes is which levels are under water, so the whole thing costs one
-  small `putImageData` and a few cached strokes. At low water you can walk to
-  the far bank; at high water there are three islands left.
-
-`demos.html` states the same thing as a table — thirteen rows, five ticked for
-Starter and twelve for Premium — because a customer deciding between £299 and
-£999 deserves to see the difference rather than be told about it.
-
-### Quality passes the demos needed
-
-Things that were missing until they were measured:
-
-- **Reveal on scroll**, added to all three. It lives in its own IIFE because
-  the first version sat after an early `return` in the module above and so ran
-  on two pages out of ten — the failure mode is "no animation", which nobody
-  notices. `data-rv` is applied by script and never by the markup, so with
-  JavaScript off the page shows everything rather than nothing, and anything
-  inside a collapsed pane is skipped because it would never intersect and
-  would still be invisible when the pane opened.
-- **Print stylesheets.** A price list gets stuck by the mirror and a menu gets
-  printed; on paper the dark ground empties a toner cartridge and none of the
-  chrome means anything. Each demo prints as the content plus its address.
-- **Computed contrast**, which found **13 failures** the eye had passed: an
-  amber strip at 3.68:1, a brass eyebrow at 4.45:1, a whole muted grey at
-  2.4:1, and a ghost button rendering dark ink on a dark band at **1.08:1**.
-  All fixed. The checker also had to be taught that WCAG 1.4.3 exempts
-  disabled controls — a greyed-out calendar date is allowed to be low
-  contrast, though 1.34:1 was unreadable and got lifted anyway.
+---
 
 ## Money
 
-`pay.html` is a checkout that handles no money. It picks a package, shows what
-that costs, and then hands the payer to **Stripe's own hosted checkout** by
-link. There is no card field anywhere on this site and there never will be: a
-static site with no server has no business touching a card number, and a
-hosted link keeps the PCI surface at zero.
+`pay.html` is a checkout that **handles no money**. There are no card fields and
+no payment code, because a site that collects card details has a PCI surface and
+this one should not have one. Each package points at a Stripe hosted Payment
+Link; Stripe takes the payment on its own page.
 
-Links live in `site.js` under `checkout`, one per package. While a link is
-empty that package shows the invoice route instead — an honest state rather
-than a dead button — and the build **fails** if a link is set to anything that
-is not an `https://…stripe.com/` URL, because a payment button pointing
-somewhere unexpected is the worst possible bug on a website.
+Set the links in `tools/data/site.js`:
 
-The prices now have exactly one home, `prices.html`, and the build fails if
-`prices.html`, `pay.html` and the contact select ever disagree about a number.
+```js
+checkout: { starter: "", growth: "", premium: "" }
+```
 
-The account has to belong to an adult: Stripe's terms require it, and a
-contract with a minor is not enforceable in England — which protects the
-customer more than it protects me. `pay.html` and the terms both say so
-plainly, because finding that out after paying would be the wrong moment.
+While a link is empty its package shows the invoice route instead, which is the
+right way to start anyway. The build **fails** if a link is not an `https`
+Stripe URL — a typo in a payment link is not something to discover in
+production.
+
+The account has to belong to an adult. Stripe's terms require the account holder
+to be 18, and in England a contract with a minor is generally not enforceable
+against them, so the account and the contracts go in a parent's name.
+
+Prices live in `tools/data/packages.js` and appear on `prices.html`, `pay.html`
+and `contact.html` from that one source. The build fails if the three ever
+disagree.
 
 ## Capacity, written down
 
-A monthly fee is a promise about future time, so `site.js` carries the limits
-that keep it keepable — six sites on a plan, two builds at once, three months'
-notice — and `prices.html` prints them. A cap nobody can see is a cap you will
-quietly break.
+A monthly fee is a promise about future time, so the limits that keep it
+keepable are printed on the site: six sites carried on a monthly plan at once,
+two builds running at the same time, three months' notice before winding a plan
+down. A cap nobody can see is a cap you will quietly break.
 
-The same section says what happens if the plan ends: the source, content and
-notes are handed over at the end of the build rather than held as leverage, so
-cancelling stops the hosting and the updates without taking the website away.
-That is the part most people selling a retainer decline to write down.
-
-## The nav is ordered by what a customer wants
-
-Prices first, then demos, then what I build, then the teardown, then about,
-then contact. The intro sequence and the machine are good at convincing
-designers; a price table is what convinces somebody who runs a café. Notes
-moved to the footer — it is depth, not a decision.
+---
 
 ## The single-file preview
 
-`tools/make-artifact.js` folds the whole thing into one self-contained HTML
-file: the intro as an overlay, the home page, the packages, the machine and the
-contact form, with every font inlined as a data URI and every link that needs a
-second page either pulled in whole or removed. It refuses to emit a file with a
-dead link in it.
+`node tools/make-artifact.js` folds the whole site into one self-contained HTML
+file: every page as a section, six font families inlined as data URIs, page
+links rewritten to in-file anchors. It refuses to emit a dead link.
 
-The machine is the one thing that cannot survive the fold intact — a single file
-has no second page to point an iframe at. So the artifact's laptop screen shows
-full-length stills of the three demos instead, and makes them scrollable once
-the flight lands. The camera move is identical; only the interactivity inside
-the screen is lost.
+A single file has no second page to point an iframe at, so the machine's screen
+shows full-length stills instead. `node tools/demo-stills.mjs` captures them
+with reduced motion on — which collapses the pinned tracks and shows every
+scroll reveal, which is exactly what a still of the page should contain.
 
-```sh
-python3 -m http.server 8765                    # serve the site
-node tools/demo-stills.mjs                     # recapture the stills
-OUT=/tmp/orion.html node tools/make-artifact.js
-```
-
-It also neutralises the intro's own skip: the site records in `sessionStorage`
-that you have seen the sequence and lands you on the final frame next time,
-which is right for a website and wrong for a preview somebody just opened.
+---
 
 ## Motion
 
-Everything runs off a single `requestAnimationFrame` loop, driven by a
-non-reactive shared state object. Scroll and pointer are read into that object
-by passive listeners; nothing in the loop triggers a React-style re-render and
-nothing polls the DOM for values it can cache. Smoothing uses frame-rate
-independent exponential damping (`1 - 2^(-dt/halfLife)`), so motion is
-identical at 60Hz and 144Hz.
+Everything scroll-linked runs through one `requestAnimationFrame` loop in three
+phases: every layout **read**, then all the maths, then every style **write**.
 
-### Why it is smooth: read, think, write
-
-The loop runs three phases per frame, and callbacks register into the phase they
-belong in — `addReader`, `addTicker`, `addWriter`:
-
-1. **Read** — every `getBoundingClientRect` and `getComputedStyle` in the whole app
-2. **Think** — damping and maths, no DOM access
-3. **Write** — every style, transform and attribute
-
-The reason is that a layout read issued *after* a style write forces the browser
-to lay the page out synchronously to answer it. With a dozen animated elements
-each measuring and then writing in turn, that is dozens of forced layouts per
-frame, and it is the actual cause of scroll-linked stutter — far more than any
-easing curve. Instrumenting the running page confirms **zero read-after-write
-transitions across 129 consecutive frames**: one layout pass per frame.
-
-Two subtler things fall out of the same discipline:
-
-- Event handlers must not measure either. A `pointermove` handler that reads a
-  rect runs *between* frames and lands after that frame's writes, so the tilt
-  effect measures in the read phase instead.
-- Anything inside a 3D-transformed subtree must be measured with
-  `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
-  scaled by the transform, and in the word cycler that 2.9% error accumulated
-  across steps until the previous word hung visibly above the current one.
-- A measurement must not include the effect it is used to compute. The magnetic
-  buttons took their pull from `getBoundingClientRect`, which reports the
-  element where the pull has already put it: the closer it got the harder it
-  pulled, so it hunted around an equilibrium and never reached one, writing a
-  new transform every frame forever. The reader now subtracts the offset it is
-  currently applying, and the offset is rounded to the same two decimals the DOM
-  is given — same grid on both sides, so rest is an actual fixed point. Parked
-  under the cursor it now produces **one distinct transform across 60 idle
-  frames**, where before every frame was different.
-
-Beyond that: the ambient colour washes use radial gradients rather than
-`filter: blur(90px)`, because a blur is a filter pass and those sections are
-3D-transformed, so it re-rasterised as they tilted. `will-change` is applied
-only to the handful of elements the loop writes every frame — applying it
-broadly costs memory and makes things worse. And the loop keeps a rolling
-average of frame cost: if the machine cannot hold 60fps it permanently steps
-down particle count and canvas frame rates rather than oscillating between
-quality tiers, which is more distracting than simply running lighter.
-
-| | |
-|---|---|
-| Preloader | Constellation draws in, counter races to 100, slat curtain lifts |
-| 3D scroll rig | Every unpinned section tilts and recedes in real perspective as it crosses the viewport |
-| Scene tilt | The hero rotates toward the cursor, its layers separated in z |
-| Armillary | A software-3D rotating armature with Orion suspended inside, true perspective projection, no library |
-| Grid floor | A CSS-3D plane receding to a horizon under the hero |
-| Chromatic split | Headlines fringe blue/magenta in proportion to scroll velocity |
-| Card rotation | Work tiles rotate in Y by their position across the lane |
-| Cursor | Stateful dot + difference-blend ring: link, view, drag, text |
-| 3D flips | Button labels and nav links rotate on the X axis rather than sliding |
-| Kinetic type | Headings split into masked words that rise into place |
-| Text scramble | Mono labels resolve out of noise on hover and on first view |
-| Flow field | Curl-noise particle plot, pointer-repelled, hero background |
-| ASCII plot | Orion rendered in text mode, rotating with pointer and scroll |
-| Halftone plates | Per-project generative dot / cross / bar fields, six tints |
-| Marquees | Seamless, speed and skew driven by scroll velocity |
-| Method | Pinned section, four steps advancing on scroll with a progress rail |
-| Work | Pinned stage with a horizontally-scrolling lane |
-| Magnetic | Buttons drift toward the cursor within reach |
-| The Assembly | Five layers of a page, exploded and inspected from a keyframed camera |
-| Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
-
-## Sound
-
-Off by default, with a toggle in the nav and in the mobile drawer. The choice
-persists in `localStorage`, and if it was on last visit the engine arms itself on
-the first pointer or key event — browsers will not let a page start audio before
-a gesture, and the toggle is itself that gesture on a first visit.
-
-Every sound is **synthesised at runtime** from oscillators and shaped noise, so
-there are no audio files and the page weight does not change. The graph is a
-gain bus into a compressor, with a send into a convolution reverb whose impulse
-response is generated on the fly — reverb is what stops synthesised tones
-sounding like a system beep.
-
-The seven colour zones are tuned to the seven notes of an A minor pentatonic
-scale, low to high, so scrolling the page plays an ascending run and any two
-sections sound consonant together. Hovers pick from a small pool of high notes
-so a fast sweep across the nav does not repeat one pitch, and are rate-limited
-to one every 55ms. The rest: a pluck on click, rising and falling arpeggios for
-the drawer, a filtered noise sweep on page transitions, a resolving chord when
-the preloader lifts, a major arpeggio on a valid submit and a low detuned pair
-on a validation failure.
-
-No `AudioContext` is constructed until the visitor asks for sound.
-
-Everything above is gated behind `prefers-reduced-motion: reduce`. Under it the
-preloader is skipped, the cursor is disabled, pins collapse to normal flow, all
-four method steps show at once, and the flow field and ASCII plot render as
-single static frames rather than blank rectangles. No content is ever left at
-`opacity: 0`.
-
-Density also drops automatically on low-tier devices (`hardwareConcurrency`,
-`deviceMemory`, viewport width), and canvases pause when scrolled out of view or
-when the tab is hidden.
-
-## Verified
-
-Measured in Chromium at 360–1920px, not eyeballed:
-
-- **LCP 232–248ms** on the interior pages and **740ms** on the animated landing
-  page; the LCP element is the `<h1>` in every case
-- **7–9 requests, 345–427KB**, a single origin (214KB of that is the five
-  self-hosted font files)
-- **Zero dead ends**: every internal link resolves, every page is reachable from
-  home by following links, and nothing that looks clickable is inert
-- **Zero forced synchronous layouts** across 129 instrumented frames
-- **Contrast** computed numerically: body 17.95:1, secondary 9.78:1, mono labels
-  5.49:1, and all seven zone signals between 6.27:1 and 17.53:1 as text against
-  the ground; interactive borders use a dedicated `--edge` token at 3.51:1 (WCAG 1.4.11)
-- **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
-- **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
-  panels and the closed drawer are `inert`
-- **Form**: blocks empty submits with per-field messages, validates email shape
-  and detail length, then assembles the brief — and, with no address configured,
-  offers "copy" rather than a mail link
-- **Truth sweep**: the built output is grepped for every fabricated string this
-  site used to carry, and the build is failed if one comes back
-- **Price agreement**: the build fails if a package price on `services.html`
-  does not appear on `contact.html` — both are generated from one file, and this
-  is what stops anyone hard-coding one of them later
-
-## The contact form
-
-There is no server. The form validates in the browser, renders the assembled
-brief into a terminal panel, and then offers two ways out: **copy the brief**,
-always; and **open it in your mail app**, only when `site.js` has an email set.
-
-That second condition is the point. The form reads its address from
-`data-inbox`, which the build fills from `site.js`. While that value is empty
-there is no address anywhere in the source, so the site cannot ship a
-plausible-looking address that does not exist. Set `email` and re-run
-`node tools/build.js` and the mail button appears by itself. To post to a real
-endpoint instead, replace the submit handler in `assets/js/app.js`.
-
-## Before publishing
-
-Two values in `tools/data/site.js` are deliberately empty, and the build
-degrades honestly around both:
-
-| Value | While empty | Once set |
-|---|---|---|
-| `origin` | no canonical links, no `og:url`, no `sitemap.xml`, and `robots.txt` carries no `Sitemap:` line | all four are emitted against the real domain |
-| `email` | no address is printed anywhere; the brief is copied instead | the mail button appears on the contact page |
-
-Prices live in `tools/data/packages.js` and appear in two places from that one
-source: the cards on `services.html` and the select on `contact.html`. Each
-package is a one-off build fee plus a monthly fee, and the build fails if the
-two surfaces ever disagree.
-
-## Fonts
-
-Six families, all latin subsets, all self-hosted under the SIL Open Font
-License 1.1. Bodoni Moda (roman and italic), Archivo and IBM Plex Mono carry
-this site; Fraunces, Bebas Neue and Cormorant Garamond give the three demo
-sites their own voices (see
-`assets/fonts/LICENSE.txt`). Bodoni and Archivo are variable, so every weight
-and, for Archivo, every width comes from a single file. Self-hosting removes the
-render-blocking third-party request and the flash of fallback text that the
-Google Fonts CDN causes on a cold connection.
-
-
-## String.replace ate my selector
-
-**Three times now.** Once on `$("[data-faq]")`, once on `$(".lab__tab")`, once
-on `$(".co__opt")` — each time a whole module went silently dead, because the
-failure mode is a guard returning early rather than an error anybody can see.
-
-
-`String.prototype.replace` treats `# Orion — static site
-
-A fourteen-page site for Orion — one person, in England — plus three complete
-demo sites built to show what each package looks like finished. **Zero dependencies, zero third-party network requests.** Hand-written
-HTML, CSS and ES2020.
-
-Nothing on this site is placeholder content. There are no invented clients, no
-invented metrics, no invented company and no invented contact details. Facts
-about Orion live in exactly one file, `tools/data/site.js`, and the rule there
-is that an unknown value stays empty rather than becoming something plausible —
-the build then omits whatever depended on it.
-
-Open `index.html` in a browser, or serve the folder:
-
-```sh
-python3 -m http.server 8000
-# then http://localhost:8000
-```
-
-## Art direction
-
-**Couture observatory** — luxury editorial typography inside a technical
-instrument frame, flying through coloured space.
-
-Bodoni Moda, a high-contrast didone, set in mixed case at billboard scale with
-italic for emphasis. Archivo carries the interface, IBM Plex Mono the data
-labels. The ground is a violet-black rather than a neutral one.
-
-Colour is zoned across **seven** signals — champagne gold for the index, violet
-for services, teal for the position statement, blue for the method, magenta for
-the work, acid for the standards, flare for contact. Each section carries an
-ambient two-hue wash in its own accent, so colour is present throughout rather
-than saved for a single pop. Every one of the seven clears 4.5:1 against the
-ground as text, which is what allows them all to be used for type.
-
-Zone utilities redeclare literal colour values rather than chaining `var()`
-indirections, because a custom property that references another resolves where
-it is *declared*, not where it is used.
-
-### The didone problem, and the fix
-
-A high-contrast serif reversed out of near-black loses its hairlines: at the
-sizes used here the hyphen in "E-commerce" and the diagonal of a "4" dropped
-below one device pixel and disappeared outright. The fix is optical-size
-compensation — `font-optical-sizing` is switched off and `opsz` is pinned
-*below* the rendered size in three bands (26 for display, 15 for headings, 9 for
-small numerals), because lower optical sizes carry sturdier hairlines. This is
-why the type holds together on a dark ground.
-
-## Pages
-
-```
-index.html                        LANDING — the typed question, then the answer
-home.html                         home — six quiet screens, one idea each
-about.html                        about — who I am, what I argue for
-services.html                     what I build, the three package cards, FAQ
-work.html                         THIS SITE — the teardown, with the measured numbers
-journal.html                      build-notes index
-contact.html                      brief form, what happens next
-
-journal-read-think-write.html     \  three build notes, generated from
-journal-didone-on-dark.html        |  tools/data/journal.js
-journal-performance-budget.html   /
-
-privacy.html                      privacy notice
-terms.html                        site terms
-404.html                          not found, with nine ways back
-
-robots.txt                        generated
-sitemap.xml                       generated only once site.js has an origin
-
-demos/chess/                      \  three demo sites, nine pages, each with
-demos/barbers/                     |  its own palette, typefaces and voice.
-demos/saltmarsh/                  /  generated by tools/demos/build.js
-```
-
-Every build note links to the other two. Nothing on the site is a dead end: no
-element that looks clickable fails to lead somewhere, which is verified by
-crawling the built output rather than by inspection.
-
-```
-assets/css/styles.css   design tokens, components, motion primitives
-assets/js/app.js        the whole motion system, one rAF loop
-assets/fonts/           Bodoni Moda, Archivo, IBM Plex Mono (OFL, latin subsets)
-tools/                  page generator, templates and content data
-```
-
-### Editing
-
-`home.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. Every other generated page is built from it, so the
-chrome cannot drift. `index.html` (the landing sequence) is hand-written and has
-its own minimal chrome on purpose.
-
-```sh
-node tools/build.js     # regenerates all generated pages, plus sitemap and robots
-```
-
-- Chrome → edit `home.html`
-- Demo sites → `tools/demos/*.js`, then `node tools/demos/build.js`
-- Facts about Orion (domain, email, location) → `tools/data/site.js`
-- Package names and prices → `tools/data/packages.js`
-- One-off page bodies → `tools/bodies/`
-- Build notes → `tools/data/journal.js`
-- Repeated page shapes → `tools/templates.js`
-
-The contact form lives in `tools/bodies/contact-form.html`, so there is only
-ever one copy of it. The build fills its package options from
-`tools/data/packages.js` and its `data-inbox` from `tools/data/site.js`.
-
-## The demo sites
-
-Three complete sites for businesses that do not exist, one per package, so the
-prices on `services.html` point at something you can actually click:
-
-| | Package | Pages | Palette | Type | The interesting part |
-|---|---|---|---|---|---|
-| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening |
-| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | a street map drawn on canvas, and generated cut plates |
-| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | a three-step booking system with real availability rules |
-
-They are deliberately nothing like each other, and nothing like this site. That
-is the point: a builder who only has one look is a builder with a template.
-
-Every page carries a bar across the top saying the business is not real, is
-`noindex`, and links back here. The build fails if one of them loses that bar.
-Where a demo cannot show something honestly it says so on the page — the
-barbers' map is drawn rather than embedded, because an embedded map means a
-third-party script and this site does not make third-party requests.
-
-### The machine
-
-`demos.html` opens with a laptop built out of CSS 3D, with a demo site running
-live inside the screen in an iframe. Scrolling flies the camera into it: the lid
-comes up over the first fifth of the track, then the camera pushes in until the
-screen fills the viewport and the site inside becomes interactive.
-
-The push is a **dolly, not a scale**. The scale you want is solved backwards for
-the z that produces it under the page's own perspective:
+Damping is frame-rate independent, so the same half-life holds at 30fps and 144:
 
 ```js
-var sc = sStart + (sEnd - sStart) * e;
-var z  = PERSP * (1 - 1 / sc);      // perspective divide, inverted
+damp(cur, target, halfLife, dt) => lerp(cur, target, 1 - 2 ** (-dt / halfLife));
 ```
 
-so the machine genuinely travels toward the camera and foreshortens on the way,
-rather than growing. The glare on the screen and the shadow on the ground fade
-out as it arrives, because both belong to an object in a room and by then you
-are looking at a website. The iframe stays `pointer-events: none` until the
-flight is 96% done, so it can never swallow the scroll that is driving it.
+Under `prefers-reduced-motion` every sequence collapses to its destination
+rather than being removed: the reader gets the information, not the journey.
 
-The laptop is unbranded on purpose: it is an aluminium shape, not anyone's
-product, and it carries no maker's mark.
-
-Under `prefers-reduced-motion`, or below 900px where a 1200px screen would be
-illegible anyway, the flight is dropped entirely and the three builds are a
-plain list of links.
-
-## Motion
-
-Everything runs off a single `requestAnimationFrame` loop, driven by a
-non-reactive shared state object. Scroll and pointer are read into that object
-by passive listeners; nothing in the loop triggers a React-style re-render and
-nothing polls the DOM for values it can cache. Smoothing uses frame-rate
-independent exponential damping (`1 - 2^(-dt/halfLife)`), so motion is
-identical at 60Hz and 144Hz.
-
-### Why it is smooth: read, think, write
-
-The loop runs three phases per frame, and callbacks register into the phase they
-belong in — `addReader`, `addTicker`, `addWriter`:
-
-1. **Read** — every `getBoundingClientRect` and `getComputedStyle` in the whole app
-2. **Think** — damping and maths, no DOM access
-3. **Write** — every style, transform and attribute
-
-The reason is that a layout read issued *after* a style write forces the browser
-to lay the page out synchronously to answer it. With a dozen animated elements
-each measuring and then writing in turn, that is dozens of forced layouts per
-frame, and it is the actual cause of scroll-linked stutter — far more than any
-easing curve. Instrumenting the running page confirms **zero read-after-write
-transitions across 129 consecutive frames**: one layout pass per frame.
-
-Two subtler things fall out of the same discipline:
-
-- Event handlers must not measure either. A `pointermove` handler that reads a
-  rect runs *between* frames and lands after that frame's writes, so the tilt
-  effect measures in the read phase instead.
-- Anything inside a 3D-transformed subtree must be measured with
-  `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
-  scaled by the transform, and in the word cycler that 2.9% error accumulated
-  across steps until the previous word hung visibly above the current one.
-- A measurement must not include the effect it is used to compute. The magnetic
-  buttons took their pull from `getBoundingClientRect`, which reports the
-  element where the pull has already put it: the closer it got the harder it
-  pulled, so it hunted around an equilibrium and never reached one, writing a
-  new transform every frame forever. The reader now subtracts the offset it is
-  currently applying, and the offset is rounded to the same two decimals the DOM
-  is given — same grid on both sides, so rest is an actual fixed point. Parked
-  under the cursor it now produces **one distinct transform across 60 idle
-  frames**, where before every frame was different.
-
-Beyond that: the ambient colour washes use radial gradients rather than
-`filter: blur(90px)`, because a blur is a filter pass and those sections are
-3D-transformed, so it re-rasterised as they tilted. `will-change` is applied
-only to the handful of elements the loop writes every frame — applying it
-broadly costs memory and makes things worse. And the loop keeps a rolling
-average of frame cost: if the machine cannot hold 60fps it permanently steps
-down particle count and canvas frame rates rather than oscillating between
-quality tiers, which is more distracting than simply running lighter.
-
-| | |
-|---|---|
-| Preloader | Constellation draws in, counter races to 100, slat curtain lifts |
-| 3D scroll rig | Every unpinned section tilts and recedes in real perspective as it crosses the viewport |
-| Scene tilt | The hero rotates toward the cursor, its layers separated in z |
-| Armillary | A software-3D rotating armature with Orion suspended inside, true perspective projection, no library |
-| Grid floor | A CSS-3D plane receding to a horizon under the hero |
-| Chromatic split | Headlines fringe blue/magenta in proportion to scroll velocity |
-| Card rotation | Work tiles rotate in Y by their position across the lane |
-| Cursor | Stateful dot + difference-blend ring: link, view, drag, text |
-| 3D flips | Button labels and nav links rotate on the X axis rather than sliding |
-| Kinetic type | Headings split into masked words that rise into place |
-| Text scramble | Mono labels resolve out of noise on hover and on first view |
-| Flow field | Curl-noise particle plot, pointer-repelled, hero background |
-| ASCII plot | Orion rendered in text mode, rotating with pointer and scroll |
-| Halftone plates | Per-project generative dot / cross / bar fields, six tints |
-| Marquees | Seamless, speed and skew driven by scroll velocity |
-| Method | Pinned section, four steps advancing on scroll with a progress rail |
-| Work | Pinned stage with a horizontally-scrolling lane |
-| Magnetic | Buttons drift toward the cursor within reach |
-| The Assembly | Five layers of a page, exploded and inspected from a keyframed camera |
-| Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
+---
 
 ## Sound
 
-Off by default, with a toggle in the nav and in the mobile drawer. The choice
-persists in `localStorage`, and if it was on last visit the engine arms itself on
-the first pointer or key event — browsers will not let a page start audio before
-a gesture, and the toggle is itself that gesture on a first visit.
+Off by default, and a toggle in the header. Every sound is synthesised in the
+Web Audio API — no files, no network. The context is created on the first
+gesture, because browsers refuse one made before.
 
-Every sound is **synthesised at runtime** from oscillators and shaped noise, so
-there are no audio files and the page weight does not change. The graph is a
-gain bus into a compressor, with a send into a convolution reverb whose impulse
-response is generated on the fly — reverb is what stops synthesised tones
-sounding like a system beep.
+---
 
-The seven colour zones are tuned to the seven notes of an A minor pentatonic
-scale, low to high, so scrolling the page plays an ascending run and any two
-sections sound consonant together. Hovers pick from a small pool of high notes
-so a fast sweep across the nav does not repeat one pitch, and are rate-limited
-to one every 55ms. The rest: a pluck on click, rising and falling arpeggios for
-the drawer, a filtered noise sweep on page transitions, a resolving chord when
-the preloader lifts, a major arpeggio on a valid submit and a low detuned pair
-on a validation failure.
+## Traps worth naming
 
-No `AudioContext` is constructed until the visitor asks for sound.
+### `String.replace` ate my selector
 
-Everything above is gated behind `prefers-reduced-motion: reduce`. Under it the
-preloader is skipped, the cursor is disabled, pins collapse to normal flow, all
-four method steps show at once, and the flow field and ASCII plot render as
-single static frames rather than blank rectangles. No content is ever left at
-`opacity: 0`.
+`String.replace` treats `$` in the **replacement** as an escape. `$&` inserts
+the whole match, `` $` `` inserts everything before it. A replacement containing
+`$(".lab__tab")` therefore becomes `$(".lab__tab")` with the preceding
+document spliced in — and the module it belonged to returns early and dies in
+silence.
 
-Density also drops automatically on low-tier devices (`hardwareConcurrency`,
-`deviceMemory`, viewport width), and canvases pause when scrolled out of view or
-when the tab is hidden.
-
-## Verified
-
-Measured in Chromium at 360–1920px, not eyeballed:
-
-- **LCP 232–248ms** on the interior pages and **740ms** on the animated landing
-  page; the LCP element is the `<h1>` in every case
-- **7–9 requests, 345–427KB**, a single origin (214KB of that is the five
-  self-hosted font files)
-- **Zero dead ends**: every internal link resolves, every page is reachable from
-  home by following links, and nothing that looks clickable is inert
-- **Zero forced synchronous layouts** across 129 instrumented frames
-- **Contrast** computed numerically: body 17.95:1, secondary 9.78:1, mono labels
-  5.49:1, and all seven zone signals between 6.27:1 and 17.53:1 as text against
-  the ground; interactive borders use a dedicated `--edge` token at 3.51:1 (WCAG 1.4.11)
-- **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
-- **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
-  panels and the closed drawer are `inert`
-- **Form**: blocks empty submits with per-field messages, validates email shape
-  and detail length, then assembles the brief — and, with no address configured,
-  offers "copy" rather than a mail link
-- **Truth sweep**: the built output is grepped for every fabricated string this
-  site used to carry, and the build is failed if one comes back
-- **Price agreement**: the build fails if a package price on `services.html`
-  does not appear on `contact.html` — both are generated from one file, and this
-  is what stops anyone hard-coding one of them later
-
-## The contact form
-
-There is no server. The form validates in the browser, renders the assembled
-brief into a terminal panel, and then offers two ways out: **copy the brief**,
-always; and **open it in your mail app**, only when `site.js` has an email set.
-
-That second condition is the point. The form reads its address from
-`data-inbox`, which the build fills from `site.js`. While that value is empty
-there is no address anywhere in the source, so the site cannot ship a
-plausible-looking address that does not exist. Set `email` and re-run
-`node tools/build.js` and the mail button appears by itself. To post to a real
-endpoint instead, replace the submit handler in `assets/js/app.js`.
-
-## Before publishing
-
-Two values in `tools/data/site.js` are deliberately empty, and the build
-degrades honestly around both:
-
-| Value | While empty | Once set |
-|---|---|---|
-| `origin` | no canonical links, no `og:url`, no `sitemap.xml`, and `robots.txt` carries no `Sitemap:` line | all four are emitted against the real domain |
-| `email` | no address is printed anywhere; the brief is copied instead | the mail button appears on the contact page |
-
-Prices live in `tools/data/packages.js` and appear in two places from that one
-source: the cards on `services.html` and the select on `contact.html`. Each
-package is a one-off build fee plus a monthly fee, and the build fails if the
-two surfaces ever disagree.
-
-## Fonts
-
-Six families, all latin subsets, all self-hosted under the SIL Open Font
-License 1.1. Bodoni Moda (roman and italic), Archivo and IBM Plex Mono carry
-this site; Fraunces, Bebas Neue and Cormorant Garamond give the three demo
-sites their own voices (see
-`assets/fonts/LICENSE.txt`). Bodoni and Archivo are variable, so every weight
-and, for Archivo, every width comes from a single file. Self-hosting removes the
-render-blocking third-party request and the flash of fallback text that the
-Google Fonts CDN causes on a cold connection.
-
-
- in the **replacement** as an escape:
-`$` becomes a literal `# Orion — static site
-
-A fourteen-page site for Orion — one person, in England — plus three complete
-demo sites built to show what each package looks like finished. **Zero dependencies, zero third-party network requests.** Hand-written
-HTML, CSS and ES2020.
-
-Nothing on this site is placeholder content. There are no invented clients, no
-invented metrics, no invented company and no invented contact details. Facts
-about Orion live in exactly one file, `tools/data/site.js`, and the rule there
-is that an unknown value stays empty rather than becoming something plausible —
-the build then omits whatever depended on it.
-
-Open `index.html` in a browser, or serve the folder:
-
-```sh
-python3 -m http.server 8000
-# then http://localhost:8000
-```
-
-## Art direction
-
-**Couture observatory** — luxury editorial typography inside a technical
-instrument frame, flying through coloured space.
-
-Bodoni Moda, a high-contrast didone, set in mixed case at billboard scale with
-italic for emphasis. Archivo carries the interface, IBM Plex Mono the data
-labels. The ground is a violet-black rather than a neutral one.
-
-Colour is zoned across **seven** signals — champagne gold for the index, violet
-for services, teal for the position statement, blue for the method, magenta for
-the work, acid for the standards, flare for contact. Each section carries an
-ambient two-hue wash in its own accent, so colour is present throughout rather
-than saved for a single pop. Every one of the seven clears 4.5:1 against the
-ground as text, which is what allows them all to be used for type.
-
-Zone utilities redeclare literal colour values rather than chaining `var()`
-indirections, because a custom property that references another resolves where
-it is *declared*, not where it is used.
-
-### The didone problem, and the fix
-
-A high-contrast serif reversed out of near-black loses its hairlines: at the
-sizes used here the hyphen in "E-commerce" and the diagonal of a "4" dropped
-below one device pixel and disappeared outright. The fix is optical-size
-compensation — `font-optical-sizing` is switched off and `opsz` is pinned
-*below* the rendered size in three bands (26 for display, 15 for headings, 9 for
-small numerals), because lower optical sizes carry sturdier hairlines. This is
-why the type holds together on a dark ground.
-
-## Pages
-
-```
-index.html                        LANDING — the typed question, then the answer
-home.html                         home — six quiet screens, one idea each
-about.html                        about — who I am, what I argue for
-services.html                     what I build, the three package cards, FAQ
-work.html                         THIS SITE — the teardown, with the measured numbers
-journal.html                      build-notes index
-contact.html                      brief form, what happens next
-
-journal-read-think-write.html     \  three build notes, generated from
-journal-didone-on-dark.html        |  tools/data/journal.js
-journal-performance-budget.html   /
-
-privacy.html                      privacy notice
-terms.html                        site terms
-404.html                          not found, with nine ways back
-
-robots.txt                        generated
-sitemap.xml                       generated only once site.js has an origin
-
-demos/chess/                      \  three demo sites, nine pages, each with
-demos/barbers/                     |  its own palette, typefaces and voice.
-demos/saltmarsh/                  /  generated by tools/demos/build.js
-```
-
-Every build note links to the other two. Nothing on the site is a dead end: no
-element that looks clickable fails to lead somewhere, which is verified by
-crawling the built output rather than by inspection.
-
-```
-assets/css/styles.css   design tokens, components, motion primitives
-assets/js/app.js        the whole motion system, one rAF loop
-assets/fonts/           Bodoni Moda, Archivo, IBM Plex Mono (OFL, latin subsets)
-tools/                  page generator, templates and content data
-```
-
-### Editing
-
-`home.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. Every other generated page is built from it, so the
-chrome cannot drift. `index.html` (the landing sequence) is hand-written and has
-its own minimal chrome on purpose.
-
-```sh
-node tools/build.js     # regenerates all generated pages, plus sitemap and robots
-```
-
-- Chrome → edit `home.html`
-- Demo sites → `tools/demos/*.js`, then `node tools/demos/build.js`
-- Facts about Orion (domain, email, location) → `tools/data/site.js`
-- Package names and prices → `tools/data/packages.js`
-- One-off page bodies → `tools/bodies/`
-- Build notes → `tools/data/journal.js`
-- Repeated page shapes → `tools/templates.js`
-
-The contact form lives in `tools/bodies/contact-form.html`, so there is only
-ever one copy of it. The build fills its package options from
-`tools/data/packages.js` and its `data-inbox` from `tools/data/site.js`.
-
-## The demo sites
-
-Three complete sites for businesses that do not exist, one per package, so the
-prices on `services.html` point at something you can actually click:
-
-| | Package | Pages | Palette | Type | The interesting part |
-|---|---|---|---|---|---|
-| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening |
-| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | a street map drawn on canvas, and generated cut plates |
-| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | a three-step booking system with real availability rules |
-
-They are deliberately nothing like each other, and nothing like this site. That
-is the point: a builder who only has one look is a builder with a template.
-
-Every page carries a bar across the top saying the business is not real, is
-`noindex`, and links back here. The build fails if one of them loses that bar.
-Where a demo cannot show something honestly it says so on the page — the
-barbers' map is drawn rather than embedded, because an embedded map means a
-third-party script and this site does not make third-party requests.
-
-### The machine
-
-`demos.html` opens with a laptop built out of CSS 3D, with a demo site running
-live inside the screen in an iframe. Scrolling flies the camera into it: the lid
-comes up over the first fifth of the track, then the camera pushes in until the
-screen fills the viewport and the site inside becomes interactive.
-
-The push is a **dolly, not a scale**. The scale you want is solved backwards for
-the z that produces it under the page's own perspective:
-
-```js
-var sc = sStart + (sEnd - sStart) * e;
-var z  = PERSP * (1 - 1 / sc);      // perspective divide, inverted
-```
-
-so the machine genuinely travels toward the camera and foreshortens on the way,
-rather than growing. The glare on the screen and the shadow on the ground fade
-out as it arrives, because both belong to an object in a room and by then you
-are looking at a website. The iframe stays `pointer-events: none` until the
-flight is 96% done, so it can never swallow the scroll that is driving it.
-
-The laptop is unbranded on purpose: it is an aluminium shape, not anyone's
-product, and it carries no maker's mark.
-
-Under `prefers-reduced-motion`, or below 900px where a 1200px screen would be
-illegible anyway, the flight is dropped entirely and the three builds are a
-plain list of links.
-
-## Motion
-
-Everything runs off a single `requestAnimationFrame` loop, driven by a
-non-reactive shared state object. Scroll and pointer are read into that object
-by passive listeners; nothing in the loop triggers a React-style re-render and
-nothing polls the DOM for values it can cache. Smoothing uses frame-rate
-independent exponential damping (`1 - 2^(-dt/halfLife)`), so motion is
-identical at 60Hz and 144Hz.
-
-### Why it is smooth: read, think, write
-
-The loop runs three phases per frame, and callbacks register into the phase they
-belong in — `addReader`, `addTicker`, `addWriter`:
-
-1. **Read** — every `getBoundingClientRect` and `getComputedStyle` in the whole app
-2. **Think** — damping and maths, no DOM access
-3. **Write** — every style, transform and attribute
-
-The reason is that a layout read issued *after* a style write forces the browser
-to lay the page out synchronously to answer it. With a dozen animated elements
-each measuring and then writing in turn, that is dozens of forced layouts per
-frame, and it is the actual cause of scroll-linked stutter — far more than any
-easing curve. Instrumenting the running page confirms **zero read-after-write
-transitions across 129 consecutive frames**: one layout pass per frame.
-
-Two subtler things fall out of the same discipline:
-
-- Event handlers must not measure either. A `pointermove` handler that reads a
-  rect runs *between* frames and lands after that frame's writes, so the tilt
-  effect measures in the read phase instead.
-- Anything inside a 3D-transformed subtree must be measured with
-  `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
-  scaled by the transform, and in the word cycler that 2.9% error accumulated
-  across steps until the previous word hung visibly above the current one.
-- A measurement must not include the effect it is used to compute. The magnetic
-  buttons took their pull from `getBoundingClientRect`, which reports the
-  element where the pull has already put it: the closer it got the harder it
-  pulled, so it hunted around an equilibrium and never reached one, writing a
-  new transform every frame forever. The reader now subtracts the offset it is
-  currently applying, and the offset is rounded to the same two decimals the DOM
-  is given — same grid on both sides, so rest is an actual fixed point. Parked
-  under the cursor it now produces **one distinct transform across 60 idle
-  frames**, where before every frame was different.
-
-Beyond that: the ambient colour washes use radial gradients rather than
-`filter: blur(90px)`, because a blur is a filter pass and those sections are
-3D-transformed, so it re-rasterised as they tilted. `will-change` is applied
-only to the handful of elements the loop writes every frame — applying it
-broadly costs memory and makes things worse. And the loop keeps a rolling
-average of frame cost: if the machine cannot hold 60fps it permanently steps
-down particle count and canvas frame rates rather than oscillating between
-quality tiers, which is more distracting than simply running lighter.
-
-| | |
-|---|---|
-| Preloader | Constellation draws in, counter races to 100, slat curtain lifts |
-| 3D scroll rig | Every unpinned section tilts and recedes in real perspective as it crosses the viewport |
-| Scene tilt | The hero rotates toward the cursor, its layers separated in z |
-| Armillary | A software-3D rotating armature with Orion suspended inside, true perspective projection, no library |
-| Grid floor | A CSS-3D plane receding to a horizon under the hero |
-| Chromatic split | Headlines fringe blue/magenta in proportion to scroll velocity |
-| Card rotation | Work tiles rotate in Y by their position across the lane |
-| Cursor | Stateful dot + difference-blend ring: link, view, drag, text |
-| 3D flips | Button labels and nav links rotate on the X axis rather than sliding |
-| Kinetic type | Headings split into masked words that rise into place |
-| Text scramble | Mono labels resolve out of noise on hover and on first view |
-| Flow field | Curl-noise particle plot, pointer-repelled, hero background |
-| ASCII plot | Orion rendered in text mode, rotating with pointer and scroll |
-| Halftone plates | Per-project generative dot / cross / bar fields, six tints |
-| Marquees | Seamless, speed and skew driven by scroll velocity |
-| Method | Pinned section, four steps advancing on scroll with a progress rail |
-| Work | Pinned stage with a horizontally-scrolling lane |
-| Magnetic | Buttons drift toward the cursor within reach |
-| The Assembly | Five layers of a page, exploded and inspected from a keyframed camera |
-| Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
-
-## Sound
-
-Off by default, with a toggle in the nav and in the mobile drawer. The choice
-persists in `localStorage`, and if it was on last visit the engine arms itself on
-the first pointer or key event — browsers will not let a page start audio before
-a gesture, and the toggle is itself that gesture on a first visit.
-
-Every sound is **synthesised at runtime** from oscillators and shaped noise, so
-there are no audio files and the page weight does not change. The graph is a
-gain bus into a compressor, with a send into a convolution reverb whose impulse
-response is generated on the fly — reverb is what stops synthesised tones
-sounding like a system beep.
-
-The seven colour zones are tuned to the seven notes of an A minor pentatonic
-scale, low to high, so scrolling the page plays an ascending run and any two
-sections sound consonant together. Hovers pick from a small pool of high notes
-so a fast sweep across the nav does not repeat one pitch, and are rate-limited
-to one every 55ms. The rest: a pluck on click, rising and falling arpeggios for
-the drawer, a filtered noise sweep on page transitions, a resolving chord when
-the preloader lifts, a major arpeggio on a valid submit and a low detuned pair
-on a validation failure.
-
-No `AudioContext` is constructed until the visitor asks for sound.
-
-Everything above is gated behind `prefers-reduced-motion: reduce`. Under it the
-preloader is skipped, the cursor is disabled, pins collapse to normal flow, all
-four method steps show at once, and the flow field and ASCII plot render as
-single static frames rather than blank rectangles. No content is ever left at
-`opacity: 0`.
-
-Density also drops automatically on low-tier devices (`hardwareConcurrency`,
-`deviceMemory`, viewport width), and canvases pause when scrolled out of view or
-when the tab is hidden.
-
-## Verified
-
-Measured in Chromium at 360–1920px, not eyeballed:
-
-- **LCP 232–248ms** on the interior pages and **740ms** on the animated landing
-  page; the LCP element is the `<h1>` in every case
-- **7–9 requests, 345–427KB**, a single origin (214KB of that is the five
-  self-hosted font files)
-- **Zero dead ends**: every internal link resolves, every page is reachable from
-  home by following links, and nothing that looks clickable is inert
-- **Zero forced synchronous layouts** across 129 instrumented frames
-- **Contrast** computed numerically: body 17.95:1, secondary 9.78:1, mono labels
-  5.49:1, and all seven zone signals between 6.27:1 and 17.53:1 as text against
-  the ground; interactive borders use a dedicated `--edge` token at 3.51:1 (WCAG 1.4.11)
-- **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
-- **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
-  panels and the closed drawer are `inert`
-- **Form**: blocks empty submits with per-field messages, validates email shape
-  and detail length, then assembles the brief — and, with no address configured,
-  offers "copy" rather than a mail link
-- **Truth sweep**: the built output is grepped for every fabricated string this
-  site used to carry, and the build is failed if one comes back
-- **Price agreement**: the build fails if a package price on `services.html`
-  does not appear on `contact.html` — both are generated from one file, and this
-  is what stops anyone hard-coding one of them later
-
-## The contact form
-
-There is no server. The form validates in the browser, renders the assembled
-brief into a terminal panel, and then offers two ways out: **copy the brief**,
-always; and **open it in your mail app**, only when `site.js` has an email set.
-
-That second condition is the point. The form reads its address from
-`data-inbox`, which the build fills from `site.js`. While that value is empty
-there is no address anywhere in the source, so the site cannot ship a
-plausible-looking address that does not exist. Set `email` and re-run
-`node tools/build.js` and the mail button appears by itself. To post to a real
-endpoint instead, replace the submit handler in `assets/js/app.js`.
-
-## Before publishing
-
-Two values in `tools/data/site.js` are deliberately empty, and the build
-degrades honestly around both:
-
-| Value | While empty | Once set |
-|---|---|---|
-| `origin` | no canonical links, no `og:url`, no `sitemap.xml`, and `robots.txt` carries no `Sitemap:` line | all four are emitted against the real domain |
-| `email` | no address is printed anywhere; the brief is copied instead | the mail button appears on the contact page |
-
-Prices live in `tools/data/packages.js` and appear in two places from that one
-source: the cards on `services.html` and the select on `contact.html`. Each
-package is a one-off build fee plus a monthly fee, and the build fails if the
-two surfaces ever disagree.
-
-## Fonts
-
-Six families, all latin subsets, all self-hosted under the SIL Open Font
-License 1.1. Bodoni Moda (roman and italic), Archivo and IBM Plex Mono carry
-this site; Fraunces, Bebas Neue and Cormorant Garamond give the three demo
-sites their own voices (see
-`assets/fonts/LICENSE.txt`). Bodoni and Archivo are variable, so every weight
-and, for Archivo, every width comes from a single file. Self-hosting removes the
-render-blocking third-party request and the flash of fallback text that the
-Google Fonts CDN causes on a cold connection.
-
-
-, `## A trap worth naming twice` becomes the whole match, `$1` a capture
-group. Patching this codebase with a script whose replacement contained
-`$(".lab__tab")` silently produced `$(".lab__tab")` — one element instead of
-an array. `.length` was `undefined`, the guard returned early, and the whole
-module went quiet with no error anywhere.
-
-It has happened twice on this build. The fix is to always pass a **function** as
-the replacement, which is never scanned for `# Orion — static site
-
-A fourteen-page site for Orion — one person, in England — plus three complete
-demo sites built to show what each package looks like finished. **Zero dependencies, zero third-party network requests.** Hand-written
-HTML, CSS and ES2020.
-
-Nothing on this site is placeholder content. There are no invented clients, no
-invented metrics, no invented company and no invented contact details. Facts
-about Orion live in exactly one file, `tools/data/site.js`, and the rule there
-is that an unknown value stays empty rather than becoming something plausible —
-the build then omits whatever depended on it.
-
-Open `index.html` in a browser, or serve the folder:
-
-```sh
-python3 -m http.server 8000
-# then http://localhost:8000
-```
-
-## Art direction
-
-**Couture observatory** — luxury editorial typography inside a technical
-instrument frame, flying through coloured space.
-
-Bodoni Moda, a high-contrast didone, set in mixed case at billboard scale with
-italic for emphasis. Archivo carries the interface, IBM Plex Mono the data
-labels. The ground is a violet-black rather than a neutral one.
-
-Colour is zoned across **seven** signals — champagne gold for the index, violet
-for services, teal for the position statement, blue for the method, magenta for
-the work, acid for the standards, flare for contact. Each section carries an
-ambient two-hue wash in its own accent, so colour is present throughout rather
-than saved for a single pop. Every one of the seven clears 4.5:1 against the
-ground as text, which is what allows them all to be used for type.
-
-Zone utilities redeclare literal colour values rather than chaining `var()`
-indirections, because a custom property that references another resolves where
-it is *declared*, not where it is used.
-
-### The didone problem, and the fix
-
-A high-contrast serif reversed out of near-black loses its hairlines: at the
-sizes used here the hyphen in "E-commerce" and the diagonal of a "4" dropped
-below one device pixel and disappeared outright. The fix is optical-size
-compensation — `font-optical-sizing` is switched off and `opsz` is pinned
-*below* the rendered size in three bands (26 for display, 15 for headings, 9 for
-small numerals), because lower optical sizes carry sturdier hairlines. This is
-why the type holds together on a dark ground.
-
-## Pages
-
-```
-index.html                        LANDING — the typed question, then the answer
-home.html                         home — six quiet screens, one idea each
-about.html                        about — who I am, what I argue for
-services.html                     what I build, the three package cards, FAQ
-work.html                         THIS SITE — the teardown, with the measured numbers
-journal.html                      build-notes index
-contact.html                      brief form, what happens next
-
-journal-read-think-write.html     \  three build notes, generated from
-journal-didone-on-dark.html        |  tools/data/journal.js
-journal-performance-budget.html   /
-
-privacy.html                      privacy notice
-terms.html                        site terms
-404.html                          not found, with nine ways back
-
-robots.txt                        generated
-sitemap.xml                       generated only once site.js has an origin
-
-demos/chess/                      \  three demo sites, nine pages, each with
-demos/barbers/                     |  its own palette, typefaces and voice.
-demos/saltmarsh/                  /  generated by tools/demos/build.js
-```
-
-Every build note links to the other two. Nothing on the site is a dead end: no
-element that looks clickable fails to lead somewhere, which is verified by
-crawling the built output rather than by inspection.
-
-```
-assets/css/styles.css   design tokens, components, motion primitives
-assets/js/app.js        the whole motion system, one rAF loop
-assets/fonts/           Bodoni Moda, Archivo, IBM Plex Mono (OFL, latin subsets)
-tools/                  page generator, templates and content data
-```
-
-### Editing
-
-`home.html` is the source of truth for the shared chrome: `<head>`, preloader,
-HUD, nav, drawer and footer. Every other generated page is built from it, so the
-chrome cannot drift. `index.html` (the landing sequence) is hand-written and has
-its own minimal chrome on purpose.
-
-```sh
-node tools/build.js     # regenerates all generated pages, plus sitemap and robots
-```
-
-- Chrome → edit `home.html`
-- Demo sites → `tools/demos/*.js`, then `node tools/demos/build.js`
-- Facts about Orion (domain, email, location) → `tools/data/site.js`
-- Package names and prices → `tools/data/packages.js`
-- One-off page bodies → `tools/bodies/`
-- Build notes → `tools/data/journal.js`
-- Repeated page shapes → `tools/templates.js`
-
-The contact form lives in `tools/bodies/contact-form.html`, so there is only
-ever one copy of it. The build fills its package options from
-`tools/data/packages.js` and its `data-inbox` from `tools/data/site.js`.
-
-## The demo sites
-
-Three complete sites for businesses that do not exist, one per package, so the
-prices on `services.html` point at something you can actually click:
-
-| | Package | Pages | Palette | Type | The interesting part |
-|---|---|---|---|---|---|
-| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening |
-| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | a street map drawn on canvas, and generated cut plates |
-| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | a three-step booking system with real availability rules |
-
-They are deliberately nothing like each other, and nothing like this site. That
-is the point: a builder who only has one look is a builder with a template.
-
-Every page carries a bar across the top saying the business is not real, is
-`noindex`, and links back here. The build fails if one of them loses that bar.
-Where a demo cannot show something honestly it says so on the page — the
-barbers' map is drawn rather than embedded, because an embedded map means a
-third-party script and this site does not make third-party requests.
-
-### The machine
-
-`demos.html` opens with a laptop built out of CSS 3D, with a demo site running
-live inside the screen in an iframe. Scrolling flies the camera into it: the lid
-comes up over the first fifth of the track, then the camera pushes in until the
-screen fills the viewport and the site inside becomes interactive.
-
-The push is a **dolly, not a scale**. The scale you want is solved backwards for
-the z that produces it under the page's own perspective:
-
-```js
-var sc = sStart + (sEnd - sStart) * e;
-var z  = PERSP * (1 - 1 / sc);      // perspective divide, inverted
-```
-
-so the machine genuinely travels toward the camera and foreshortens on the way,
-rather than growing. The glare on the screen and the shadow on the ground fade
-out as it arrives, because both belong to an object in a room and by then you
-are looking at a website. The iframe stays `pointer-events: none` until the
-flight is 96% done, so it can never swallow the scroll that is driving it.
-
-The laptop is unbranded on purpose: it is an aluminium shape, not anyone's
-product, and it carries no maker's mark.
-
-Under `prefers-reduced-motion`, or below 900px where a 1200px screen would be
-illegible anyway, the flight is dropped entirely and the three builds are a
-plain list of links.
-
-## Motion
-
-Everything runs off a single `requestAnimationFrame` loop, driven by a
-non-reactive shared state object. Scroll and pointer are read into that object
-by passive listeners; nothing in the loop triggers a React-style re-render and
-nothing polls the DOM for values it can cache. Smoothing uses frame-rate
-independent exponential damping (`1 - 2^(-dt/halfLife)`), so motion is
-identical at 60Hz and 144Hz.
-
-### Why it is smooth: read, think, write
-
-The loop runs three phases per frame, and callbacks register into the phase they
-belong in — `addReader`, `addTicker`, `addWriter`:
-
-1. **Read** — every `getBoundingClientRect` and `getComputedStyle` in the whole app
-2. **Think** — damping and maths, no DOM access
-3. **Write** — every style, transform and attribute
-
-The reason is that a layout read issued *after* a style write forces the browser
-to lay the page out synchronously to answer it. With a dozen animated elements
-each measuring and then writing in turn, that is dozens of forced layouts per
-frame, and it is the actual cause of scroll-linked stutter — far more than any
-easing curve. Instrumenting the running page confirms **zero read-after-write
-transitions across 129 consecutive frames**: one layout pass per frame.
-
-Two subtler things fall out of the same discipline:
-
-- Event handlers must not measure either. A `pointermove` handler that reads a
-  rect runs *between* frames and lands after that frame's writes, so the tilt
-  effect measures in the read phase instead.
-- Anything inside a 3D-transformed subtree must be measured with
-  `getComputedStyle`, not `getBoundingClientRect` — a client rect comes back
-  scaled by the transform, and in the word cycler that 2.9% error accumulated
-  across steps until the previous word hung visibly above the current one.
-- A measurement must not include the effect it is used to compute. The magnetic
-  buttons took their pull from `getBoundingClientRect`, which reports the
-  element where the pull has already put it: the closer it got the harder it
-  pulled, so it hunted around an equilibrium and never reached one, writing a
-  new transform every frame forever. The reader now subtracts the offset it is
-  currently applying, and the offset is rounded to the same two decimals the DOM
-  is given — same grid on both sides, so rest is an actual fixed point. Parked
-  under the cursor it now produces **one distinct transform across 60 idle
-  frames**, where before every frame was different.
-
-Beyond that: the ambient colour washes use radial gradients rather than
-`filter: blur(90px)`, because a blur is a filter pass and those sections are
-3D-transformed, so it re-rasterised as they tilted. `will-change` is applied
-only to the handful of elements the loop writes every frame — applying it
-broadly costs memory and makes things worse. And the loop keeps a rolling
-average of frame cost: if the machine cannot hold 60fps it permanently steps
-down particle count and canvas frame rates rather than oscillating between
-quality tiers, which is more distracting than simply running lighter.
-
-| | |
-|---|---|
-| Preloader | Constellation draws in, counter races to 100, slat curtain lifts |
-| 3D scroll rig | Every unpinned section tilts and recedes in real perspective as it crosses the viewport |
-| Scene tilt | The hero rotates toward the cursor, its layers separated in z |
-| Armillary | A software-3D rotating armature with Orion suspended inside, true perspective projection, no library |
-| Grid floor | A CSS-3D plane receding to a horizon under the hero |
-| Chromatic split | Headlines fringe blue/magenta in proportion to scroll velocity |
-| Card rotation | Work tiles rotate in Y by their position across the lane |
-| Cursor | Stateful dot + difference-blend ring: link, view, drag, text |
-| 3D flips | Button labels and nav links rotate on the X axis rather than sliding |
-| Kinetic type | Headings split into masked words that rise into place |
-| Text scramble | Mono labels resolve out of noise on hover and on first view |
-| Flow field | Curl-noise particle plot, pointer-repelled, hero background |
-| ASCII plot | Orion rendered in text mode, rotating with pointer and scroll |
-| Halftone plates | Per-project generative dot / cross / bar fields, six tints |
-| Marquees | Seamless, speed and skew driven by scroll velocity |
-| Method | Pinned section, four steps advancing on scroll with a progress rail |
-| Work | Pinned stage with a horizontally-scrolling lane |
-| Magnetic | Buttons drift toward the cursor within reach |
-| The Assembly | Five layers of a page, exploded and inspected from a keyframed camera |
-| Counters, parallax, tilt, clip-wipes, SVG stroke draws, page-transition curtain |
-
-## Sound
-
-Off by default, with a toggle in the nav and in the mobile drawer. The choice
-persists in `localStorage`, and if it was on last visit the engine arms itself on
-the first pointer or key event — browsers will not let a page start audio before
-a gesture, and the toggle is itself that gesture on a first visit.
-
-Every sound is **synthesised at runtime** from oscillators and shaped noise, so
-there are no audio files and the page weight does not change. The graph is a
-gain bus into a compressor, with a send into a convolution reverb whose impulse
-response is generated on the fly — reverb is what stops synthesised tones
-sounding like a system beep.
-
-The seven colour zones are tuned to the seven notes of an A minor pentatonic
-scale, low to high, so scrolling the page plays an ascending run and any two
-sections sound consonant together. Hovers pick from a small pool of high notes
-so a fast sweep across the nav does not repeat one pitch, and are rate-limited
-to one every 55ms. The rest: a pluck on click, rising and falling arpeggios for
-the drawer, a filtered noise sweep on page transitions, a resolving chord when
-the preloader lifts, a major arpeggio on a valid submit and a low detuned pair
-on a validation failure.
-
-No `AudioContext` is constructed until the visitor asks for sound.
-
-Everything above is gated behind `prefers-reduced-motion: reduce`. Under it the
-preloader is skipped, the cursor is disabled, pins collapse to normal flow, all
-four method steps show at once, and the flow field and ASCII plot render as
-single static frames rather than blank rectangles. No content is ever left at
-`opacity: 0`.
-
-Density also drops automatically on low-tier devices (`hardwareConcurrency`,
-`deviceMemory`, viewport width), and canvases pause when scrolled out of view or
-when the tab is hidden.
-
-## Verified
-
-Measured in Chromium at 360–1920px, not eyeballed:
-
-- **LCP 232–248ms** on the interior pages and **740ms** on the animated landing
-  page; the LCP element is the `<h1>` in every case
-- **7–9 requests, 345–427KB**, a single origin (214KB of that is the five
-  self-hosted font files)
-- **Zero dead ends**: every internal link resolves, every page is reachable from
-  home by following links, and nothing that looks clickable is inert
-- **Zero forced synchronous layouts** across 129 instrumented frames
-- **Contrast** computed numerically: body 17.95:1, secondary 9.78:1, mono labels
-  5.49:1, and all seven zone signals between 6.27:1 and 17.53:1 as text against
-  the ground; interactive borders use a dedicated `--edge` token at 3.51:1 (WCAG 1.4.11)
-- **No horizontal overflow** at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920
-- **Keyboard**: drawer traps focus, Escape closes and restores it, collapsed FAQ
-  panels and the closed drawer are `inert`
-- **Form**: blocks empty submits with per-field messages, validates email shape
-  and detail length, then assembles the brief — and, with no address configured,
-  offers "copy" rather than a mail link
-- **Truth sweep**: the built output is grepped for every fabricated string this
-  site used to carry, and the build is failed if one comes back
-- **Price agreement**: the build fails if a package price on `services.html`
-  does not appear on `contact.html` — both are generated from one file, and this
-  is what stops anyone hard-coding one of them later
-
-## The contact form
-
-There is no server. The form validates in the browser, renders the assembled
-brief into a terminal panel, and then offers two ways out: **copy the brief**,
-always; and **open it in your mail app**, only when `site.js` has an email set.
-
-That second condition is the point. The form reads its address from
-`data-inbox`, which the build fills from `site.js`. While that value is empty
-there is no address anywhere in the source, so the site cannot ship a
-plausible-looking address that does not exist. Set `email` and re-run
-`node tools/build.js` and the mail button appears by itself. To post to a real
-endpoint instead, replace the submit handler in `assets/js/app.js`.
-
-## Before publishing
-
-Two values in `tools/data/site.js` are deliberately empty, and the build
-degrades honestly around both:
-
-| Value | While empty | Once set |
-|---|---|---|
-| `origin` | no canonical links, no `og:url`, no `sitemap.xml`, and `robots.txt` carries no `Sitemap:` line | all four are emitted against the real domain |
-| `email` | no address is printed anywhere; the brief is copied instead | the mail button appears on the contact page |
-
-Prices live in `tools/data/packages.js` and appear in two places from that one
-source: the cards on `services.html` and the select on `contact.html`. Each
-package is a one-off build fee plus a monthly fee, and the build fails if the
-two surfaces ever disagree.
-
-## Fonts
-
-Six families, all latin subsets, all self-hosted under the SIL Open Font
-License 1.1. Bodoni Moda (roman and italic), Archivo and IBM Plex Mono carry
-this site; Fraunces, Bebas Neue and Cormorant Garamond give the three demo
-sites their own voices (see
-`assets/fonts/LICENSE.txt`). Bodoni and Archivo are variable, so every weight
-and, for Archivo, every width comes from a single file. Self-hosting removes the
-render-blocking third-party request and the flash of fallback text that the
-Google Fonts CDN causes on a cold connection.
-
-
- patterns:
+This bit three times. Always pass a function:
 
 ```js
 s.replace(needle, () => replacement);   // not s.replace(needle, replacement)
 ```
 
-## [hidden] has to win
+### `[hidden]` has to win
 
 `.btn` is `display: inline-flex`. The user-agent sheet's `[hidden] { display:
 none }` is a plain element-attribute rule, so any component that sets its own
-`display` outranks it — and hiding that component from script then does
-nothing at all, silently. It leaked the nav CTA onto small screens once and
-showed a live pay button for an unconfigured package once. One rule ends it:
+`display` outranks it — and hiding that component from script then does nothing
+at all, silently. It leaked the nav CTA onto small screens once and showed a
+live pay button for an unconfigured package once. One rule ends it:
 
 ```css
 [hidden] { display: none !important; }
 ```
 
-## A trap worth naming twice
+### `putImageData` replaces, it does not blend
 
-`position: sticky` fails silently in two different ways, and this site hit both.
+It ignores `globalCompositeOperation`, `globalAlpha` **and** the current
+transform. Stamping film grain that way does not lay grain over a picture, it
+wipes the picture. `grain()` tiles a cached noise canvas with `createPattern`
+instead.
+
+### Nonzero winding cancels
+
+Filling a head, its hair and its beard as one path lets their winding directions
+cancel where they overlap, and nonzero then punches a hole through the crown.
+Each part begins, closes and fills on its own.
+
+Related: every hair shape's inner edge has to sit **below** the crown of the
+skull, not above it. A hairline gap between two fills reads as a dark bar drawn
+across the head.
+
+### A damped value must not be fed its own kick
+
+Adding a constant to a value that is also being damped towards a target makes it
+converge on `target + k/rate`, not on `target`. Add the kick at draw time.
+
+### `position: sticky` fails silently, twice
 
 1. **A transformed ancestor.** A transform makes an element the containing block
    for everything inside it, so a sticky descendant stops behaving. This is why
-   the 3D scroll rig applies perspective per element rather than to a wrapper —
-   and why `init3D` now refuses to tilt any section that contains a sticky
-   element, rather than relying on anyone remembering the rule.
+   the 3D rig applies perspective per element, and why `init3D` refuses to tilt
+   any section containing a sticky element rather than relying on anyone
+   remembering.
 2. **A shrink-wrapped containing block.** A sticky element can only travel
-   within its containing block. In a grid with `align-items: start`, a sidebar
-   column is only as tall as its own content, so there is nowhere to travel and
-   it simply scrolls away. The column needs `align-self: stretch`.
+   within its containing block. In a grid with `align-items: start` a sidebar
+   column is only as tall as its content, so there is nowhere to travel. The
+   column needs `align-self: stretch`.
 
-Neither throws, neither warns, and both look like "sticky is broken".
+### A palette token reaching where it should not
 
+Three contrast failures, all the same shape. `.nav a` set the colour of the
+label *inside* a solid button and painted it the same as the fill behind it. The
+footer's muted greys were mixed from `--paper`, which is black on a dark demo —
+they come from their own `--foot-ink` now. And an accent that is a signature on
+bone is unreadable on near-black.
 
-## The intro sequence
+---
 
-`index.html` is a cinematic entry page: somebody types "How to build a website"
-into a prompt box, autocomplete offers the usual answers, and then the real one
-arrives and assembles itself as a wireframe of the site's own layout before
-rushing past the camera into a title card.
+## Verified
 
-It runs off a **cue list evaluated against elapsed time**, not chained timeouts.
-That is what makes it skippable: Escape simply fires every cue that has not run
-yet and lands on the final frame. Skip is an ordinary link, so the page curtain
-carries it into the site.
+Measured in a real browser rather than asserted. Every number below was produced
+by a script, not by looking.
 
-It **is** the site's landing page: the root is the sequence, and it hands over
-to `home.html` through the page curtain.
+- **28 pages** — 16 site, 12 demo — load with no page error and exactly one `<h1>`
+- **link graph** — 0 dead file links, 0 dead anchors
+- **contrast** — every piece of text on all 28 pages meets WCAG 2.2 AA, computed
+  numerically against its real composited ground. Disabled controls are exempt
+  under 1.4.3; text over a picture is judged by eye, not by this
+- **no JavaScript** — all 28 pages render their full text with script disabled.
+  Every reveal starts at `opacity: 0`, so without the `<noscript>` block this is
+  a blank page under a preloader that never lifts
+- **overflow** — no horizontal overflow at 360, 390, 768, 1024, 1280, 1440, 1920
+- **the intro** — the address bar navigates, the tab title follows it, Orion
+  opens in a second tab, the tab zooms, the page detonates, the title card lands
+- **the demos** — the opening steps and highlights its last move; the gallery
+  filters 8 → 2 and the lightbox opens, paints its copy and traps focus; the
+  tide film's sun and clock both advance with the scroll and the captions stay
+  keyed to them; a booking runs date → sitting → details, refuses an empty
+  submission and confirms a complete one
+- **the truth sweep** — 33 banned patterns across every generated file, and the
+  build exits non-zero on a hit
 
-Because a gate that replays on every visit gets old fast, the sequence records
-itself in `sessionStorage` once it has run. Later visits in the same session
-land straight on the final frame rather than replaying eight seconds. It is
-deliberately **not** a redirect — bouncing the root to another page traps the
-back button.
+## Before publishing
 
-The root still carries a real `<h1>` and its own canonical, and its first paint
-is on frame one rather than behind the reveal, so the landing page keeps an LCP
-inside the site's own budget (692ms measured) despite being an animation.
+1. Set `origin` in `tools/data/site.js` to the real domain. While it is empty
+   the build emits no canonical, no `og:url` and no sitemap, because a canonical
+   pointing at a domain you do not own is worse than none.
+2. Create the three Stripe Payment Links and paste them into `checkout`.
+3. Re-run `node tools/build.js`, `node tools/demos/build.js` and the
+   verification scripts.
 
-To put the plain home page back at the root, reverse the two filenames and
-repoint the links — the generator reads its chrome from `home.html`, so that
-reference moves too.
+## Fonts
 
+Six families, latin subsets, self-hosted under the SIL Open Font License 1.1
+(`assets/fonts/LICENSE.txt`). Bodoni Moda (roman and italic), Archivo and IBM
+Plex Mono carry this site; Fraunces, Bebas Neue and Cormorant Garamond give the
+demo sites their own voices. Bodoni and Archivo are variable, so every weight
+and every width comes from one file each.
 
-## Restraint
-
-The home page runs to just under **300 words** across six screens. It used to be
-974 across nine, and it read as a brochure: every section carried body copy, tag
-lists, metrics and descriptions, so nothing had room to land.
-
-The detail did not get deleted — it moved to the pages built for it. What each
-discipline involves and what it costs live on `services.html`, the build's
-measured numbers on `work.html`, who I am on `about.html`, the brief form on
-`contact.html`. The home page's job is to make one argument per screen and point
-at the page that elaborates.
-
-The budget that produced it: **a heading of six words or fewer, and at most one
-supporting line of about eighteen.** Anything that needed more was a link.
-
-## The Assembly
-
-The centrepiece is a scroll-driven exploded view, rendered in software 3D on a
-2D canvas — no WebGL, no library.
-
-Five layers of a web page — grid, structure, type, colour, motion — are built as
-sets of primitives in local space and separated along z as the view explodes.
-A camera of six keyframes is sampled by scroll position rather than by a clock,
-so the object is wherever your scroll says it is: front-on and collapsed, pulled
-apart at three-quarters, edge-on as strata, seen from above, then collapsed back
-and zoomed into the finished page.
-
-Layers are depth-sorted per frame and the one being described reads brightest,
-so exactly one thing is legible at a time. The whole thing costs a few hundred
-primitives a frame.
-
-Under reduced motion the track collapses, the stage stops pinning, and the
-object renders once as a static three-quarter exploded frame with every caption
-shown at once.
+Self-hosting removes the render-blocking third-party request and the flash of
+fallback text a font CDN causes on a cold connection. It is also the only way
+the "no third-party request" claim on the site is true.

@@ -275,7 +275,7 @@ page["index.html"] = {
       </div>
       <h2 id="work-h" class="sr">Recent cuts</h2>
       <ul class="grid3">
-${galleryGrid(CUTS.slice(0, 3))}
+${galleryGrid([CUTS[0], CUTS[4], CUTS[2]])}
       </ul>
     </div>
   </section>
@@ -318,7 +318,7 @@ ${galleryGrid(CUTS.slice(0, 3))}
 
   <section class="cta" aria-labelledby="cta-h">
     <canvas class="cta__art" aria-hidden="true"
-            data-art="interior" data-art-opts='{"warm":"#e8a63c","cool":"#16202a","dark":"#0b0908","lamps":3,"seed":47}'></canvas>
+            data-art="portrait" data-art-opts='{"cut":"long","seed":17,"x":0.24,"y":0.52,"scale":0.2,"back":"#0b0908","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
     <div class="cta__scrim" aria-hidden="true"></div>
     <div class="wrap cta__in">
       <p class="eyebrow" data-rev>Tuesday to Saturday</p>
