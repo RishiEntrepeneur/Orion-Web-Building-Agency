@@ -43,7 +43,7 @@ function cta(zone, heading, primary, secondary) {
 const tick = '<svg class="pk__tick" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1.5 6.4 4.4 9.2 10.5 2.8" stroke-linecap="round" stroke-linejoin="round" /></svg>';
 
 function packages(list) {
-  return `  <section class="section" data-sec="PACKAGES" data-zone-set="gold" aria-labelledby="pk-h" data-3d="5">
+  return `  <section class="section" id="packages" data-sec="PACKAGES" data-zone-set="gold" aria-labelledby="pk-h" data-3d="5">
       <div class="wash" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">

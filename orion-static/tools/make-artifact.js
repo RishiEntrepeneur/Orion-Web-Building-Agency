@@ -20,11 +20,18 @@ for (const f of fs.readdirSync(path.join(R, "assets/fonts")).filter(n => n.endsW
   css = css.split(`url("../fonts/${f}")`).join(`url("data:font/woff2;base64,${b64}")`);
 }
 
-const section = (src, open) => {
-  const a = src.indexOf(open);
-  if (a < 0) throw new Error("section not found: " + open);
-  const b = src.indexOf("</section>", a);
-  if (b < 0) throw new Error("unclosed section: " + open);
+/* Find a section by its data-sec value and walk back to the opening tag.
+   Matching the whole opening tag as a literal string was brittle: adding an
+   id to the packages section moved the attribute order and the lookup missed
+   a section that was plainly there. */
+const section = (src, sec) => {
+  const marker = 'data-sec="' + sec + '"';
+  const at = src.indexOf(marker);
+  if (at < 0) throw new Error("section not found: " + sec);
+  const a = src.lastIndexOf("<section", at);
+  if (a < 0) throw new Error("no opening <section> before " + sec);
+  const b = src.indexOf("</section>", at);
+  if (b < 0) throw new Error("unclosed section: " + sec);
   return src.slice(a, b + "</section>".length);
 };
 
@@ -32,10 +39,12 @@ const jsonld = (html.match(/<script type="application\/ld\+json">[\s\S]*?<\/scri
 let body = html.slice(html.indexOf(">", html.indexOf("<body")) + 1, html.lastIndexOf("</body>"));
 
 /* ---- bring in the two sections worth showing from elsewhere ---- */
-const services = fs.readFileSync(path.join(R, "services.html"), "utf8");
+/* prices.html owns the packages, the ladder and the capacity commitment now */
+const prices = fs.readFileSync(path.join(R, "prices.html"), "utf8");
 const contact = fs.readFileSync(path.join(R, "contact.html"), "utf8");
-const packages = section(services, '<section class="section" data-sec="PACKAGES"');
-const form = section(contact, '<section class="section" id="contact" data-sec="BRIEF"')
+const packages = section(prices, "PACKAGES");
+const commitment = section(prices, "CAPACITY");
+const form = section(contact, "BRIEF")
   /* it lands last here, after "what I build" and the packages */
   .replace('<span class="sec-head__idx">01</span>', '<span class="sec-head__idx">04</span>');
 
@@ -45,10 +54,10 @@ const form = section(contact, '<section class="section" id="contact" data-sec="B
    pages as full-length stills instead, and becomes scrollable once the
    flight lands. The camera move is identical. */
 const demos = fs.readFileSync(path.join(R, "demos.html"), "utf8");
-let lab = section(demos, '<section class="section lab"');
+let lab = section(demos, "MACHINE");
 /* the tier ladder is the argument the machine is evidence for, so the
    preview carries both */
-const ladder = section(demos, '<section class="section" data-sec="LADDER"');
+const ladder = section(prices, "LADDER");
 
 const shot = (name) =>
   "data:image/jpeg;base64," + fs.readFileSync(path.join(STILLS, "full-" + name + ".jpg")).toString("base64");
@@ -97,8 +106,9 @@ const labShim = `
 
 /* the home page's contact block is a CTA pointing at two pages that are not in
    this file; the real form says the same thing and actually works */
-const homeContact = section(body, '<section class="section" id="contact" data-sec="CONTACT"');
-body = body.replace(homeContact, packages + "\n\n" + ladder + "\n\n" + lab + "\n\n" + form);
+const homeContact = section(body, "CONTACT");
+body = body.replace(homeContact,
+  packages + "\n\n" + ladder + "\n\n" + commitment + "\n\n" + lab + "\n\n" + form);
 
 
 /* ---- links: keep the ones that resolve to a section here, drop the rest ---- */
@@ -109,6 +119,7 @@ body = body
   .replace(/href="work\.html(#[a-z-]+)?"/g, 'href="#work"')
   /* the machine is in this file, so its page link becomes the section anchor */
   .replace(/href="demos\.html"/g, 'href="#lab"')
+  .replace(/href="prices\.html"/g, 'href="#packages"')
   .replace(/href="home\.html#/g, 'href="#');
 
 /* nav + drawer: About and Build notes have no section in this file */
@@ -129,7 +140,7 @@ body = body.replace(/\s*<a class="btn btn--solid" href="#work"[^>]*>\s*<span cla
 
 /* footer columns that index pages this file does not contain */
 body = body.replace(/\s*<nav aria-label="Build notes">[\s\S]*?<\/nav>/, "");
-body = body.replace(/\s*<li class="foot__li"><a href="(?:index|about|journal)\.html"[^>]*>[^<]*<\/a><\/li>/g, "");
+body = body.replace(/\s*<li class="foot__li"><a href="(?:index|about|journal|pay)\.html"[^>]*>[^<]*<\/a><\/li>/g, "");
 body = body.replace(/\s*<a class="mono" href="(?:privacy|terms)\.html"[^>]*>[^<]*<\/a>/g, "");
 /* the About button in the hero pair, and anything else still aimed at it */
 body = body.replace(/\s*<a class="btn btn--ghost" href="about\.html"[^>]*>\s*<span class="btn__lab">[\s\S]*?<\/span>\s*<\/a>/g, "");
