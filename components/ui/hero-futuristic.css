@@ -1,0 +1,111 @@
+/* Styles for components/ui/hero-futuristic.tsx.
+   The component references these class names as plain strings, so they are a
+   global stylesheet rather than a CSS module. Every name is prefixed inside
+   the keyframes to keep it out of the way of the rest of the app. */
+
+@keyframes hf-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* The button is centred with a translate of its own, so it needs a keyframe
+   that carries that translate through — a shared one would knock it off
+   centre for the length of the animation. */
+@keyframes hf-button-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 0.9rem);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes hf-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.28rem);
+  }
+}
+
+/* `both` matters: the inline animation-delay is what staggers the words, and
+   without a backwards fill each one would flash at full opacity before its
+   delay elapsed. */
+.fade-in {
+  animation: hf-fade-in 0.75s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
+}
+
+.fade-in-subtitle {
+  animation: hf-fade-in 0.95s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
+}
+
+.explore-btn {
+  position: absolute;
+  bottom: clamp(1.5rem, 5vh, 3rem);
+  left: 50%;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.35rem;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  animation: hf-button-in 1s cubic-bezier(0.2, 0.65, 0.3, 0.9) both;
+}
+
+.explore-btn:hover {
+  background: rgb(255 255 255 / 0.14);
+  border-color: rgb(255 255 255 / 0.45);
+}
+
+.explore-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+.explore-arrow {
+  display: inline-flex;
+  animation: hf-bob 1.9s ease-in-out infinite;
+}
+
+.arrow-svg {
+  display: block;
+}
+
+/* A full-bleed hero that animates on load is exactly the case the reduced
+   motion query exists for: hold every element at its resting state. */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .fade-in-subtitle,
+  .explore-btn,
+  .explore-arrow {
+    animation: none;
+    opacity: 1;
+    filter: none;
+  }
+
+  .explore-btn {
+    transform: translate(-50%, 0);
+  }
+}
