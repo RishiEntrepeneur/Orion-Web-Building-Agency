@@ -1852,17 +1852,20 @@ a.work__card:hover .work__name { color: var(--accent); }
 .story__hud a { pointer-events: auto; }
 .story__top { display: flex; justify-content: space-between; gap: 1rem; }
 
-.story__acts { position: relative; min-height: clamp(13rem, 30vh, 19rem); align-self: end; }
+/* The acts are anchored to the bottom of this box and grow upward, so it has
+   to be tall enough for the longest of them or that one climbs over the label
+   above it. */
+.story__acts { position: relative; min-height: clamp(15rem, 34vh, 22rem); align-self: end; }
 .story__act {
   position: absolute; inset: auto 0 0 0;
-  display: grid; gap: 0.75rem; max-width: 30ch;
+  display: grid; gap: 0.7rem; max-width: 36ch;
   opacity: 0; transform: translateY(18px);
   transition: opacity 0.6s var(--ease-out), transform 0.85s var(--ease-out);
 }
 .story__act[data-on="true"] { opacity: 1; transform: none; }
 .story__n { color: var(--accent); letter-spacing: 0.2em; }
 .story__k {
-  font-size: clamp(1.6rem, 3.6vw, 2.9rem); line-height: 1.06;
+  font-size: clamp(1.4rem, 2.9vw, 2.35rem); line-height: 1.08;
   letter-spacing: -0.02em; color: var(--bone); text-wrap: balance;
 }
 .story__d { color: var(--ash); font-size: clamp(0.9375rem, 1vw + 0.7rem, 1.0625rem); max-width: 42ch; }
@@ -1877,8 +1880,8 @@ a.work__card:hover .work__name { color: var(--accent); }
 @media (max-width: 900px) {
   /* the picture moves above the words rather than behind them */
   .story__hud { padding-block: clamp(4.5rem, 11vh, 6rem) clamp(1.5rem, 4vh, 2.5rem); }
-  .story__acts { min-height: clamp(15rem, 40vh, 21rem); }
-  .story__k { font-size: clamp(1.5rem, 6.6vw, 2.1rem); }
+  .story__acts { min-height: clamp(16rem, 42vh, 23rem); }
+  .story__k { font-size: clamp(1.35rem, 6vw, 1.95rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {
