@@ -31,6 +31,8 @@
   .intro__enter { position: static !important; pointer-events: auto !important; }
   .asm__step { position: static !important; }
   .brw__ptr, .burst, .asm__burst { display: none !important; }
+  /* a control that only script can honour should not be offered */
+  .walk, .foot__walk, .asm__fire { display: none !important; }
 </style></noscript>
 
 <script type="application/ld+json">
@@ -328,6 +330,7 @@
       <nav aria-label="Pages">
         <h2 class="foot__h mono">Pages</h2>
         <ul>
+          <li class="foot__li"><button class="foot__walk" type="button" data-tour-start>Walk me through it</button></li>
           <li class="foot__li"><a href="index.html" data-curtain="Ask">Intro sequence</a></li>
           <li class="foot__li"><a href="home.html" data-curtain="Orion">Home</a></li>
           <li class="foot__li"><a href="prices.html" data-curtain="Prices">Prices</a></li>

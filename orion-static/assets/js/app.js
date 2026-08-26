@@ -3450,7 +3450,7 @@
         panel = null;
       }, 420);
       var start = $("[data-tour-start]");
-      if (start) start.focus();
+      if (start && start.offsetParent) start.focus();
     }
 
     /* Next and Back are links when they cross a page boundary, so the
@@ -3560,7 +3560,11 @@
       }
     }
 
-    on($("[data-tour-start]"), "click", function () { show(0); });
+    /* there is one of these under the hero and one in the footer of every
+       page, so the tour is reachable from wherever somebody landed */
+    $$("[data-tour-start]").forEach(function (el) {
+      on(el, "click", function () { show(0); });
+    });
 
     on(document, "keydown", function (e) {
       if (!panel) return;
