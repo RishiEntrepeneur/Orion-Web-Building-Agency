@@ -25,9 +25,12 @@ import { createLiquidMetalMaterial } from "./shaders/materials";
 export default function LiquidMetal({
   distance = 3.2,
   scale = 5.4,
+  homeStrength = 0.2,
 }: {
   distance?: number;
   scale?: number;
+  /** How much of the lens survives on the route whose hero is the weave. */
+  homeStrength?: number;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const { size, viewport, camera } = useThree();
@@ -51,7 +54,11 @@ export default function LiquidMetal({
     // Present in the hero, then dissolve away as the camera leaves zone 0 so it
     // never competes with the section content further down.
     const zoneFade = 1 - Math.min(1, Math.max(0, scrollState.zone / 0.85));
-    uniforms.uIntensity.value = qualityState.intensity * zoneFade;
+    // Home's hero object is the weave. The lens stays there as a surface
+    // quality — the specular still plays over the knot — but drops back to a
+    // whisper so it is not two things competing for the same job.
+    const routeFade = routeState.index === 0 ? homeStrength : 1;
+    uniforms.uIntensity.value = qualityState.intensity * zoneFade * routeFade;
     const [ar, ag, ab] = accentAt(routeState.u);
     uniforms.uAccent.value.setRGB(ar, ag, ab);
 

@@ -16,10 +16,17 @@ export default function Hero() {
       aria-labelledby="hero-heading"
       className="relative isolate overflow-hidden px-5 pb-20 pt-28 sm:px-8 sm:pb-28 sm:pt-36 lg:px-10 lg:pb-36 lg:pt-44"
     >
-      {/* Sectional glow */}
+      {/* Copy scrim.
+          The weave is a bright object sitting directly behind the headline, so
+          the type needs a ground of its own — the global scene scrim is pitched
+          for the quieter sections further down and is not enough on its own
+          here. A soft ellipse over the copy column: dense enough behind the
+          words to clear WCAG AA against the brightest frame the weave and the
+          metal lens can produce between them, and gone by the edges so the
+          weave still reads at full strength around the type. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[42rem] w-[80rem] max-w-none -translate-x-1/2 bg-[radial-gradient(50%_50%_at_50%_30%,color-mix(in_oklab,var(--accent)_28%,transparent),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[72rem] bg-[radial-gradient(64%_54%_at_50%_56%,rgba(7,8,11,0.9)_0%,rgba(7,8,11,0.82)_42%,rgba(7,8,11,0.52)_68%,rgba(7,8,11,0.2)_80%,transparent_90%)]"
       />
 
       <div className="mx-auto w-full max-w-7xl">
