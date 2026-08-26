@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Demos — Orion</title>
-<meta name="description" content="One finished demo site per package: a chess club, a barbershop and a restaurant with a working booking system." />
+<title>Pay — Orion</title>
+<meta name="description" content="Pay for a job we have already agreed. Handled by Stripe; card details never touch this site." />
 <meta name="theme-color" content="#06060a" />
 <meta name="color-scheme" content="dark" />
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Demos — Orion" />
-<meta property="og:description" content="One finished demo site per package: a chess club, a barbershop and a restaurant with a working booking system." />
+<meta property="og:title" content="Pay — Orion" />
+<meta property="og:description" content="Pay for a job we have already agreed. Handled by Stripe; card details never touch this site." />
 <meta name="twitter:card" content="summary_large_image" />
 
 <link rel="preload" href="assets/fonts/bodoni-normal-400-900.woff2" as="font" type="font/woff2" crossorigin />
@@ -23,11 +23,11 @@
 {"@context":"https://schema.org","@type":"WebSite","name":"Orion","description":"Websites designed and built by hand by one developer in England.","inLanguage":"en-GB"}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"},{"@type":"ListItem","position":2,"name":"Demos"}]}
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home"},{"@type":"ListItem","position":2,"name":"Pay"}]}
 </script>
 </head>
 
-<body data-page="demos">
+<body data-page="pay">
 
 <a class="skip" href="#main">Skip to content</a>
 
@@ -111,7 +111,7 @@
 
     <nav class="nav__links" aria-label="Primary">
       <a class="nav__link nav__link--first" href="prices.html" data-curtain="Prices" data-scramble-host><span data-scramble>Prices</span></a>
-      <a class="nav__link" href="demos.html" aria-current="page" data-curtain="Demos" data-scramble-host><span data-scramble>Demos</span></a>
+      <a class="nav__link" href="demos.html" data-curtain="Demos" data-scramble-host><span data-scramble>Demos</span></a>
       <a class="nav__link" href="services.html" data-curtain="What I build" data-scramble-host><span data-scramble>What I build</span></a>
       <a class="nav__link" href="work.html" data-curtain="This site" data-scramble-host><span data-scramble>This site</span></a>
       <a class="nav__link" href="about.html" data-curtain="About" data-scramble-host><span data-scramble>About</span></a>
@@ -139,7 +139,7 @@
   <nav class="drawer__list" aria-label="Mobile">
     <ul>
       <li class="drawer__item"><a class="drawer__a" style="--i:0" href="prices.html" data-curtain="Prices"><i>01</i>Prices</a></li>
-      <li class="drawer__item"><a class="drawer__a" style="--i:1" href="demos.html" aria-current="page" data-curtain="Demos"><i>02</i>Demos</a></li>
+      <li class="drawer__item"><a class="drawer__a" style="--i:1" href="demos.html" data-curtain="Demos"><i>02</i>Demos</a></li>
       <li class="drawer__item"><a class="drawer__a" style="--i:2" href="services.html" data-curtain="What I build"><i>03</i>What I build</a></li>
       <li class="drawer__item"><a class="drawer__a" style="--i:3" href="work.html" data-curtain="This site"><i>04</i>This site</a></li>
       <li class="drawer__item"><a class="drawer__a" style="--i:4" href="about.html" data-curtain="About"><i>05</i>About</a></li>
@@ -157,182 +157,166 @@
 
 
 <main id="main">
-  <section class="pagehead" data-sec="DEMOS" data-zone-set="teal">
-    <div class="hero__field" aria-hidden="true"><canvas id="flow"></canvas></div>
+  <section class="pagehead pagehead--plain" data-sec="PAY" data-zone-set="acid">
     <div class="wash" aria-hidden="true"></div>
     <div class="shell">
       <nav class="crumb mono" aria-label="Breadcrumb">
-        <a href="home.html" data-curtain="Orion">Orion</a><span aria-hidden="true">/</span><span class="mono--bright">Demos</span>
+        <a href="home.html" data-curtain="Orion">Orion</a><span aria-hidden="true">/</span><span class="mono--bright">Pay</span>
       </nav>
-      <h1 class="pagehead__title" data-kin="word">Demos</h1>
+      <h1 class="pagehead__title" data-kin="word">Pay</h1>
       <p class="lede mt-lg" style="max-width:54ch">
-        One finished site per package, so you can see exactly what the money buys.
-        All three are invented businesses — real, working sites for people who do not exist.
+        For a job we have already agreed. If we have not spoken yet, start on the
+        <a href="contact.html" data-curtain="Contact">contact page</a> instead — I would rather
+        you paid for the right thing than the nearest thing.
       </p>
       <div class="pagehead__meta">
-        <span class="mono">03 builds</span>
-        <span class="mono">10 pages</span>
-        <span class="mono mono--accent" data-scramble-in>Live, not screenshots</span>
+        <span class="mono">Handled by Stripe</span>
+        <span class="mono">Card details never touch this site</span>
+        <span class="mono mono--accent" data-scramble-in>Receipt by email</span>
       </div>
     </div>
   </section>
 
-  <!-- ============ THE MACHINE ============ -->
-  <section class="section lab" id="lab" data-sec="MACHINE" data-zone-set="blue"
-           style="padding-block:0" aria-labelledby="lab-h">
-    <div class="lab__track" id="lab-track">
-      <div class="lab__stage">
-        <div class="wash" aria-hidden="true"></div>
-
-        <div class="lab__hud">
-          <div class="lab__top">
-            <span class="mono" data-scramble-in>Pick one</span>
-            <span class="mono mono--accent">Click the machine to go in</span>
-          </div>
-          <h2 id="lab-h" class="sr-only">The three demo builds, running</h2>
-          <div class="lab__pick" role="tablist" aria-label="Choose a demo">
-            <button class="lab__tab" type="button" role="tab" aria-selected="true"
-                    data-demo="demos/chess/index.html" data-name="Alderley Chess Club" data-tier="Starter Launch">
-              <span class="lab__tabn">Starter Launch</span>
-              <span class="lab__tabt">Alderley Chess Club</span>
-            </button>
-            <button class="lab__tab" type="button" role="tab" aria-selected="false"
-                    data-demo="demos/barbers/index.html" data-name="Fairweather Barbers" data-tier="Business Growth">
-              <span class="lab__tabn">Business Growth</span>
-              <span class="lab__tabt">Fairweather Barbers</span>
-            </button>
-            <button class="lab__tab" type="button" role="tab" aria-selected="false"
-                    data-demo="demos/saltmarsh/index.html" data-name="Saltmarsh" data-tier="Premium Custom">
-              <span class="lab__tabn">Premium Custom</span>
-              <span class="lab__tabt">Saltmarsh</span>
-            </button>
-          </div>
-          <p class="lab__note mono">
-            <span id="lab-state">Click it to go in</span>
-            <span aria-hidden="true">·</span>
-            <a id="lab-open" href="demos/chess/index.html">Open it full size &rarr;</a>
-          </p>
-          <div class="lab__acts">
-            <button class="lab__act lab__act--go" type="button" id="lab-enter">Open the machine</button>
-            <button class="lab__act" type="button" id="lab-exit" hidden>&larr; Come back out</button>
-          </div>
-        </div>
-
-        <div class="lab__view">
-          <div class="mach" id="mach">
-            <div class="mach__rig" id="mach-rig">
-              <div class="mach__lid" id="mach-lid">
-                <div class="mach__shell"></div>
-                <div class="mach__bez">
-                  <div class="mach__scr">
-                    <iframe class="mach__frame" id="mach-frame" src="demos/chess/index.html"
-                            title="Alderley Chess Club — a Starter Launch demo" loading="lazy"
-                            tabindex="-1" scrolling="no"></iframe>
-                    <div class="mach__glare"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="mach__base">
-                <div class="mach__deck">
-                  <div class="mach__keys"></div>
-                  <div class="mach__pad"></div>
-                </div>
-                <div class="mach__edge"></div>
-              </div>
-              <div class="mach__shadow"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ THE THREE ============ -->
-  <section class="section" data-sec="BUILDS" data-zone-set="violet" data-3d="5" aria-labelledby="blds-h">
-    <div class="wash wash--alt" aria-hidden="true"></div>
+  <section class="section" data-sec="CHECKOUT" data-zone-set="acid" aria-labelledby="co-h" data-3d="4">
+      <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
         <span class="sec-head__idx">01</span>
-        <span class="sec-head__label">The three</span>
+        <span class="sec-head__label" data-scramble-in>Which one did we agree?</span>
         <span class="sec-head__spacer"></span>
-        <span class="sec-head__label">One per package</span>
+        <span class="sec-head__label">Prices in pounds sterling</span>
       </div>
-      <h2 id="blds-h" class="sr-only">The three demo builds</h2>
+      <h2 id="co-h" class="display mb-lg" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        Pick the package, then pay
+      </h2>
 
-      <div class="dmo">
-        <article class="dmo__row">
-          <span class="dmo__idx">01 / 03</span>
-          <div>
-            <p class="mono mono--accent">Starter Launch &middot; &pound;299 + &pound;39/month</p>
-            <h3 class="dmo__t">Alderley Chess Club</h3>
-            <p class="svc__body mt-lg">
-              One page for a village chess club: when they meet, where, what it costs and a form
-              to ask a question. The teaching board steps through a real opening, because a club
-              site that shows you something beats a club site that lists things.
-            </p>
-            <p class="dmo__spec mono">1 page &middot; light palette &middot; Fraunces + Archivo &middot; interactive board</p>
-            <a class="arrow-link mt-lg" href="demos/chess/index.html">
-              Open the demo
-              <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
+      <div class="co">
+        <div class="co__pick" role="radiogroup" aria-label="Which package">
+          <button class="co__opt" type="button" role="radio" aria-checked="true"
+                  data-pk="starter"
+                  data-name="Starter Launch"
+                  data-setup="£299"
+                  data-monthly="£39"
+                  data-link=""
+                  data-inc="Three-page layout — home, about, contact | Secure website hosting | One text or image update a month | Mobile-friendly design">
+            <span class="co__on">Starter Launch</span>
+            <span class="co__op">£299 <i>+ £39/mo</i></span>
+            <span class="co__ot">One clean site, looked after</span>
+          </button>
+          <button class="co__opt" type="button" role="radio" aria-checked="false"
+                  data-pk="growth"
+                  data-name="Business Growth"
+                  data-setup="£599"
+                  data-monthly="£59"
+                  data-link=""
+                  data-inc="Up to five pages — home, about, services, gallery, contact | Super-fast hosting | Google Maps and local SEO set up | Three content updates a month | Everything in Starter Launch">
+            <span class="co__on">Business Growth</span>
+            <span class="co__op">£599 <i>+ £59/mo</i></span>
+            <span class="co__ot">What most businesses actually need</span>
+          </button>
+          <button class="co__opt" type="button" role="radio" aria-checked="false"
+                  data-pk="premium"
+                  data-name="Premium Custom"
+                  data-setup="£999+"
+                  data-monthly="£99"
+                  data-link=""
+                  data-inc="Full custom multi-page site, or a booking system | Priority support — your messages answered before anything else | Unlimited small updates | A monthly performance and visitor report | Everything in Business Growth">
+            <span class="co__on">Premium Custom</span>
+            <span class="co__op">from £999 <i>+ £99/mo</i></span>
+            <span class="co__ot">When it has to stand out</span>
+          </button>
+        </div>
+
+        <aside class="co__sum" aria-live="polite">
+          <h3 class="co__sh mono">What you are paying</h3>
+          <dl class="co__dl">
+            <div class="co__row"><dt>Package</dt><dd id="co-name">—</dd></div>
+            <div class="co__row"><dt>To build it, once</dt><dd id="co-setup">—</dd></div>
+            <div class="co__row"><dt>Then, each month</dt><dd id="co-monthly">—</dd></div>
+            <div class="co__row co__row--tot"><dt>Today</dt><dd id="co-today">—</dd></div>
+          </dl>
+          <ul class="co__inc" id="co-inc"></ul>
+
+          <div class="co__go">
+            <a class="btn btn--solid" id="co-pay" href="#" hidden>
+              <span class="btn__lab"><span>Pay securely</span><span>Continue to Stripe</span></span>
+            </a>
+            <a class="btn btn--solid" id="co-invoice" href="contact.html" data-curtain="Contact">
+              <span class="btn__lab"><span>Ask for an invoice</span><span>Bank transfer</span></span>
             </a>
           </div>
-        </article>
-
-        <article class="dmo__row">
-          <span class="dmo__idx">02 / 03</span>
-          <div>
-            <p class="mono mono--accent">Business Growth &middot; &pound;599 + &pound;59/month</p>
-            <h3 class="dmo__t">Fairweather Barbers</h3>
-            <p class="svc__body mt-lg">
-              Five pages for a two-chair barbershop: the shop, the full price list with the time
-              each cut takes, the work, and a find-us page with a drawn map and a booking request.
-              The plates are generated by code rather than faked with stock photography.
-            </p>
-            <p class="dmo__spec mono">5 pages &middot; near-black &middot; Bebas Neue + Archivo &middot; canvas map</p>
-            <a class="arrow-link mt-lg" href="demos/barbers/index.html">
-              Open the demo
-              <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
-            </a>
-          </div>
-        </article>
-
-        <article class="dmo__row" style="border-bottom:1px solid var(--rule)">
-          <span class="dmo__idx">03 / 03</span>
-          <div>
-            <p class="mono mono--accent">Premium Custom &middot; from &pound;999 + &pound;99/month</p>
-            <h3 class="dmo__t">Saltmarsh</h3>
-            <p class="svc__body mt-lg">
-              Four pages and a working booking system for a twenty-two cover restaurant. Pick a
-              party size, a date from a real calendar with real availability rules, then a sitting,
-              then confirm — and it hands you a reference. Everything but the final write is live.
-            </p>
-            <p class="dmo__spec mono">4 pages &middot; pale palette &middot; Cormorant + Archivo &middot; 3-step booking</p>
-            <a class="arrow-link mt-lg" href="demos/saltmarsh/book.html">
-              Try the booking system
-              <svg width="16" height="10" viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M0 5h14M10 1l4 4-4 4" /></svg>
-            </a>
-          </div>
-        </article>
+          <p class="co__note mono" id="co-note">
+            Card payment is not switched on yet — invoices are sent by email and paid by bank
+            transfer, which costs neither of us a fee.
+          </p>
+        </aside>
       </div>
+    </div>
+  </section>
 
-      <p class="form__note mt-xl" style="max-width:64ch">
-        Every business on this page is invented, and each demo says so in a bar across the top of
-        every page. Nothing here is a claim about work I have done for somebody else — it is work
-        I did to show what each package looks like finished.
-      </p>
+  <section class="section" data-sec="AFTER" data-zone-set="blue" aria-labelledby="af-h" data-3d="5">
+      <div class="wash" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="sec-head">
+        <span class="sec-head__idx">02</span>
+        <span class="sec-head__label">After you pay</span>
+        <span class="sec-head__spacer"></span>
+        <span class="sec-head__label">Four steps</span>
+      </div>
+      <h2 id="af-h" class="display" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        What happens next
+      </h2>
+      <ol class="steps mt-xl">
+        <li>
+          <span class="steps__n">01</span>
+          <span class="steps__k">A receipt, straight away</span>
+          <span class="steps__v">Emailed by Stripe, not by me, so it arrives whether or not I am at a computer. Keep it — it is your proof of payment.</span>
+        </li>
+        <li>
+          <span class="steps__n">02</span>
+          <span class="steps__k">I confirm the scope in writing</span>
+          <span class="steps__v">Within a day: what I am building, what I need from you, and when it will be live. If anything in it surprises you, say so before I start rather than after.</span>
+        </li>
+        <li>
+          <span class="steps__n">03</span>
+          <span class="steps__k">You see it early</span>
+          <span class="steps__v">Direction arrives as a real page in a real browser, not a picture of one. Nothing is a surprise at the end.</span>
+        </li>
+        <li>
+          <span class="steps__n">04</span>
+          <span class="steps__k">It goes live, and it is yours</span>
+          <span class="steps__v">Source, notes and the checking scripts, handed over. The monthly starts the month after it is live, not the day you paid.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" data-sec="SAFETY" data-zone-set="violet" aria-labelledby="sf-h" data-3d="5">
+      <div class="wash wash--alt" aria-hidden="true"></div>
+    <div class="shell split">
+      <div>
+        <p class="kick mono mono--accent">Paying safely</p>
+        <h2 id="sf-h" class="display mt-lg" style="font-size:clamp(1.6rem,3.4vw,2.5rem);max-width:14ch" data-kin="word">Your card never touches this site</h2>
+      </div>
+      <div class="prose">
+        <p>The pay button hands you to <b>Stripe</b>, who take the card details on their own page. This site has no server, stores nothing and never sees a card number — which is deliberate, and the reason I have not built a card form of my own. Anyone who asks you to type card details into a small business's own website is doing it wrong.</p>
+        <p>You will see Stripe's domain in the address bar before you type anything. If you do not, close the tab and tell me.</p>
+        <p>Payments and contracts are handled by an adult in my family. Stripe requires the account holder to be an adult, and it means the written agreement is with somebody who can be held to it — which matters to you rather more than it does to me. The work is mine; the paperwork is theirs, and their name is on the invoice you will receive.</p>
+        <p>Refunds: if I have not started, all of it, no argument. If I have, the fair share of what is left. That is in the written agreement before you pay, not discovered afterwards.</p>
+      </div>
     </div>
   </section>
 
   <section class="section" data-sec="NEXT" data-zone-set="flare" data-3d="5">
     <div class="wash" aria-hidden="true"></div>
     <div class="shell between">
-      <h2 class="display" style="font-size:clamp(2rem,6.2vw,4.75rem);max-width:15ch" data-kin="word">Yours would be the fourth</h2>
+      <h2 class="display" style="font-size:clamp(2rem,6.2vw,4.75rem);max-width:15ch" data-kin="word">Not agreed anything yet?</h2>
       <div class="row">
         <a class="btn btn--solid" href="contact.html" data-curtain="Contact" data-magnetic="0.3">
-          <span class="btn__lab"><span>Start a project</span><span>Say hello</span></span>
+          <span class="btn__lab"><span>Start there instead</span><span>Say hello</span></span>
         </a>
         <a class="btn btn--ghost" href="prices.html" data-curtain="Prices" data-magnetic="0.24">
-          <span class="btn__lab"><span>Packages and prices</span><span>What it costs</span></span>
+          <span class="btn__lab"><span>See the prices</span><span>All three</span></span>
         </a>
       </div>
     </div>

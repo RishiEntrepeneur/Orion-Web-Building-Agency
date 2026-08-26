@@ -11,7 +11,9 @@ const PACKAGES = require("./data/packages.js");
 const body = (f) => fs.readFileSync(path.join(__dirname, "bodies", f), "utf8");
 
 /* ---------- what I build: packages injected from data ---------- */
-const servicesBody = body("services.html").replace("<!--PACKAGES-->", () => T.packages(PACKAGES));
+/* The packages used to live here too. One home for a price is the whole
+   point of having a price. */
+const servicesBody = body("services.html");
 
 /* ---------- contact: one copy of the form, options from the same data ---------- */
 /* "£999+ + £99/month" reads badly, so a trailing + becomes a leading "from". */
@@ -31,7 +33,46 @@ const contactBlock = body("contact-form.html")
   .replace('<span class="sec-head__label" data-scramble-in>Start here</span>',
            '<span class="sec-head__label" data-scramble-in>Project brief</span>');
 
+/* ---------- pay: one option per package, wired to its Stripe link ---------- */
+const LINKS = SITE.checkout || {};
+const badLink = Object.keys(LINKS).filter((k) => LINKS[k] && !/^https:\/\/(buy\.stripe\.com|[a-z0-9-]+\.stripe\.com)\//.test(LINKS[k]));
+if (badLink.length) {
+  console.error("\nBUILD FAILED — checkout links must be https Stripe URLs:");
+  badLink.forEach((k) => console.error("  " + k + ": " + LINKS[k]));
+  process.exit(1);
+}
+const checkoutOptions = PACKAGES.map((k, i) => `          <button class="co__opt" type="button" role="radio" aria-checked="${i === 0}"
+                  data-pk="${k.id}"
+                  data-name="${k.name}"
+                  data-setup="${k.setup}"
+                  data-monthly="${k.monthly}"
+                  data-link="${LINKS[k.id] || ""}"
+                  data-inc="${k.features.join(" | ")}">
+            <span class="co__on">${k.name}</span>
+            <span class="co__op">${setupLabel(k)} <i>+ ${k.monthly}/mo</i></span>
+            <span class="co__ot">${k.tagline}</span>
+          </button>`).join("\n");
+
+const payBody = body("pay.html").replace("<!--CHECKOUT_OPTIONS-->", () => checkoutOptions);
+
+const pricesBody = body("prices.html")
+  .replace("<!--PACKAGES-->", () => T.packages(PACKAGES))
+  .replace("<!--LADDER-->", () => T.ladder(PACKAGES, { idx: "02" }))
+  .replace("<!--COMMITMENT-->", () => T.commitment(SITE.capacity));
+
 /* ---------- hand-written pages ---------- */
+write("prices.html", {
+  title: "Prices — Orion",
+  desc: "Three packages: £299, £599 or from £999 to build, then £39, £59 or £99 a month. What each one includes, side by side.",
+  slug: "prices", current: "prices.html", crumb: "Prices"
+}, pricesBody);
+
+write("pay.html", {
+  title: "Pay — Orion",
+  desc: "Pay for a job we have already agreed. Handled by Stripe; card details never touch this site.",
+  slug: "pay", crumb: "Pay"
+}, payBody);
+
 write("services.html", {
   title: "What I build — Orion",
   desc: "Design and build, motion and 3D, performance and accessibility — and three packages, from £299 to build plus £39 a month.",
@@ -139,11 +180,11 @@ Allow: /
    cannot drift — but nothing stops a future edit from hard-coding one of them,
    and a price that disagrees with itself is exactly the kind of untruth this
    build is supposed to catch. */
-const svc = fs.readFileSync(path.join(ROOT, "services.html"), "utf8");
+const svc = fs.readFileSync(path.join(ROOT, "prices.html"), "utf8");
 const con = fs.readFileSync(path.join(ROOT, "contact.html"), "utf8");
 const drift = [];
 PACKAGES.forEach((k) => {
-  if (!svc.includes(k.setup) || !svc.includes(k.monthly)) drift.push(k.name + " missing from services.html");
+  if (!svc.includes(k.setup) || !svc.includes(k.monthly)) drift.push(k.name + " missing from prices.html");
   if (!con.includes(setupLabel(k)) || !con.includes(k.monthly)) drift.push(k.name + " missing from contact.html");
 });
 if (drift.length) {
@@ -151,7 +192,17 @@ if (drift.length) {
   drift.forEach((d) => console.error("  " + d));
   process.exit(1);
 }
-console.log("prices agree across services.html and contact.html (" + PACKAGES.length + " packages)");
+/* pay.html is generated from the same data, so it joins the check */
+const pay = fs.readFileSync(path.join(ROOT, "pay.html"), "utf8");
+PACKAGES.forEach((k) => {
+  if (!pay.includes(k.setup) || !pay.includes(k.monthly)) drift.push(k.name + " missing from pay.html");
+});
+if (drift.length) {
+  console.error("\nBUILD FAILED — package prices disagree between pages:");
+  drift.forEach((d) => console.error("  " + d));
+  process.exit(1);
+}
+console.log("prices agree across prices.html, pay.html and contact.html (" + PACKAGES.length + " packages)");
 
 /* ---------- truth sweep ----------
    Every string below was on this site once, and every one of them was

@@ -24,5 +24,42 @@ module.exports = {
   location: "England, United Kingdom",
 
   /* Shown in the footer copyright line. */
-  year: "2026"
+  year: "2026",
+
+  /* -------------------------------------------------------------
+     PAYMENT
+
+     One Stripe Payment Link per package. Create them in the Stripe
+     dashboard (Products → Payment links) with the build fee as a
+     one-time price and the monthly as a recurring price, then paste
+     the https://buy.stripe.com/... URL here.
+
+     While a link is empty its package shows the invoice route
+     instead — which is the right way to start anyway. No card
+     details ever touch this site either way: the link hands the
+     payer to Stripe's own checkout.
+
+     The account has to belong to an adult. Stripe's terms require
+     the account holder to be 18, and in England a contract with a
+     minor is generally not enforceable against them — so the
+     account, and the contracts, go in a parent's name.
+     ------------------------------------------------------------- */
+  checkout: {
+    starter: "",
+    growth: "",
+    premium: ""
+  },
+
+  /* -------------------------------------------------------------
+     CAPACITY
+
+     A monthly fee is a promise about future time, so these are the
+     limits that keep the promise keepable. They are printed on the
+     site: a cap nobody can see is a cap you will quietly break.
+     ------------------------------------------------------------- */
+  capacity: {
+    monthlyClients: 6,      /* sites carried on a monthly plan at once */
+    concurrentBuilds: 2,    /* builds running at the same time */
+    noticeMonths: 3         /* notice given before winding a plan down */
+  }
 };

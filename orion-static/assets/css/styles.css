@@ -277,6 +277,12 @@ body[data-cursor-state="text"] .cur__dot { width: 0; height: 0; margin: 0; }
   padding: var(--gutter);
 }
 .boot[hidden] { display: none; }
+
+/* [hidden] must win. Components that set their own display — .btn is
+   inline-flex — outrank the user-agent sheet's [hidden] { display: none },
+   so hiding one from script silently does nothing. This has now bitten the
+   nav CTA and the pay button; one rule ends it for every component. */
+[hidden] { display: none !important; }
 .boot__slats { position: absolute; inset: 0; display: flex; }
 .boot__slat { flex: 1; background: var(--void); transform-origin: top; }
 .boot__core { position: relative; z-index: 2; display: grid; place-items: center; }
@@ -2055,3 +2061,62 @@ a.work__card:hover .work__name { color: var(--accent); }
 .lad tbody tr:hover .lad__n { color: var(--edge); }
 .lad tbody tr:hover th { color: var(--bone); }
 .lad tbody tr:hover td { background: rgba(255,255,255,.022); }
+
+/* ============================================================
+   48. CHECKOUT
+   A choice on the left, what it costs on the right. No card
+   fields anywhere: the pay button is a link to Stripe's own
+   hosted checkout, which is the whole security argument.
+   ============================================================ */
+.co { display: grid; gap: clamp(1.5rem, 3.5vw, 2.5rem); align-items: start; margin-top: 2.4rem; }
+@media (min-width: 940px) { .co { grid-template-columns: minmax(0, 1fr) 24rem; } }
+
+.co__pick { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.co__opt {
+  font: inherit; text-align: left; cursor: pointer;
+  background: var(--void); color: var(--ash); border: 0;
+  padding: 1.3rem 1.4rem;
+  display: grid; gap: .35rem;
+  transition: background-color .2s, color .2s;
+}
+.co__opt:hover { background: var(--carbon); color: var(--bone); }
+.co__opt[aria-checked="true"] { background: var(--carbon); color: var(--bone); box-shadow: inset 3px 0 0 var(--accent); }
+.co__opt:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.co__on {
+  font-family: var(--f-display); font-weight: 600; font-size: 1.25rem; line-height: 1; color: var(--bone);
+  font-optical-sizing: none; font-variation-settings: "opsz" var(--opsz, 15);
+}
+.co__op { font-family: var(--f-mono); font-size: .8125rem; letter-spacing: .08em; color: var(--accent); }
+.co__op i { font-style: normal; color: var(--slate); }
+.co__ot { font-size: .875rem; color: var(--slate); }
+
+.co__sum { border: 1px solid var(--rule); background: var(--carbon); padding: 1.5rem; }
+.co__sh { font-size: .625rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin: 0 0 1.1rem; }
+.co__dl { margin: 0; display: grid; }
+.co__row { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; padding-block: .7rem; border-bottom: 1px solid var(--rule); }
+.co__row dt { font-family: var(--f-mono); font-size: .625rem; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); }
+.co__row dd { margin: 0; color: var(--bone); font-size: .9375rem; text-align: right; }
+.co__row--tot { border-bottom: 0; padding-top: 1rem; }
+.co__row--tot dt { color: var(--ash); }
+.co__row--tot dd {
+  font-family: var(--f-display); font-weight: 700; font-size: 1.5rem; line-height: 1; color: var(--accent);
+  font-optical-sizing: none; font-variation-settings: "opsz" 9;
+}
+.co__inc { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: .5rem; border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+.co__inc li { font-size: .875rem; color: var(--ash); padding-left: 1.1rem; position: relative; line-height: 1.5; }
+.co__inc li::before { content: ""; position: absolute; left: 0; top: .52em; width: 5px; height: 5px; background: var(--accent); }
+.co__go { display: grid; gap: .6rem; margin-top: 1.5rem; }
+.co__go .btn { justify-content: center; text-align: center; }
+.co__note { font-size: .6875rem; line-height: 1.6; color: var(--slate); margin-top: 1rem; letter-spacing: .04em; }
+
+/* a plain page head for the pages people arrive at wanting a fact */
+.pagehead--plain { padding-bottom: clamp(1.5rem, 3vw, 2.2rem); }
+.pagehead--plain .hero__field { display: none; }
+
+/* prices is the first thing in the nav, so it gets a mark */
+.nav__link--first { color: var(--bone); }
+.nav__link--first::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: var(--accent); opacity: .5;
+}
+.nav__link { position: relative; }

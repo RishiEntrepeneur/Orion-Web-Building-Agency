@@ -47,7 +47,7 @@ module.exports = [
     forWho: "Businesses with a lot to show, or who need a booking system behind it.",
     features: [
       "Full custom multi-page site, or a booking system",
-      "Priority support, any time",
+      "Priority support — your messages answered before anything else",
       "Unlimited small updates",
       "A monthly performance and visitor report",
       "Everything in Business Growth"

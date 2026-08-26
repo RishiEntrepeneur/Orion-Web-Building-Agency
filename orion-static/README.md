@@ -237,6 +237,47 @@ Things that were missing until they were measured:
   disabled controls — a greyed-out calendar date is allowed to be low
   contrast, though 1.34:1 was unreadable and got lifted anyway.
 
+## Money
+
+`pay.html` is a checkout that handles no money. It picks a package, shows what
+that costs, and then hands the payer to **Stripe's own hosted checkout** by
+link. There is no card field anywhere on this site and there never will be: a
+static site with no server has no business touching a card number, and a
+hosted link keeps the PCI surface at zero.
+
+Links live in `site.js` under `checkout`, one per package. While a link is
+empty that package shows the invoice route instead — an honest state rather
+than a dead button — and the build **fails** if a link is set to anything that
+is not an `https://…stripe.com/` URL, because a payment button pointing
+somewhere unexpected is the worst possible bug on a website.
+
+The prices now have exactly one home, `prices.html`, and the build fails if
+`prices.html`, `pay.html` and the contact select ever disagree about a number.
+
+The account has to belong to an adult: Stripe's terms require it, and a
+contract with a minor is not enforceable in England — which protects the
+customer more than it protects me. `pay.html` and the terms both say so
+plainly, because finding that out after paying would be the wrong moment.
+
+## Capacity, written down
+
+A monthly fee is a promise about future time, so `site.js` carries the limits
+that keep it keepable — six sites on a plan, two builds at once, three months'
+notice — and `prices.html` prints them. A cap nobody can see is a cap you will
+quietly break.
+
+The same section says what happens if the plan ends: the source, content and
+notes are handed over at the end of the build rather than held as leverage, so
+cancelling stops the hosting and the updates without taking the website away.
+That is the part most people selling a retainer decline to write down.
+
+## The nav is ordered by what a customer wants
+
+Prices first, then demos, then what I build, then the teardown, then about,
+then contact. The intro sequence and the machine are good at convincing
+designers; a price table is what convinces somebody who runs a café. Notes
+moved to the footer — it is depth, not a decision.
+
 ## The single-file preview
 
 `tools/make-artifact.js` folds the whole thing into one self-contained HTML
@@ -438,6 +479,11 @@ Google Fonts CDN causes on a cold connection.
 
 
 ## String.replace ate my selector
+
+**Three times now.** Once on `$("[data-faq]")`, once on `$(".lab__tab")`, once
+on `$(".co__opt")` — each time a whole module went silently dead, because the
+failure mode is a guard returning early rather than an error anybody can see.
+
 
 `String.prototype.replace` treats `# Orion — static site
 
@@ -1453,6 +1499,18 @@ Google Fonts CDN causes on a cold connection.
 
 ```js
 s.replace(needle, () => replacement);   // not s.replace(needle, replacement)
+```
+
+## [hidden] has to win
+
+`.btn` is `display: inline-flex`. The user-agent sheet's `[hidden] { display:
+none }` is a plain element-attribute rule, so any component that sets its own
+`display` outranks it — and hiding that component from script then does
+nothing at all, silently. It leaked the nav CTA onto small screens once and
+showed a live pay button for an unconfigured package once. One rule ends it:
+
+```css
+[hidden] { display: none !important; }
 ```
 
 ## A trap worth naming twice

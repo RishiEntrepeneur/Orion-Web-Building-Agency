@@ -1,0 +1,132 @@
+  <section class="pagehead pagehead--plain" data-sec="PAY" data-zone-set="acid">
+    <div class="wash" aria-hidden="true"></div>
+    <div class="shell">
+      <nav class="crumb mono" aria-label="Breadcrumb">
+        <a href="home.html" data-curtain="Orion">Orion</a><span aria-hidden="true">/</span><span class="mono--bright">Pay</span>
+      </nav>
+      <h1 class="pagehead__title" data-kin="word">Pay</h1>
+      <p class="lede mt-lg" style="max-width:54ch">
+        For a job we have already agreed. If we have not spoken yet, start on the
+        <a href="contact.html" data-curtain="Contact">contact page</a> instead — I would rather
+        you paid for the right thing than the nearest thing.
+      </p>
+      <div class="pagehead__meta">
+        <span class="mono">Handled by Stripe</span>
+        <span class="mono">Card details never touch this site</span>
+        <span class="mono mono--accent" data-scramble-in>Receipt by email</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-sec="CHECKOUT" data-zone-set="acid" aria-labelledby="co-h" data-3d="4">
+      <div class="wash wash--alt" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="sec-head">
+        <span class="sec-head__idx">01</span>
+        <span class="sec-head__label" data-scramble-in>Which one did we agree?</span>
+        <span class="sec-head__spacer"></span>
+        <span class="sec-head__label">Prices in pounds sterling</span>
+      </div>
+      <h2 id="co-h" class="display mb-lg" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        Pick the package, then pay
+      </h2>
+
+      <div class="co">
+        <div class="co__pick" role="radiogroup" aria-label="Which package">
+<!--CHECKOUT_OPTIONS-->
+        </div>
+
+        <aside class="co__sum" aria-live="polite">
+          <h3 class="co__sh mono">What you are paying</h3>
+          <dl class="co__dl">
+            <div class="co__row"><dt>Package</dt><dd id="co-name">—</dd></div>
+            <div class="co__row"><dt>To build it, once</dt><dd id="co-setup">—</dd></div>
+            <div class="co__row"><dt>Then, each month</dt><dd id="co-monthly">—</dd></div>
+            <div class="co__row co__row--tot"><dt>Today</dt><dd id="co-today">—</dd></div>
+          </dl>
+          <ul class="co__inc" id="co-inc"></ul>
+
+          <div class="co__go">
+            <a class="btn btn--solid" id="co-pay" href="#" hidden>
+              <span class="btn__lab"><span>Pay securely</span><span>Continue to Stripe</span></span>
+            </a>
+            <a class="btn btn--solid" id="co-invoice" href="contact.html" data-curtain="Contact">
+              <span class="btn__lab"><span>Ask for an invoice</span><span>Bank transfer</span></span>
+            </a>
+          </div>
+          <p class="co__note mono" id="co-note">
+            Card payment is not switched on yet — invoices are sent by email and paid by bank
+            transfer, which costs neither of us a fee.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-sec="AFTER" data-zone-set="blue" aria-labelledby="af-h" data-3d="5">
+      <div class="wash" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="sec-head">
+        <span class="sec-head__idx">02</span>
+        <span class="sec-head__label">After you pay</span>
+        <span class="sec-head__spacer"></span>
+        <span class="sec-head__label">Four steps</span>
+      </div>
+      <h2 id="af-h" class="display" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        What happens next
+      </h2>
+      <ol class="steps mt-xl">
+        <li>
+          <span class="steps__n">01</span>
+          <span class="steps__k">A receipt, straight away</span>
+          <span class="steps__v">Emailed by Stripe, not by me, so it arrives whether or not I am at a computer. Keep it — it is your proof of payment.</span>
+        </li>
+        <li>
+          <span class="steps__n">02</span>
+          <span class="steps__k">I confirm the scope in writing</span>
+          <span class="steps__v">Within a day: what I am building, what I need from you, and when it will be live. If anything in it surprises you, say so before I start rather than after.</span>
+        </li>
+        <li>
+          <span class="steps__n">03</span>
+          <span class="steps__k">You see it early</span>
+          <span class="steps__v">Direction arrives as a real page in a real browser, not a picture of one. Nothing is a surprise at the end.</span>
+        </li>
+        <li>
+          <span class="steps__n">04</span>
+          <span class="steps__k">It goes live, and it is yours</span>
+          <span class="steps__v">Source, notes and the checking scripts, handed over. The monthly starts the month after it is live, not the day you paid.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" data-sec="SAFETY" data-zone-set="violet" aria-labelledby="sf-h" data-3d="5">
+      <div class="wash wash--alt" aria-hidden="true"></div>
+    <div class="shell split">
+      <div>
+        <p class="kick mono mono--accent">Paying safely</p>
+        <h2 id="sf-h" class="display mt-lg" style="font-size:clamp(1.6rem,3.4vw,2.5rem);max-width:14ch" data-kin="word">Your card never touches this site</h2>
+      </div>
+      <div class="prose">
+        <p>The pay button hands you to <b>Stripe</b>, who take the card details on their own page. This site has no server, stores nothing and never sees a card number — which is deliberate, and the reason I have not built a card form of my own. Anyone who asks you to type card details into a small business's own website is doing it wrong.</p>
+        <p>You will see Stripe's domain in the address bar before you type anything. If you do not, close the tab and tell me.</p>
+        <p>Payments and contracts are handled by an adult in my family. Stripe requires the account holder to be an adult, and it means the written agreement is with somebody who can be held to it — which matters to you rather more than it does to me. The work is mine; the paperwork is theirs, and their name is on the invoice you will receive.</p>
+        <p>Refunds: if I have not started, all of it, no argument. If I have, the fair share of what is left. That is in the written agreement before you pay, not discovered afterwards.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-sec="NEXT" data-zone-set="flare" data-3d="5">
+    <div class="wash" aria-hidden="true"></div>
+    <div class="shell between">
+      <h2 class="display" style="font-size:clamp(2rem,6.2vw,4.75rem);max-width:15ch" data-kin="word">Not agreed anything yet?</h2>
+      <div class="row">
+        <a class="btn btn--solid" href="contact.html" data-curtain="Contact" data-magnetic="0.3">
+          <span class="btn__lab"><span>Start there instead</span><span>Say hello</span></span>
+        </a>
+        <a class="btn btn--ghost" href="prices.html" data-curtain="Prices" data-magnetic="0.24">
+          <span class="btn__lab"><span>See the prices</span><span>All three</span></span>
+        </a>
+      </div>
+    </div>
+  </section>

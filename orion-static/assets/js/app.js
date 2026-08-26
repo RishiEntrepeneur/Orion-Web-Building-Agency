@@ -2865,6 +2865,97 @@
     });
   }
 
+
+  /* ============================================================
+     36. CHECKOUT — pick a package, then pay for it
+     ============================================================
+     No card handling here, on purpose. The pay button is a link to
+     Stripe's own hosted checkout; this page only decides which link.
+     When a package has no link configured the invoice route takes
+     its place, which is the honest state rather than a dead button. */
+  function initCheckout() {
+    var opts = $$(".co__opt");
+    if (!opts.length) return;
+
+    var nameEl = $("#co-name");
+    var setupEl = $("#co-setup");
+    var monthlyEl = $("#co-monthly");
+    var todayEl = $("#co-today");
+    var incEl = $("#co-inc");
+    var payBtn = $("#co-pay");
+    var invBtn = $("#co-invoice");
+    var noteEl = $("#co-note");
+
+    function choose(btn) {
+      opts.forEach(function (o) { o.setAttribute("aria-checked", String(o === btn)); });
+
+      var name = btn.getAttribute("data-name");
+      var setup = btn.getAttribute("data-setup");
+      var monthly = btn.getAttribute("data-monthly");
+      var link = (btn.getAttribute("data-link") || "").trim();
+      var inc = (btn.getAttribute("data-inc") || "").split(" | ").filter(Boolean);
+
+      var from = setup.slice(-1) === "+";
+      nameEl.textContent = name;
+      setupEl.textContent = from ? "from " + setup.slice(0, -1) : setup;
+      monthlyEl.textContent = monthly + " a month";
+      todayEl.textContent = (from ? "from " + setup.slice(0, -1) : setup) + " + " + monthly;
+
+      incEl.textContent = "";
+      inc.forEach(function (line) {
+        var li = document.createElement("li");
+        li.textContent = line;
+        incEl.appendChild(li);
+      });
+
+      if (link) {
+        payBtn.hidden = false;
+        payBtn.setAttribute("href", link);
+        payBtn.setAttribute("rel", "noopener");
+        /* the label has to name where it is sending you before it sends you */
+        var lab = $(".btn__lab", payBtn);
+        if (lab) lab.innerHTML = "<span>Pay " + (from ? "from " : "") +
+          (from ? setup.slice(0, -1) : setup) + "</span><span>Continue to Stripe</span>";
+        invBtn.className = "btn btn--ghost";
+        noteEl.textContent = "The button opens Stripe's own checkout. Your card details are typed there, never here — this page has no server and stores nothing.";
+      } else {
+        payBtn.hidden = true;
+        invBtn.className = "btn btn--solid";
+        noteEl.textContent = "Card payment is not switched on for this package yet — invoices are sent by email and paid by bank transfer, which costs neither of us a fee.";
+      }
+      /* carry the choice into the contact form so the invoice request
+         does not need retyping */
+      invBtn.setAttribute("href", "contact.html#contact");
+      try { sessionStorage.setItem("orion-pick", name); } catch (e) {}
+    }
+
+    opts.forEach(function (o) {
+      on(o, "click", function () { choose(o); });
+      on(o, "keydown", function (e) {
+        var i = opts.indexOf(o);
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); opts[(i + 1) % opts.length].focus(); opts[(i + 1) % opts.length].click(); }
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); opts[(i - 1 + opts.length) % opts.length].focus(); opts[(i - 1 + opts.length) % opts.length].click(); }
+      });
+      o.setAttribute("tabindex", "0");
+    });
+    choose(opts[0]);
+  }
+
+  /* The pay page hands a choice over in sessionStorage; the contact form
+     picks it up so nobody has to say it twice. */
+  function initCarry() {
+    var sel = $("#brief-package");
+    if (!sel) return;
+    var picked = "";
+    try { picked = sessionStorage.getItem("orion-pick") || ""; } catch (e) {}
+    if (!picked) return;
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value.indexOf(picked) === 0) { sel.selectedIndex = i; break; }
+    }
+    var field = sel.closest(".field");
+    if (field) field.setAttribute("data-filled", "true");
+  }
+
   /* ============================================================
      27. BOOT
      ============================================================ */
@@ -2901,6 +2992,8 @@
     initIntro();
     initAssembly();
     initLab();
+    initCheckout();
+    initCarry();
     init3D();
     initCard3D();
     initOrbit();
