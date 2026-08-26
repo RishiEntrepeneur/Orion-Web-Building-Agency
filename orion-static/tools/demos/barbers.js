@@ -112,7 +112,7 @@ const hours = `  <section class="strip">
   </section>`;
 
 const cut = (n, name, len, price, note) => `        <article class="cutcard">
-          <div class="cutcard__plate"><canvas data-cut="${n}" width="480" height="360"></canvas></div>
+          <div class="cutcard__plate"><canvas data-cut="${n}" width="760" height="570"></canvas></div>
           <div class="cutcard__b">
             <h3>${name}</h3>
             <p class="cutcard__m"><span>${len}</span><b>${price}</b></p>
@@ -128,7 +128,8 @@ page["index.html"] = {
   desc: "A proper barbershop on Cross Street. Cuts, beards, hot towel shaves. Walk-ins welcome.",
   body: `  <section class="hero">
     <div class="hero__bg" aria-hidden="true"><canvas id="grain"></canvas></div>
-    <div class="wrap hero__in">
+    <div class="wrap hero__in hero__grid">
+      <div>
       <p class="kick">Cross Street &middot; Marbury</p>
       <h1>Fourteen years<br />of getting it<br /><em>right</em> first time</h1>
       <p class="lede">
@@ -138,6 +139,11 @@ page["index.html"] = {
       <div class="row">
         <a class="btn btn--fill" href="contact.html">Book a chair</a>
         <a class="btn" href="services.html">See the prices</a>
+      </div>
+      </div>
+      <div class="hero__plate" aria-hidden="true">
+        <canvas data-cut="3" width="760" height="570"></canvas>
+        <span class="hero__cap">Fig. 01 — skin fade &amp; beard</span>
       </div>
     </div>
   </section>
@@ -513,7 +519,7 @@ page["contact.html"] = {
           </p>
           <div class="row">
             <button class="btn btn--fill" type="button" id="copy">Copy it</button>
-            <button class="btn btn--ghostdark" type="button" id="again">Change something</button>
+            <button class="btn" type="button" id="again">Change something</button>
           </div>
           <p class="note note--tight" id="copied" role="status" aria-live="polite"></p>
         </div>

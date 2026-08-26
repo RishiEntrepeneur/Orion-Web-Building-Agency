@@ -16,6 +16,10 @@ for (const [page, out] of [
   await p.goto("http://127.0.0.1:8765/" + page, { waitUntil: "load" });
   /* let every canvas paint and every reveal settle before the capture */
   await p.evaluate(async () => {
+    /* The demos reveal on scroll and one of them sets scroll-behavior: smooth,
+       so a still has to walk the whole page first or half of it captures at
+       opacity 0. */
+    document.documentElement.style.scrollBehavior = "auto";
     window.scrollTo(0, document.body.scrollHeight);
     await new Promise(r => setTimeout(r, 900));
     window.scrollTo(0, 0);

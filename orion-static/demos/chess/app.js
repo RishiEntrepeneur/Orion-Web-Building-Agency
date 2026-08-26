@@ -179,4 +179,47 @@
       navigator.clipboard.writeText(text).then(function () { say(true); }, function () { say(false); });
     } else { say(false); }
   });
+
+})();
+
+/* ---------- reveal on scroll ----------
+   Its own IIFE on purpose: the module above returns early on pages that have
+   no form, and this used to sit after that return — so the reveal ran on two
+   pages out of ten and nobody noticed, because the failure mode is "no
+   animation" rather than "error".
+
+   data-rv is applied here and never in the markup, so with JavaScript off
+   the page shows everything instead of nothing. */
+(function () {
+  var items = document.querySelectorAll("h1, .h2, .lede, .cards, .split > div, .facts, .boardwrap, .moves, .row, .fld, .card");
+  if (!items.length) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!("IntersectionObserver" in window)) return;
+
+  var watch = [];
+  Array.prototype.forEach.call(items, function (el) {
+    /* Anything inside a collapsed pane never intersects, so it would sit at
+       opacity 0 for ever and be invisible when the pane finally opens. */
+    if (el.closest("[hidden]")) return;
+    watch.push(el);
+  });
+  watch.forEach(function (el, i) {
+    el.setAttribute("data-rv", "");
+    el.style.setProperty("--rv-d", ((i % 6) * 55) + "ms");
+  });
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.setAttribute("data-in", "true");
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  watch.forEach(function (el) { io.observe(el); });
+
+  /* Belt and braces: anything still unrevealed after five seconds gets shown.
+     A reveal system that can strand content is worse than no reveal system. */
+  window.setTimeout(function () {
+    watch.forEach(function (el) { el.setAttribute("data-in", "true"); });
+  }, 5000);
 })();

@@ -25,7 +25,7 @@
   --rule:   #cdccc4;
   --green:  #2f4739;   /* board dark */
   --green2: #43604e;
-  --brass:  #96661a;
+  --brass:  #85590f;   /* 5.46:1 on --paper; #96661a was 4.45 and failed */
   --brass2: #b8863b;
   /* Board squares are lighter than the chrome green on purpose: a black piece
      has to read on the dark square as well as a white one does. */
@@ -263,3 +263,63 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+
+/* ---------- reveal ----------
+   Only ever applied by script: see app.js. */
+[data-rv] {
+  opacity: 0; transform: translateY(15px);
+  transition: opacity .75s cubic-bezier(.22,.61,.36,1) var(--rv-d, 0ms),
+              transform .75s cubic-bezier(.22,.61,.36,1) var(--rv-d, 0ms);
+}
+[data-rv][data-in="true"] { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-rv] { opacity: 1 !important; transform: none !important; }
+}
+
+::selection { background: #96661a; color: #f3f3ef; }
+
+/* ---------- print ----------
+   Somebody will print this and put it on the village hall noticeboard. */
+@media print {
+  @page { margin: 16mm; }
+  body { background: #fff; color: #111; font-size: 11pt; }
+  .demobar, .top, .hero__grid, .hero__piece, .foot, .btn, .moves,
+  form, #done, .boardwrap { display: none !important; }
+  .band, .band--alt, .hero { background: #fff !important; border: 0; padding-block: 0 0 6mm; }
+  .cards, .facts { border-color: #bbb; background: #bbb; }
+  .card, .facts > div { background: #fff !important; break-inside: avoid; }
+  .eyebrow, .card__k { color: #6b4a12 !important; }
+  .body, .card__d, .cap { color: #444 !important; }
+  a[href]::after { content: ""; }
+  main::after {
+    content: "Alderley Chess Club · Alderley Village Hall, Mill Lane · Thursdays from 7pm · £3, under-18s free";
+    display: block; margin-top: 8mm; padding-top: 3mm; border-top: 1px solid #111;
+    font-size: 9pt; color: #333;
+  }
+}
+
+/* ---------- fixtures ---------- */
+.head-row { display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: flex-end; justify-content: space-between; }
+.cap--right { text-align: left; }
+@media (min-width: 760px) { .cap--right { text-align: right; } }
+.tbl-wrap { overflow-x: auto; margin-top: 2rem; }
+.fix { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.fix caption { caption-side: bottom; text-align: left; padding-top: 1rem; max-width: 62ch; }
+.fix th, .fix td { text-align: left; padding: .75rem 1rem .75rem 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.fix thead th {
+  font-family: var(--f-b); font-size: .6875rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--ink2); font-weight: 600; border-bottom-color: var(--ink);
+}
+.fix tbody td { color: var(--ink2); font-size: .9375rem; }
+.fix tbody td:nth-child(2) { color: var(--ink); font-weight: 500; white-space: normal; }
+.fix__r { text-align: right; padding-right: 0; }
+.fix__r b { font-family: var(--f-d); font-weight: 700; font-optical-sizing: none; font-variation-settings: "opsz" 18; font-size: 1.0625rem; }
+.fix__r .w { color: var(--green); }
+.fix__r .d { color: var(--ink2); }
+.fix__r .l { color: #8c3a2c; }
+.fix__r span { font-size: .8125rem; color: var(--ink2); }
+.fix__next td { background: var(--paper2); }
+.band--alt .fix__next td { background: var(--paper); }
+.fix__next .fix__r span { color: var(--brass); font-weight: 600; }
+@media print { .fix__next td { background: #eee !important; } .tbl-wrap { overflow: visible; } }

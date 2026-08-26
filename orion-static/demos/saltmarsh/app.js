@@ -49,31 +49,134 @@
     addEventListener("resize", paintSky);
   }
 
-  /* ---------- tide plate ---------- */
+  /* ---------- the marsh, as a survey ----------
+     Contours, drawn the way an Ordnance Survey sheet draws them: a height
+     field sampled on a grid, then marching squares walked over it to find
+     where each level crosses. Every fifth line is an index contour and is
+     drawn heavier, which is what makes a set of curves read as a map rather
+     than as decoration. Below the lowest level the ground is water. */
+
+  function field(seed, cols, rows) {
+    /* value noise: a coarse lattice of random heights, bilinear between,
+       three octaves deep */
+    function lattice(n, sd) {
+      var r = rng(sd), g = [];
+      for (var j = 0; j <= n; j++) { g[j] = []; for (var i = 0; i <= n; i++) g[j][i] = r(); }
+      return g;
+    }
+    var octs = [[3, seed * 13 + 1, 1.0], [7, seed * 29 + 7, 0.45], [15, seed * 53 + 3, 0.2]];
+    var grids = octs.map(function (o) { return lattice(o[0], o[1]); });
+    var f = [];
+    for (var y = 0; y <= rows; y++) {
+      f[y] = [];
+      for (var x = 0; x <= cols; x++) {
+        var u = x / cols, v = y / rows, sum = 0, amp = 0;
+        for (var k = 0; k < octs.length; k++) {
+          var n = octs[k][0], w = octs[k][2], g = grids[k];
+          var gx = u * n, gy = v * n;
+          /* the lattice is 0..n inclusive, so the last sample (u = 1) would
+             read n+1 and come back undefined — clamp to the last cell */
+          var x0 = Math.min(n - 1, Math.floor(gx)), y0 = Math.min(n - 1, Math.floor(gy));
+          var tx = gx - x0, ty = gy - y0;
+          var sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+          var a0 = g[y0][x0] + (g[y0][x0 + 1] - g[y0][x0]) * sx;
+          var a1 = g[y0 + 1][x0] + (g[y0 + 1][x0 + 1] - g[y0 + 1][x0]) * sx;
+          sum += (a0 + (a1 - a0) * sy) * w;
+          amp += w;
+        }
+        /* tilt the whole sheet so the low ground gathers at one corner —
+           a marsh drains somewhere */
+        f[y][x] = sum / amp - (v * 0.30) - (u * 0.10);
+      }
+    }
+    return f;
+  }
+
+  /* Marching squares: for one level, emit the segments where it crosses. */
+  function isoline(f, level, cols, rows, W, H) {
+    var segs = [];
+    var sx = W / cols, sy = H / rows;
+    var lerp = function (a, b, va, vb) { var t = (level - va) / (vb - va || 1e-6); return a + (b - a) * t; };
+    for (var y = 0; y < rows; y++) {
+      for (var x = 0; x < cols; x++) {
+        var tl = f[y][x], tr = f[y][x + 1], br = f[y + 1][x + 1], bl = f[y + 1][x];
+        var idx = (tl > level ? 8 : 0) | (tr > level ? 4 : 0) | (br > level ? 2 : 0) | (bl > level ? 1 : 0);
+        if (idx === 0 || idx === 15) continue;
+        var X = x * sx, Y = y * sy;
+        var T = [lerp(X, X + sx, tl, tr), Y];
+        var R = [X + sx, lerp(Y, Y + sy, tr, br)];
+        var B = [lerp(X, X + sx, bl, br), Y + sy];
+        var L = [X, lerp(Y, Y + sy, tl, bl)];
+        var push = function (p, q) { segs.push([p[0], p[1], q[0], q[1]]); };
+        switch (idx) {
+          case 1: case 14: push(L, B); break;
+          case 2: case 13: push(B, R); break;
+          case 3: case 12: push(L, R); break;
+          case 4: case 11: push(T, R); break;
+          case 6: case 9:  push(T, B); break;
+          case 7: case 8:  push(L, T); break;
+          case 5:  push(L, T); push(B, R); break;
+          case 10: push(T, R); push(L, B); break;
+        }
+      }
+    }
+    return segs;
+  }
+
   Array.prototype.forEach.call(document.querySelectorAll("[data-tide]"), function (c) {
     var x = c.getContext("2d"), W = c.width, H = c.height;
-    var r = rng(parseFloat(c.getAttribute("data-tide")) * 71 + 5);
+    var seed = parseFloat(c.getAttribute("data-tide")) || 1;
+    var COLS = 90, ROWS = Math.round(90 * H / W);
+    var f = field(seed, COLS, ROWS);
+
     var g = x.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "#22343c");
+    g.addColorStop(0, "#24363e");
     g.addColorStop(1, "#16232a");
     x.fillStyle = g; x.fillRect(0, 0, W, H);
-    /* channels cut by the tide across a marsh */
-    for (var i = 0; i < 26; i++) {
-      var y0 = H * (i / 26) + r() * 12;
-      x.strokeStyle = i % 4 === 0 ? "rgba(194,104,60,.5)" : "rgba(207,217,210,.22)";
-      x.lineWidth = 0.7 + r() * 2.4;
-      x.beginPath();
-      var amp2 = 10 + r() * 60;
-      for (var px = -10; px <= W + 10; px += 12) {
-        var py = y0 + Math.sin(px / (60 + r() * 40) + i * 1.7) * (amp2 * 0.12) + Math.sin(px / 220) * amp2 * 0.3;
-        px === -10 ? x.moveTo(px, py) : x.lineTo(px, py);
+
+    /* water: everything under the lowest contour, filled by cell */
+    var WATER = -0.02;
+    x.fillStyle = "rgba(31,48,56,0.75)";
+    var cw = W / COLS, ch = H / ROWS;
+    for (var yy = 0; yy < ROWS; yy++) {
+      for (var xx = 0; xx < COLS; xx++) {
+        if (f[yy][xx] < WATER) x.fillRect(xx * cw - 0.5, yy * ch - 0.5, cw + 1, ch + 1);
       }
+    }
+
+    /* the contours themselves */
+    var levels = [];
+    for (var lv = -0.02; lv < 0.62; lv += 0.035) levels.push(lv);
+    levels.forEach(function (level, i) {
+      var index = i % 5 === 0;
+      x.strokeStyle = index ? "rgba(194,104,60,0.62)" : "rgba(207,217,210,0.30)";
+      x.lineWidth = index ? 1.5 : 0.8;
+      x.beginPath();
+      isoline(f, level, COLS, ROWS, W, H).forEach(function (s2) {
+        x.moveTo(s2[0], s2[1]); x.lineTo(s2[2], s2[3]);
+      });
       x.stroke();
-    }
-    for (var k = 0; k < 1400; k++) {
-      x.fillStyle = "rgba(207,217,210," + (r() * 0.05).toFixed(3) + ")";
-      x.fillRect(r() * W, r() * H, 1, 1);
-    }
+    });
+
+    /* the low-water mark, heavier still */
+    x.strokeStyle = "rgba(232,234,228,0.55)";
+    x.lineWidth = 2;
+    x.beginPath();
+    isoline(f, WATER, COLS, ROWS, W, H).forEach(function (s2) {
+      x.moveTo(s2[0], s2[1]); x.lineTo(s2[2], s2[3]);
+    });
+    x.stroke();
+
+    /* a survey sheet has a grid and a note on it */
+    x.strokeStyle = "rgba(207,217,210,0.07)";
+    x.lineWidth = 1;
+    for (var gx2 = 0; gx2 <= W; gx2 += W / 6) { x.beginPath(); x.moveTo(gx2, 0); x.lineTo(gx2, H); x.stroke(); }
+    for (var gy2 = 0; gy2 <= H; gy2 += W / 6) { x.beginPath(); x.moveTo(0, gy2); x.lineTo(W, gy2); x.stroke(); }
+    x.font = "400 13px 'IBM Plex Mono', ui-monospace, monospace";
+    x.fillStyle = "rgba(139,154,160,0.9)";
+    x.fillText("WRAITH POINT — LOW WATER", 16, H - 34);
+    x.fillStyle = "rgba(194,104,60,0.9)";
+    x.fillText("CONTOURS AT 0.5m", 16, H - 16);
   });
 
   /* ============================================================
@@ -338,4 +441,47 @@
     sync();
     show(1);
   });
+
+})();
+
+/* ---------- reveal on scroll ----------
+   Its own IIFE on purpose: the module above returns early on pages that have
+   no form, and this used to sit after that return — so the reveal ran on two
+   pages out of ten and nobody noticed, because the failure mode is "no
+   animation" rather than "error".
+
+   data-rv is applied here and never in the markup, so with JavaScript off
+   the page shows everything instead of nothing. */
+(function () {
+  var items = document.querySelectorAll("h1, .phead__h, .h2, .lede, .thirds > article, .feature__plate, .facts, .jrow, .course, .post article, .bk, .steps, .body");
+  if (!items.length) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!("IntersectionObserver" in window)) return;
+
+  var watch = [];
+  Array.prototype.forEach.call(items, function (el) {
+    /* Anything inside a collapsed pane never intersects, so it would sit at
+       opacity 0 for ever and be invisible when the pane finally opens. */
+    if (el.closest("[hidden]")) return;
+    watch.push(el);
+  });
+  watch.forEach(function (el, i) {
+    el.setAttribute("data-rv", "");
+    el.style.setProperty("--rv-d", ((i % 6) * 55) + "ms");
+  });
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.setAttribute("data-in", "true");
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  watch.forEach(function (el) { io.observe(el); });
+
+  /* Belt and braces: anything still unrevealed after five seconds gets shown.
+     A reveal system that can strand content is worse than no reveal system. */
+  window.setTimeout(function () {
+    watch.forEach(function (el) { el.setAttribute("data-in", "true"); });
+  }, 5000);
 })();

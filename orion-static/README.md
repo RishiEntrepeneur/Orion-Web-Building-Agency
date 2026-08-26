@@ -115,9 +115,9 @@ prices on `services.html` point at something you can actually click:
 
 | | Package | Pages | Palette | Type | The interesting part |
 |---|---|---|---|---|---|
-| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening |
-| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | a street map drawn on canvas, and generated cut plates |
-| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | a three-step booking system with real availability rules |
+| **Alderley Chess Club** | Starter Launch | 1 | light, board green, brass | Fraunces + Archivo | a teaching board that steps through a real opening, and a league table |
+| **Fairweather Barbers** | Business Growth | 5 | near-black, bone, amber | Bebas Neue + Archivo | halftone profiles, and a street map drawn on canvas |
+| **Saltmarsh** | Premium Custom | 4 | pale grey-green, rust | Cormorant + Archivo | contour topography, and a three-step booking system |
 
 They are deliberately nothing like each other, and nothing like this site. That
 is the point: a builder who only has one look is a builder with a template.
@@ -127,6 +127,31 @@ Every page carries a bar across the top saying the business is not real, is
 Where a demo cannot show something honestly it says so on the page — the
 barbers' map is drawn rather than embedded, because an embedded map means a
 third-party script and this site does not make third-party requests.
+
+### Drawing what you cannot photograph
+
+None of these businesses exist, so none of them have photographs, and putting
+stock imagery on them would be the same lie the rest of this site exists to
+avoid. Both image-led demos generate their own instead — and both took more
+than one attempt, because the first version of each read as noise rather than
+as art direction.
+
+**The barbers** are real halftones. A profile is drawn as a silhouette on an
+offscreen canvas, the pixels are read back, and a dot grid is sized by the
+coverage of each cell — the process a newspaper used, done in code. The head is
+a **point outline**, not hand-placed bezier handles: a nose is four coordinates
+you can reason about and two control points you cannot. What changes between
+the six plates is the hair, built by pushing the skull run outwards by an
+amount that varies along it, so a crop is a crop and a fade is a fade rather
+than a hat. The profile is deliberately stylised, the way a barber's shop sign
+is: at this dot pitch a nose is four cells across, and an anatomically
+ambitious one renders as a dent.
+
+**Saltmarsh** is a survey sheet. A height field of three octaves of value noise
+is sampled on a grid, then **marching squares** walks it to find where each
+contour level crosses. Every fifth line is an index contour and is drawn
+heavier, which is the thing that makes a set of curves read as a map instead of
+as decoration. Everything below the lowest level is water.
 
 ### The machine
 
@@ -162,6 +187,27 @@ This was wrong once: the machine was hidden below 900px on the theory that it
 would be illegible, which meant anyone reading the preview in a side panel saw
 the tabs and an empty stage — they never saw the one thing the page exists for.
 A breakpoint that hides your centrepiece is not a responsive design.
+
+### Quality passes the demos needed
+
+Things that were missing until they were measured:
+
+- **Reveal on scroll**, added to all three. It lives in its own IIFE because
+  the first version sat after an early `return` in the module above and so ran
+  on two pages out of ten — the failure mode is "no animation", which nobody
+  notices. `data-rv` is applied by script and never by the markup, so with
+  JavaScript off the page shows everything rather than nothing, and anything
+  inside a collapsed pane is skipped because it would never intersect and
+  would still be invisible when the pane opened.
+- **Print stylesheets.** A price list gets stuck by the mirror and a menu gets
+  printed; on paper the dark ground empties a toner cartridge and none of the
+  chrome means anything. Each demo prints as the content plus its address.
+- **Computed contrast**, which found **13 failures** the eye had passed: an
+  amber strip at 3.68:1, a brass eyebrow at 4.45:1, a whole muted grey at
+  2.4:1, and a ghost button rendering dark ink on a dark band at **1.08:1**.
+  All fixed. The checker also had to be taught that WCAG 1.4.3 exempts
+  disabled controls — a greyed-out calendar date is allowed to be low
+  contrast, though 1.34:1 was unreadable and got lifted anyway.
 
 ## The single-file preview
 

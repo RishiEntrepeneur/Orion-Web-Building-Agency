@@ -153,7 +153,9 @@ h1 em, .phead__h em { font-style: normal; color: var(--amber2); }
 /* ---------- hours strip ---------- */
 .strip { background: var(--amber); color: var(--pitch); }
 .strip__in { display: flex; flex-wrap: wrap; gap: .5rem 1.6rem; align-items: baseline; padding-block: .85rem; }
-.strip__k { font-family: var(--f-m); font-size: .625rem; letter-spacing: .2em; text-transform: uppercase; opacity: .75; }
+/* was opacity: .75 over amber, which measured 3.68:1 — a solid darker ink
+   instead, at 4.86:1 */
+.strip__k { font-family: var(--f-m); font-size: .625rem; letter-spacing: .2em; text-transform: uppercase; color: #3d1f04; }
 .strip__k--end { margin-left: auto; }
 .strip__v { font-family: var(--f-d); font-size: 1.25rem; letter-spacing: .06em; }
 .strip__v--off { opacity: .6; }
@@ -276,4 +278,55 @@ h1 em, .phead__h em { font-style: normal; color: var(--amber2); }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+/* the hero was a column of type with an empty half beside it */
+.hero__grid { display: grid; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (min-width: 940px) { .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr); } }
+.hero__plate { position: relative; border: 1px solid var(--rule); overflow: hidden; background: #0f0d0c; }
+.hero__plate canvas { width: 100%; height: auto; display: block; }
+.hero__cap {
+  position: absolute; left: 0; bottom: 0; z-index: 2;
+  font-family: var(--f-m); font-size: .5625rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--bone); background: rgba(20,17,15,.82); padding: .35rem .6rem;
+}
+@media (max-width: 939px) { .hero__plate { display: none; } }
+
+
+/* ---------- reveal ----------
+   Only ever applied by script: see app.js. */
+[data-rv] {
+  opacity: 0; transform: translateY(15px);
+  transition: opacity .75s cubic-bezier(.22,.61,.36,1) var(--rv-d, 0ms),
+              transform .75s cubic-bezier(.22,.61,.36,1) var(--rv-d, 0ms);
+}
+[data-rv][data-in="true"] { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-rv] { opacity: 1 !important; transform: none !important; }
+}
+
+::selection { background: #e0761f; color: #14110f; }
+
+/* ---------- print ----------
+   A price list gets printed and stuck by the mirror. Worth doing properly:
+   the dark ground would empty a toner cartridge, and none of the chrome
+   means anything on paper. */
+@media print {
+  @page { margin: 16mm; }
+  body { background: #fff; color: #111; font-size: 11pt; }
+  .demobar, .top, .nav-m, .foot, .pole, .hero__bg, .hero__plate,
+  .btn, .cta, .burger, .strip, .mapwrap, .cutcard__plate, form { display: none !important; }
+  .band, .band--dark, .band--amber, .phead { background: #fff !important; color: #111 !important; padding-block: 0 0 8mm; border: 0; }
+  .h2, h1, .phead__h, .plist__h, .prow__n, .cutcard h3 { color: #111 !important; }
+  .kick, .prow__t, .prow__p, .note { color: #444 !important; }
+  .prow { border-bottom: 1px solid #ccc; break-inside: avoid; padding-block: 3mm; }
+  .plist { break-inside: avoid; }
+  .prow__p { font-weight: 700; }
+  a[href]::after { content: ""; }
+  /* the address belongs on a printed price list even though it is chrome */
+  main::after {
+    content: "Fairweather Barbers · 42 Cross Street, Marbury CH3 8QP · Tue–Fri 9–6, Sat 8–4";
+    display: block; margin-top: 8mm; padding-top: 3mm; border-top: 1px solid #111;
+    font-size: 9pt; color: #333;
+  }
 }
