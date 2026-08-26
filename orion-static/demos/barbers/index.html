@@ -3,200 +3,245 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Fairweather Barbers — Marbury</title>
-<meta name="description" content="A proper barbershop on Cross Street. Cuts, beards, hot towel shaves. Walk-ins welcome." />
+<title>Fairweather Barbers — two chairs on Sedgewick Street</title>
+<meta name="description" content="A proper barber shop. Cut and finish £24, skin fade £28, hot towel shave £30. Walk in or book. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
 <meta name="theme-color" content="#14110f" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M-6 26 L10 -2 M2 26 L18 -2 M10 26 L26 -2 M18 26 L34 -2' stroke='%23e0761f' stroke-width='5'/%3E%3C/svg%3E" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M11 5h10v22H11z' fill='%23efe9df'/%3E%3Cpath d='M11 8l10-3v4l-10 3zM11 15l10-3v4l-10 3zM11 22l10-3v4l-10 3z' fill='%23c9a227'/%3E%3C/svg%3E" />
 <link rel="preload" href="../../assets/fonts/bebas-normal-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> This is a <b>Business Growth</b> demo — five pages, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body data-page="home">
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="top__in">
-    <a class="mark" href="index.html">
-      <span class="mark__n">Fairweather</span>
-      <span class="mark__s">Barbers &middot; est. 2011</span>
-    </a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="about.html">The shop</a>
-      <a href="services.html">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
-    </nav>
-    <a class="cta" href="contact.html">Book a chair</a>
-    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-    <a href="index.html" aria-current="page">Home</a>
-      <a href="about.html">The shop</a>
-      <a href="services.html">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> It is a <b>Business Growth</b> demo — five pages, a gallery and a live opening-hours sign, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Fairweather Barbers — home">
+    <svg class="mark__ico" viewBox="0 0 26 30" fill="none" aria-hidden="true">
+      <rect x="7" y="1.5" width="12" height="27" stroke="currentColor" stroke-width="1.4" />
+      <path d="M7 6.5 19 3v3.6L7 10.1zM7 14 19 10.5v3.6L7 17.6zM7 21.5 19 18v3.6L7 25.1z" fill="var(--accent)" />
+    </svg>
+    <span class="mark__name">Fairweather<em>Barbers, est. 2011</em></span>
+  </a>
+  <nav class="nav" aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="services.html">Cuts &amp; prices</a>
+        <a href="gallery.html">The work</a>
+        <a href="about.html">The shop</a>
+        <a href="contact.html">Find us</a>
+    <span class="sign" data-sign hidden>
+      <i class="sign__dot"></i><span data-sign-text>Checking</span>
+    </span>
   </nav>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
+  </button>
 </header>
 
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="services.html" style="--i:1">Cuts &amp; prices</a>
+    <a href="gallery.html" style="--i:2">The work</a>
+    <a href="about.html" style="--i:3">The shop</a>
+    <a href="contact.html" style="--i:4">Find us</a>
+</div>
+
 <main id="main">
+
   <section class="hero">
-    <div class="hero__bg" aria-hidden="true"><canvas id="grain"></canvas></div>
-    <div class="wrap hero__in hero__grid">
-      <div>
-      <p class="kick">Cross Street &middot; Marbury</p>
-      <h1>Fourteen years<br />of getting it<br /><em>right</em> first time</h1>
-      <p class="lede">
-        A barbershop, not a salon. Two chairs, no music you have to shout over,
-        and a cut that still looks like something three weeks later.
+    <div class="hero__art" aria-hidden="true">
+      <canvas data-art="portrait" data-art-opts='{"cut":"fade","seed":2,"x":0.74,"y":0.5,"scale":0.25,"flip":true,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="wrap hero__in">
+      <p class="eyebrow" data-rev>Sedgewick Street &middot; two chairs &middot; since 2011</p>
+      <h1 class="d1" data-rev><span data-split>A haircut, not an experience</span></h1>
+      <p class="lede" data-rev="0.16">
+        Forty minutes, a proper wash, and somebody who will tell you if what you
+        asked for is a bad idea. Walk in, or book the chair.
       </p>
-      <div class="row">
-        <a class="btn btn--fill" href="contact.html">Book a chair</a>
-        <a class="btn" href="services.html">See the prices</a>
-      </div>
-      </div>
-      <div class="hero__plate" aria-hidden="true">
-        <canvas data-cut="3" width="760" height="570"></canvas>
-        <span class="hero__cap">Fig. 01 — skin fade &amp; beard</span>
+      <div class="row mt" data-rev="0.26">
+        <a class="btn btn--solid" href="contact.html" data-mag="0.22">Book the chair</a>
+        <a class="btn btn--ghost" href="services.html" data-mag="0.22">Cuts &amp; prices</a>
       </div>
     </div>
   </section>
 
-  <section class="strip">
-    <div class="wrap strip__in">
-      <span class="strip__k">Open</span>
-      <span class="strip__v">Tue&ndash;Fri 9&ndash;6</span>
-      <span class="strip__v">Sat 8&ndash;4</span>
-      <span class="strip__v strip__v--off">Sun &amp; Mon closed</span>
-      <span class="strip__k strip__k--end">Walk-ins welcome, but Saturday fills by ten</span>
-    </div>
-  </section>
-
-  <section class="band">
-    <div class="wrap">
-      <p class="kick">What we do</p>
-      <h2 class="h2">Three things, properly</h2>
-      <div class="three">
-        <article class="tcard">
-          <span class="tcard__n">01</span>
-          <h3>Cuts</h3>
-          <p>Scissor, clipper or both. We ask what you actually do each morning before we start, because a cut you cannot maintain is a cut that lasts a fortnight.</p>
-          <p class="tcard__p">from &pound;22</p>
-        </article>
-        <article class="tcard">
-          <span class="tcard__n">02</span>
-          <h3>Beards</h3>
-          <p>Shaped, lined and finished with a hot towel. Booked as its own appointment because doing it in the last four minutes of a cut is how beards go wrong.</p>
-          <p class="tcard__p">from &pound;14</p>
-        </article>
-        <article class="tcard">
-          <span class="tcard__n">03</span>
-          <h3>Wet shaves</h3>
-          <p>Cut-throat, two passes, hot towels either side. Forty minutes and you will not want to go back to a cartridge razor.</p>
-          <p class="tcard__p">&pound;32</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="band band--dark">
-    <div class="wrap split">
+  <section class="strip" aria-label="What we do">
+    <div data-marquee="30">
       <div>
-        <p class="kick">The shop</p>
-        <h2 class="h2">Two chairs, on purpose</h2>
-        <p class="body">
-          Ray opened Fairweather in 2011 with one chair and a secondhand mirror. There are two
-          chairs now and there will never be three, because the day this becomes a place where
-          nobody knows your name is the day it stops being worth running.
-        </p>
-        <a class="arrow" href="about.html">More about the shop &rarr;</a>
+        <span>Cut &amp; finish</span><span class="strip__dot">&#10022;</span>
+        <span>Skin fade</span><span class="strip__dot">&#10022;</span>
+        <span>Hot towel shave</span><span class="strip__dot">&#10022;</span>
+        <span>Beard trim</span><span class="strip__dot">&#10022;</span>
+        <span>Restyle</span><span class="strip__dot">&#10022;</span>
+        <span>Grey blending</span><span class="strip__dot">&#10022;</span>
       </div>
-      <dl class="stats">
-        <div><dt>Chairs</dt><dd>2</dd></div>
-        <div><dt>Years open</dt><dd>14</dd></div>
-        <div><dt>Cuts a week</dt><dd>90</dd></div>
-        <div><dt>Music, loud</dt><dd>0</dd></div>
-      </dl>
     </div>
   </section>
 
-  <section class="band">
+  <section class="band" aria-labelledby="what-h">
     <div class="wrap">
-      <p class="kick">Regulars ask for these</p>
-      <h2 class="h2">Three we do most weeks</h2>
-      <div class="cuts">
-        <article class="cutcard">
-          <div class="cutcard__plate"><canvas data-cut="1" width="760" height="570"></canvas></div>
-          <div class="cutcard__b">
-            <h3>The Cross Street</h3>
-            <p class="cutcard__m"><span>Short back and sides</span><b>£24</b></p>
-            <p class="cutcard__d">Scissor on top, faded low. The one half of Marbury walks in and asks for by name.</p>
-          </div>
-        </article>
-        <article class="cutcard">
-          <div class="cutcard__plate"><canvas data-cut="2" width="760" height="570"></canvas></div>
-          <div class="cutcard__b">
-            <h3>Grown-out crop</h3>
-            <p class="cutcard__m"><span>Medium, textured</span><b>£26</b></p>
-            <p class="cutcard__d">For hair that has a mind of its own. Cut so it falls the right way without product.</p>
-          </div>
-        </article>
-        <article class="cutcard">
-          <div class="cutcard__plate"><canvas data-cut="3" width="760" height="570"></canvas></div>
-          <div class="cutcard__b">
-            <h3>Skin fade &amp; beard</h3>
-            <p class="cutcard__m"><span>Short, sharp</span><b>£34</b></p>
-            <p class="cutcard__d">Fade to skin, beard shaped to match. Book the hour, not the half.</p>
-          </div>
-        </article>
+      <div class="head" data-rev>
+        <span class="num">01</span>
+        <span class="eyebrow head__line">What it costs</span>
+        <span class="num">No surprises</span>
       </div>
-      <div class="row"><a class="btn" href="gallery.html">See more of the work</a></div>
+      <div class="split">
+        <div class="stack">
+          <h2 id="what-h" class="d2" data-rev>Four prices,<br />on the wall,<br />since 2011.</h2>
+          <p data-rev="0.08">
+            The price on the list is the price at the till. Nobody will suggest a
+            treatment you did not ask for, and nobody will sell you a bottle of
+            anything on the way out.
+          </p>
+          <a class="lnk mt" href="services.html">The whole list <span class="lnk__ar" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ul class="quickprice" data-rev="0.1">
+          <li><span>Cut and finish</span><b>£24</b></li>
+          <li><span>Skin fade</span><b>£28</b></li>
+          <li><span>Hot towel shave</span><b>£30</b></li>
+          <li><span>Cut and beard</span><b>£34</b></li>
+          <li><span>Under 12s</span><b>£14</b></li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <section class="band band--amber">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Saturday goes<br />by ten. Ring<br />ahead.</h2>
-      <div class="row">
-        <a class="btn btn--dark" href="contact.html">Book a chair</a>
-        <a class="btn btn--ghostdark" href="services.html">Prices first</a>
+  <section class="band band--flush" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="head" data-rev>
+        <span class="num">02</span>
+        <span class="eyebrow head__line">The work</span>
+        <a class="num lnk" href="gallery.html">All of it &rarr;</a>
+      </div>
+      <h2 id="work-h" class="sr">Recent cuts</h2>
+      <ul class="grid3">
+
+        <li class="shot" data-rev="0" data-cut="fade">
+          <button class="fig fig--4x5" data-lb data-lb-cap="Skin fade, hard part">
+            <canvas data-art="portrait" data-art-opts='{"cut":"fade","seed":2,"flip":false,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+            <span class="fig__zoom" aria-hidden="true">+</span>
+          </button>
+          <p class="shot__cap">Skin fade, hard part</p>
+        </li>
+        <li class="shot" data-rev="0.07" data-cut="quiff">
+          <button class="fig fig--4x5" data-lb data-lb-cap="Grown out quiff, scissor sides">
+            <canvas data-art="portrait" data-art-opts='{"cut":"quiff","seed":5,"flip":true,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+            <span class="fig__zoom" aria-hidden="true">+</span>
+          </button>
+          <p class="shot__cap">Grown out quiff, scissor sides</p>
+        </li>
+        <li class="shot" data-rev="0.14" data-cut="beard">
+          <button class="fig fig--4x5" data-lb data-lb-cap="Beard shaped, cheeks lined">
+            <canvas data-art="portrait" data-art-opts='{"cut":"beard","seed":8,"flip":false,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+            <span class="fig__zoom" aria-hidden="true">+</span>
+          </button>
+          <p class="shot__cap">Beard shaped, cheeks lined</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="shop-h">
+    <div class="wrap">
+      <div class="split split--even split--flip">
+        <div class="stack">
+          <p class="eyebrow" data-rev>03 &middot; The shop</p>
+          <h2 id="shop-h" class="d2" data-rev>Two chairs,<br />one kettle.</h2>
+          <p data-rev="0.08">
+            It was a bookmakers, and before that a fishmonger's, and the tiles
+            behind the basins are the fishmonger's. There is a radio on, a dog
+            called Bracket, and a queue on Saturday mornings that everybody has
+            made their peace with.
+          </p>
+          <dl class="stats" data-rev="0.16">
+            <div><dt>Chairs</dt><dd><span data-count="2">2</span></dd></div>
+            <div><dt>Years open</dt><dd><span data-count="14">14</span></dd></div>
+            <div><dt>Cuts a week</dt><dd><span data-count="130">130</span></dd></div>
+          </dl>
+        </div>
+        <button class="fig fig--3x2" data-lb data-lb-cap="The shop, after close" data-rev="mask">
+          <canvas data-art="interior" data-art-opts='{"warm":"#e8a63c","cool":"#1b2733","dark":"#100c0a","lamps":4,"seed":31}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
       </div>
     </div>
   </section>
+
+  <section class="band band--flush" aria-labelledby="say-h">
+    <div class="wrap wrap--tight">
+      <h2 id="say-h" class="sr">What people say</h2>
+      <blockquote class="bigquote" data-rev>
+        <p class="d2">&ldquo;He told me the fade I asked for would look daft on me. He was right, and he said it nicely.&rdquo;</p>
+        <footer class="eyebrow">A customer who does not exist &middot; Sedgewick Street</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-h">
+    <canvas class="cta__art" aria-hidden="true"
+            data-art="interior" data-art-opts='{"warm":"#e8a63c","cool":"#16202a","dark":"#0b0908","lamps":3,"seed":47}'></canvas>
+    <div class="cta__scrim" aria-hidden="true"></div>
+    <div class="wrap cta__in">
+      <p class="eyebrow" data-rev>Tuesday to Saturday</p>
+      <h2 id="cta-h" class="d1" data-rev>Come in.</h2>
+      <a class="btn btn--solid mt" href="contact.html" data-mag="0.24" data-rev="0.1">Book the chair</a>
+    </div>
+  </section>
+
 </main>
 
 <footer class="foot">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="foot__in">
-    <div>
-      <p class="foot__n">Fairweather</p>
-      <p class="foot__d">42 Cross Street<br />Marbury, CH3 8QP</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3">Walk in, or don't.<br />Either works.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:32ch;opacity:.75">
+          Two chairs on Sedgewick Street. No app, no membership, no upselling.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Opening</p>
+        <ul class="foot__list" data-hours-mini>
+          <li><span>Tuesday</span><span>09:00–18:00</span></li>
+          <li><span>Wednesday</span><span>09:00–18:00</span></li>
+          <li><span>Thursday</span><span>09:00–20:00</span></li>
+          <li><span>Friday</span><span>08:00–18:00</span></li>
+          <li><span>Saturday</span><span>08:00–16:00</span></li>
+          <li><span>Sunday</span><span>Closed</span></li>
+          <li><span>Monday</span><span>Closed</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Cuts &amp; prices</a></li>
+          <li><a href="gallery.html">The work</a></li>
+          <li><a href="about.html">The shop</a></li>
+          <li><a href="contact.html">Find us</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Hours</p>
-      <p class="foot__d">Tue&ndash;Fri 9&ndash;6<br />Sat 8&ndash;4 &middot; Sun&ndash;Mon closed</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">Home</a><br /><a href="about.html">The shop</a><br /><a href="services.html">Cuts &amp; prices</a><br /><a href="gallery.html">Work</a><br /><a href="contact.html">Find us</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional shop, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Fairweather Barbers &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

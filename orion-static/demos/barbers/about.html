@@ -4,155 +4,155 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The shop — Fairweather Barbers</title>
-<meta name="description" content="Two chairs on Cross Street since 2011. Who cuts here and how the shop works." />
+<meta name="description" content="A bookmakers, then a fishmonger's, then two chairs and a kettle. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
 <meta name="theme-color" content="#14110f" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M-6 26 L10 -2 M2 26 L18 -2 M10 26 L26 -2 M18 26 L34 -2' stroke='%23e0761f' stroke-width='5'/%3E%3C/svg%3E" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M11 5h10v22H11z' fill='%23efe9df'/%3E%3Cpath d='M11 8l10-3v4l-10 3zM11 15l10-3v4l-10 3zM11 22l10-3v4l-10 3z' fill='%23c9a227'/%3E%3C/svg%3E" />
 <link rel="preload" href="../../assets/fonts/bebas-normal-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<a class="demobar" href="../../work.html">
+<a class="skip" href="#main">Skip to content</a>
+
+<a class="demobar" href="../../demos.html">
   <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> This is a <b>Business Growth</b> demo — five pages, built by Orion.</span>
+  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> It is a <b>Business Growth</b> demo — five pages, a gallery and a live opening-hours sign, built by Orion.</span>
   <span class="demobar__back">Back to Orion &rarr;</span>
 </a>
 
-<a class="skip" href="#main">Skip to content</a>
-
-<header class="top">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="top__in">
-    <a class="mark" href="index.html">
-      <span class="mark__n">Fairweather</span>
-      <span class="mark__s">Barbers &middot; est. 2011</span>
-    </a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html">Home</a>
-      <a href="about.html" aria-current="page">The shop</a>
-      <a href="services.html">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
-    </nav>
-    <a class="cta" href="contact.html">Book a chair</a>
-    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-    <a href="index.html">Home</a>
-      <a href="about.html" aria-current="page">The shop</a>
-      <a href="services.html">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Fairweather Barbers — home">
+    <svg class="mark__ico" viewBox="0 0 26 30" fill="none" aria-hidden="true">
+      <rect x="7" y="1.5" width="12" height="27" stroke="currentColor" stroke-width="1.4" />
+      <path d="M7 6.5 19 3v3.6L7 10.1zM7 14 19 10.5v3.6L7 17.6zM7 21.5 19 18v3.6L7 25.1z" fill="var(--accent)" />
+    </svg>
+    <span class="mark__name">Fairweather<em>Barbers, est. 2011</em></span>
+  </a>
+  <nav class="nav" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="services.html">Cuts &amp; prices</a>
+        <a href="gallery.html">The work</a>
+        <a href="about.html" aria-current="page">The shop</a>
+        <a href="contact.html">Find us</a>
+    <span class="sign" data-sign hidden>
+      <i class="sign__dot"></i><span data-sign-text>Checking</span>
+    </span>
   </nav>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
+  </button>
 </header>
 
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="services.html" style="--i:1">Cuts &amp; prices</a>
+    <a href="gallery.html" style="--i:2">The work</a>
+    <a href="about.html" style="--i:3">The shop</a>
+    <a href="contact.html" style="--i:4">Find us</a>
+</div>
+
 <main id="main">
-  <section class="phead">
-    <div class="wrap">
-      <p class="kick">The shop</p>
-      <h1 class="phead__h">A barbershop, <em>not</em> a salon</h1>
-      <p class="lede">
-        Fourteen years on the same street, two chairs, and a rule that nobody gets rushed
-        because the next appointment is early.
+
+  <section class="pagehead">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="portrait" data-art-opts='{"cut":"shaved","seed":20,"x":0.73,"y":0.5,"scale":0.24,"flip":true,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Sedgewick Street</p>
+      <h1 class="d1" data-rev><span data-split>Two chairs and a kettle</span></h1>
+    </div>
+  </section>
+
+  <article class="band prose">
+    <div class="wrap wrap--tight">
+      <p class="drop" data-rev>
+        The unit had been a bookmakers for twenty years and a fishmonger's for
+        forty before that. When we pulled the carpet up there was a drain in the
+        middle of the floor and white tile all the way to shoulder height, which
+        is why the shop looks the way it does — we did not choose it, we just
+        stopped covering it up.
       </p>
-    </div>
-  </section>
+      <p data-rev>
+        Two chairs, on purpose. A third would mean somebody standing behind it who
+        did not train here, and the only reason the queue on Saturday is bearable
+        is that everybody in it knows exactly who is cutting.
+      </p>
 
-  <section class="band">
-    <div class="wrap split split--wide">
-      <div>
-        <h2 class="h2">How it started</h2>
-      </div>
-      <div>
-        <p class="body">
-          Ray Fairweather cut hair in three other people's shops for eleven years before taking
-          the lease on 42 Cross Street in 2011. The first fit-out was one chair, a secondhand
-          mirror off a shop closing in Chester, and a sign he painted himself. The sign is still
-          up. It needs doing again and he will not let anyone touch it.
-        </p>
-        <p class="body">
-          Priya joined in 2016 and took the second chair permanently in 2018. Between them they
-          get through about ninety heads a week, which is roughly the ceiling before the thing
-          people like about the place starts to go.
-        </p>
-        <p class="body">
-          There is no receptionist, no app, and no upselling. If you want something we do not
-          think will suit you, we will say so and then do it anyway, because it is your head.
-        </p>
-      </div>
-    </div>
-  </section>
+      <figure class="pull" data-rev>
+        <blockquote class="d2">If it will not sit right on a Wednesday, we will say so on the Tuesday.</blockquote>
+      </figure>
 
-  <section class="band band--dark">
-    <div class="wrap">
-      <p class="kick">Who cuts</p>
-      <h2 class="h2">Two chairs, two barbers</h2>
-      <div class="people">
-        <article class="person">
-          <span class="person__mono" aria-hidden="true">RF</span>
-          <h3>Ray Fairweather</h3>
-          <p class="person__r">Owner &middot; 25 years cutting</p>
-          <p class="person__d">Scissor work and classic shapes. Will talk about Chester City for the full half hour if you let him, and can be steered onto anything else with one question.</p>
-        </article>
-        <article class="person">
-          <span class="person__mono" aria-hidden="true">PK</span>
-          <h3>Priya Kaur</h3>
-          <p class="person__r">Barber &middot; 12 years cutting</p>
-          <p class="person__d">Fades, texture and anything that has to survive curly hair and a motorcycle helmet. Books out furthest ahead, so ring early in the week.</p>
-        </article>
+      <p data-rev>
+        We do not sell product. There is a shelf with three things on it, all of
+        them things we use, and if you ask what to buy the honest answer is
+        usually nothing.
+      </p>
+
+      <div class="split split--even mt-lg">
+        <button class="fig fig--4x5" data-lb data-lb-cap="Chair one" data-rev="mask">
+          <canvas data-art="portrait" data-art-opts='{"cut":"beard","seed":8,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+        <button class="fig fig--4x5" data-lb data-lb-cap="Chair two" data-rev="mask">
+          <canvas data-art="portrait" data-art-opts='{"cut":"quiff","seed":5,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+      </div>
+
+      <div class="signoff" data-rev>
+        <span class="eyebrow">Both chairs</span>
+        <span class="d3">— Fairweather</span>
       </div>
     </div>
-  </section>
+  </article>
 
-  <section class="band">
-    <div class="wrap">
-      <p class="kick">How the shop works</p>
-      <h2 class="h2">Four things worth knowing</h2>
-      <ol class="rules">
-        <li><span>01</span><b>Walk-ins are real</b><p>We keep two slots a day unbooked. Before ten and after four are the quiet windows, and Saturday is not one of them.</p></li>
-        <li><span>02</span><b>Under-12s and over-70s pay &pound;14</b><p>Always have. It is not a promotion and it does not need mentioning at the till.</p></li>
-        <li><span>03</span><b>Cash or card, no minimum</b><p>Nobody is being asked to buy a &pound;7 pomade to use the card machine.</p></li>
-        <li><span>04</span><b>If it is not right, come back</b><p>Within a week, no charge, no argument. It happens two or three times a year and it is fine.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="band band--amber">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Come and see<br />what we mean</h2>
-      <div class="row">
-        <a class="btn btn--dark" href="contact.html">Find us</a>
-        <a class="btn btn--ghostdark" href="services.html">Cuts &amp; prices</a>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer class="foot">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="foot__in">
-    <div>
-      <p class="foot__n">Fairweather</p>
-      <p class="foot__d">42 Cross Street<br />Marbury, CH3 8QP</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3">Walk in, or don't.<br />Either works.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:32ch;opacity:.75">
+          Two chairs on Sedgewick Street. No app, no membership, no upselling.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Opening</p>
+        <ul class="foot__list" data-hours-mini>
+          <li><span>Tuesday</span><span>09:00–18:00</span></li>
+          <li><span>Wednesday</span><span>09:00–18:00</span></li>
+          <li><span>Thursday</span><span>09:00–20:00</span></li>
+          <li><span>Friday</span><span>08:00–18:00</span></li>
+          <li><span>Saturday</span><span>08:00–16:00</span></li>
+          <li><span>Sunday</span><span>Closed</span></li>
+          <li><span>Monday</span><span>Closed</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Cuts &amp; prices</a></li>
+          <li><a href="gallery.html">The work</a></li>
+          <li><a href="about.html">The shop</a></li>
+          <li><a href="contact.html">Find us</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Hours</p>
-      <p class="foot__d">Tue&ndash;Fri 9&ndash;6<br />Sat 8&ndash;4 &middot; Sun&ndash;Mon closed</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">Home</a><br /><a href="about.html">The shop</a><br /><a href="services.html">Cuts &amp; prices</a><br /><a href="gallery.html">Work</a><br /><a href="contact.html">Find us</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional shop, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Fairweather Barbers &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

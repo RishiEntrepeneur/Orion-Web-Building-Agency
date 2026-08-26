@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Get in touch — Alderley Chess Club</title>
+<meta name="description" content="Ask a question before you come, or just turn up on a Thursday. Demo site built by Orion." />
+<meta name="robots" content="noindex, follow" />
+<meta name="theme-color" content="#f2f0e8" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f2f0e8'/%3E%3Crect width='16' height='16' fill='%231f3a2e'/%3E%3Crect x='16' y='16' width='16' height='16' fill='%231f3a2e'/%3E%3C/svg%3E" />
+<link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="contact">
+
+<a class="skip" href="#main">Skip to content</a>
+
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Alderley Chess Club is not a real club.</b> It is a <b>Starter Launch</b> demo — three pages, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Alderley Chess Club — home">
+    <svg class="mark__ico" viewBox="0 0 24 24" aria-hidden="true">
+      <rect width="12" height="12" fill="var(--accent)" />
+      <rect x="12" y="12" width="12" height="12" fill="var(--accent)" />
+      <rect x="12" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="1" />
+      <rect y="12" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="1" />
+    </svg>
+    <span class="mark__name">Alderley<em>Chess Club</em></span>
+  </a>
+  <nav class="nav" aria-label="Main">
+        <a href="index.html">The club</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" aria-current="page">Get in touch</a>
+  </nav>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
+  </button>
+</header>
+
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">The club</a>
+    <a href="about.html" style="--i:1">About</a>
+    <a href="contact.html" style="--i:2">Get in touch</a>
+</div>
+
+<main id="main">
+
+  <section class="pagehead">
+    <div class="wrap">
+      <p class="eyebrow" data-rev>Mill Lane, Alderley</p>
+      <h1 class="d1" data-rev><span data-split>Get in touch</span></h1>
+      <p class="lede" data-rev="0.12">
+        You do not have to. You can simply turn up on a Thursday. But if you
+        would rather ask something first, this is the way.
+      </p>
+    </div>
+  </section>
+
+  <section class="band band--flush">
+    <div class="wrap">
+      <div class="split">
+        <div class="stack">
+          <h2 class="d3" data-rev>Before you come</h2>
+          <dl class="qa" data-rev="0.06">
+            <div><dt>Do I need to be any good?</dt><dd>No. Roughly a third of the room could not tell you what the Italian Game is.</dd></div>
+            <div><dt>Do I need a set?</dt><dd>No. We have twenty.</dd></div>
+            <div><dt>Can I bring a child?</dt><dd>Yes, and they come free. Under-14s need somebody with them.</dd></div>
+            <div><dt>Is there parking?</dt><dd>On Mill Lane, free after six. The hall car park is four spaces and always taken.</dd></div>
+          </dl>
+        </div>
+
+        <form class="ask" id="ask" novalidate>
+          <p class="eyebrow">Send a message</p>
+          <div class="field">
+            <label for="c-name">Name</label>
+            <input id="c-name" name="name" type="text" autocomplete="name" required />
+            <p class="field__err" data-err-for="c-name" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="c-email">Email</label>
+            <input id="c-email" name="email" type="email" autocomplete="email" required />
+            <p class="field__err" data-err-for="c-email" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="c-msg">Your question</label>
+            <textarea id="c-msg" name="msg" required placeholder="I have not played since school and I would like to start again."></textarea>
+            <p class="field__err" data-err-for="c-msg" aria-live="polite"></p>
+          </div>
+          <button class="btn btn--solid mt" type="submit">Send it</button>
+          <p class="ask__done" id="ask-done" hidden>
+            That is the message written. This is a demonstration, so nothing was
+            sent — on a real build it would land in the secretary's inbox.
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3">Thursday nights, and a board that is always free.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:32ch;opacity:.75">
+          Alderley Village Hall, Mill Lane. Since 1974.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">When</p>
+        <ul class="foot__list">
+          <li>Thursdays, 7:00 &ndash; 10:30pm</li>
+          <li>Doors from quarter to</li>
+          <li>£3 a night, under-18s free</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">The club</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Get in touch</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot__end">
+      <span>Alderley Chess Club &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

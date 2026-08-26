@@ -268,23 +268,26 @@ p { max-width: 68ch; text-wrap: pretty; }
 }
 
 /* ---------- 9. chrome -------------------------------------------------- */
+/* This strip belongs to Orion, not to the demo, so it does NOT inherit the
+   demo's palette: a dark site would otherwise paint dark text on it. */
 .demobar {
   display: flex; align-items: center; gap: 0.9rem;
   padding: 0.7rem var(--gut);
-  background: var(--deep); color: color-mix(in srgb, var(--paper) 84%, transparent);
+  background: #08070e; color: #c9c2d4;
   font-size: 0.8125rem; line-height: 1.4;
   position: relative; z-index: 60;
 }
 .demobar__tag {
   flex: none; font-family: var(--f-mono); font-size: 0.5625rem;
   letter-spacing: 0.2em; text-transform: uppercase;
-  background: var(--accent); color: var(--on-accent);
+  background: #e9c979; color: #08070e;
   padding: 0.25rem 0.5rem;
 }
 .demobar__txt { flex: 1; min-width: 0; }
-.demobar__txt b { color: var(--paper); font-weight: 500; }
+.demobar__txt b { color: #f6f2e9; font-weight: 500; }
+.demobar__back { color: #e9c979; }
+.demobar:hover .demobar__back { color: #f6f2e9; }
 .demobar__back { flex: none; border-bottom: 1px solid currentColor; }
-.demobar__back:hover { color: var(--paper); }
 @media (max-width: 720px) { .demobar { font-size: 0.75rem; flex-wrap: wrap; } }
 
 .bar {

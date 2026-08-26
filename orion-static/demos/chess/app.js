@@ -1,225 +1,153 @@
-/* Alderley Chess Club — demo build.
-   No dependencies, same as everything else Orion builds. */
+/* =====================================================================
+   ALDERLEY CHESS CLUB — one interactive thing, done properly
+   ===================================================================== */
 (function () {
   "use strict";
 
-  /* ---------- the board ----------
-     64 squares, index 0 = a8, 63 = h1. A square is dark when
-     (row + file) is odd, which puts a1 dark where it belongs. */
-  /* How a printed chess diagram does it: White is the hollow glyph, Black the
-     solid one, and BOTH are drawn in ink. Colouring the white set white is the
-     trap — the glyph is an outline, so a white outline on a light square is
-     nothing at all. Ink on both keeps every piece legible on either square. */
-  var GLYPH = {
-    K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
-    k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
-  };
-  var START = (
-    "rnbqkbnr" +
-    "pppppppp" +
-    "........" +
-    "........" +
-    "........" +
-    "........" +
-    "PPPPPPPP" +
-    "RNBQKBNR"
-  ).split("");
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  /* Giuoco Piano. from/to are board indices; say is what we tell the reader. */
-  var LINE = [
-    { san: "1. e4",   from: 52, to: 36, say: "White takes the centre. The pawn also opens lines for the bishop and the queen behind it." },
-    { san: "1… e5", from: 12, to: 28, say: "Black claims an equal share of the middle. Neither pawn can take the other." },
-    { san: "2. Nf3",  from: 62, to: 45, say: "A knight comes out and attacks the e5 pawn. Every move so far does two jobs." },
-    { san: "2… Nc6", from: 1,  to: 18, say: "Black defends the pawn with a piece that also wanted to come out anyway." },
-    { san: "3. Bc4",  from: 61, to: 34, say: "The bishop points at f7 — the square only the black king defends." },
-    { san: "3… Bc5", from: 5,  to: 26, say: "Black mirrors it. This is the Giuoco Piano, and both sides are simply ready to play." }
+  /* ------------------------------------------------------------------
+     The board.
+
+     Printed diagrams do not colour the pieces black and white — the
+     Unicode "white" glyphs are hollow outlines and vanish on a light
+     square if you fill them white. Both sides are drawn in ink, and it
+     is the hollow-versus-solid glyph that tells them apart, exactly as
+     a newspaper does it.
+     ------------------------------------------------------------------ */
+  var W = { k: "♔", q: "♕", r: "♖", b: "♗", n: "♘", p: "♙" };
+  var B = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
+
+  function start() {
+    return [
+      ["r", "n", "b", "q", "k", "b", "n", "r"].map(function (t) { return { t: t, s: "b" }; }),
+      "pppppppp".split("").map(function () { return { t: "p", s: "b" }; }),
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      "pppppppp".split("").map(function () { return { t: "p", s: "w" }; }),
+      ["r", "n", "b", "q", "k", "b", "n", "r"].map(function (t) { return { t: t, s: "w" }; })
+    ];
+  }
+
+  /* file/rank to row/col: a1 is bottom-left, and row 0 is rank 8 */
+  function sq(name) {
+    return { c: name.charCodeAt(0) - 97, r: 8 - parseInt(name[1], 10) };
+  }
+
+  var GAME = [
+    { m: "e4", from: "e2", to: "e4", say: "White takes the centre. Nearly every game you will ever see starts with a pawn on one of these two squares." },
+    { m: "e5", from: "e7", to: "e5", say: "Black says the same thing back. The two pawns now stare at each other and neither can advance." },
+    { m: "Nf3", from: "g1", to: "f3", say: "A knight out, attacking the pawn on e5. Develop a piece and make a threat with the same move — that is the whole idea." },
+    { m: "Nc6", from: "b8", to: "c6", say: "Black defends the pawn with a knight, which also develops. Nobody has wasted a move yet." },
+    { m: "Bc4", from: "f1", to: "c4", say: "The bishop points at f7, the weakest square in Black's position. This is the Italian Game, and it is about five hundred years old." },
+    { m: "Bc5", from: "f8", to: "c5", say: "Black mirrors it. Four pieces out, both kings safe, and the game has not really started — which is exactly what an opening is for." }
   ];
 
-  var cb = document.getElementById("cb");
-  var movesEl = document.getElementById("moves");
-  var sayEl = document.getElementById("say");
-  var nextBtn = document.getElementById("next");
-  var resetBtn = document.getElementById("reset");
-  var cells = [];
-  var ply = 0;
+  function board() {
+    var el = $("#board");
+    if (!el) return;
+    var movesEl = $("#moves");
+    var cap = $("#mv-cap");
+    var prev = $("#mv-prev");
+    var next = $("#mv-next");
+    var at = 0;
 
-  if (cb) {
-    for (var i = 0; i < 64; i++) {
-      var el = document.createElement("i");
-      var row = Math.floor(i / 8), file = i % 8;
-      if ((row + file) % 2 === 1) el.className = "d";
-      cb.appendChild(el);
-      cells.push(el);
-    }
-    LINE.forEach(function (m, n) {
-      var s = document.createElement("span");
-      s.textContent = m.san;
-      s.addEventListener("click", function () { goTo(n + 1); });
-      s.setAttribute("role", "button");
-      s.setAttribute("tabindex", "0");
-      s.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(n + 1); }
-      });
-      movesEl.appendChild(s);
-    });
-    goTo(0);
-  }
+    movesEl.innerHTML = GAME.map(function (g, i) {
+      return '<li data-i="' + i + '">' + (i % 2 === 0 ? (i / 2 + 1) + ". " : "") + g.m + "</li>";
+    }).join("");
 
-  function goTo(n) {
-    ply = Math.max(0, Math.min(LINE.length, n));
-    var b = START.slice();
-    var hi = [];
-    for (var i = 0; i < ply; i++) {
-      var m = LINE[i];
-      b[m.to] = b[m.from];
-      b[m.from] = ".";
-      if (i === ply - 1) hi = [m.from, m.to];
-    }
-    for (var s = 0; s < 64; s++) {
-      var p = b[s];
-      var c = cells[s];
-      c.textContent = p === "." ? "" : GLYPH[p];
-      var row = Math.floor(s / 8), file = s % 8;
-      var cls = (row + file) % 2 === 1 ? "d" : "";
-      if (p !== "." && p === p.toUpperCase()) cls += " w";
-      if (hi.indexOf(s) > -1) cls += " hi";
-      c.className = cls.trim();
-    }
-    var kids = movesEl.children;
-    for (var k = 0; k < kids.length; k++) kids[k].className = k < ply ? "on" : "";
-    sayEl.textContent = ply === 0 ? "The starting position. White to move." : LINE[ply - 1].say;
-    nextBtn.textContent = ply >= LINE.length ? "Start again" : "Next move";
-  }
-
-  if (nextBtn) nextBtn.addEventListener("click", function () { goTo(ply >= LINE.length ? 0 : ply + 1); });
-  if (resetBtn) resetBtn.addEventListener("click", function () { goTo(0); });
-
-  /* ---------- the enquiry form ----------
-     No server behind a demo, so it validates, assembles and offers a copy. */
-  var f = document.getElementById("f");
-  if (!f) return;
-  var alert = document.getElementById("alert");
-  var done = document.getElementById("done");
-  var out = document.getElementById("out");
-  var copied = document.getElementById("copied");
-  var text = "";
-
-  function field(input) { return input.closest(".fld"); }
-  function bad(input, msg) {
-    var w = field(input);
-    w.setAttribute("data-bad", "1");
-    input.setAttribute("aria-invalid", "true");
-    w.querySelector(".err").textContent = msg;
-  }
-  function good(input) {
-    var w = field(input);
-    w.removeAttribute("data-bad");
-    input.setAttribute("aria-invalid", "false");
-    w.querySelector(".err").textContent = "";
-  }
-
-  var inputs = f.querySelectorAll("input, select, textarea");
-  Array.prototype.forEach.call(inputs, function (i) {
-    i.addEventListener("input", function () { good(i); });
-    i.addEventListener("change", function () { good(i); });
-  });
-
-  f.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var problems = [];
-    Array.prototype.forEach.call(inputs, function (i) {
-      if (!i.required) return;
-      var v = (i.value || "").trim();
-      good(i);
-      if (!v) { bad(i, "We need this one"); problems.push(i); return; }
-      if (i.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
-        bad(i, "That does not look like an email address"); problems.push(i);
+    function render() {
+      var pos = start();
+      var last = null;
+      for (var i = 0; i < at; i++) {
+        var g = GAME[i];
+        var f = sq(g.from), t = sq(g.to);
+        pos[t.r][t.c] = pos[f.r][f.c];
+        pos[f.r][f.c] = null;
+        last = { f: f, t: t };
       }
-    });
-    if (problems.length) {
-      alert.hidden = false;
-      alert.textContent = problems.length === 1
-        ? "One field still needs filling in."
-        : problems.length + " fields still need filling in.";
-      problems[0].focus();
-      return;
+
+      var html = "";
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
+          var p = pos[r][c];
+          var dark = (r + c) % 2 === 1;
+          var isFrom = last && last.f.r === r && last.f.c === c;
+          var isTo = last && last.t.r === r && last.t.c === c;
+          html += '<span class="sq ' + (dark ? "sq--d" : "sq--l") + '"' +
+            (isFrom ? ' data-from="true"' : "") +
+            (isTo ? ' data-to="true" data-moved="true"' : "") + ">" +
+            (p ? '<span class="sq__p">' + (p.s === "w" ? W[p.t] : B[p.t]) + "</span>" : "") +
+            "</span>";
+        }
+      }
+      el.innerHTML = html;
+
+      $$("li", movesEl).forEach(function (li, i) {
+        li.setAttribute("data-on", String(i === at - 1));
+      });
+      cap.textContent = at === 0
+        ? "The starting position. Press Next move to play through the opening."
+        : GAME[at - 1].say;
+      el.setAttribute("aria-label", at === 0
+        ? "A chess board in the starting position"
+        : "A chess board after " + GAME[at - 1].m);
+      prev.disabled = at === 0;
+      next.disabled = at === GAME.length;
+      next.textContent = at === GAME.length ? "That is the opening" : "Next move";
     }
-    alert.hidden = true;
-    var d = new FormData(f);
-    text = [
-      "ALDERLEY CHESS CLUB — ENQUIRY",
-      "==============================",
-      "",
-      "NAME:   " + d.get("name"),
-      "EMAIL:  " + d.get("email"),
-      "PLAYS:  " + d.get("level"),
-      "",
-      "QUESTION",
-      "--------",
-      d.get("msg")
-    ].join("\n");
-    out.textContent = text;
-    f.hidden = true;
-    done.hidden = false;
-    copied.textContent = "";
-    done.focus();
-  });
 
-  document.getElementById("again").addEventListener("click", function () {
-    done.hidden = true;
-    f.hidden = false;
-    document.getElementById("f-name").focus();
-  });
-
-  document.getElementById("copy").addEventListener("click", function () {
-    function say(ok) {
-      copied.textContent = ok ? "Copied to your clipboard." : "Could not copy — select the text above instead.";
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { say(true); }, function () { say(false); });
-    } else { say(false); }
-  });
-
-})();
-
-/* ---------- reveal on scroll ----------
-   Its own IIFE on purpose: the module above returns early on pages that have
-   no form, and this used to sit after that return — so the reveal ran on two
-   pages out of ten and nobody noticed, because the failure mode is "no
-   animation" rather than "error".
-
-   data-rv is applied here and never in the markup, so with JavaScript off
-   the page shows everything instead of nothing. */
-(function () {
-  var items = document.querySelectorAll("h1, .h2, .lede, .cards, .split > div, .facts, .boardwrap, .moves, .row, .fld, .card");
-  if (!items.length) return;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!("IntersectionObserver" in window)) return;
-
-  var watch = [];
-  Array.prototype.forEach.call(items, function (el) {
-    /* Anything inside a collapsed pane never intersects, so it would sit at
-       opacity 0 for ever and be invisible when the pane finally opens. */
-    if (el.closest("[hidden]")) return;
-    watch.push(el);
-  });
-  watch.forEach(function (el, i) {
-    el.setAttribute("data-rv", "");
-    el.style.setProperty("--rv-d", ((i % 6) * 55) + "ms");
-  });
-
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      e.target.setAttribute("data-in", "true");
-      io.unobserve(e.target);
+    next.addEventListener("click", function () { if (at < GAME.length) { at++; render(); } });
+    prev.addEventListener("click", function () { if (at > 0) { at--; render(); } });
+    $$("li", movesEl).forEach(function (li) {
+      li.addEventListener("click", function () { at = +li.getAttribute("data-i") + 1; render(); });
     });
-  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-  watch.forEach(function (el) { io.observe(el); });
+    document.addEventListener("keydown", function (e) {
+      if (e.target && e.target.closest && e.target.closest("input, textarea, select")) return;
+      if (e.key === "ArrowRight" && at < GAME.length) { at++; render(); }
+      if (e.key === "ArrowLeft" && at > 0) { at--; render(); }
+    });
 
-  /* Belt and braces: anything still unrevealed after five seconds gets shown.
-     A reveal system that can strand content is worse than no reveal system. */
-  window.setTimeout(function () {
-    watch.forEach(function (el) { el.setAttribute("data-in", "true"); });
-  }, 5000);
+    render();
+  }
+
+  /* ---------- the message ---------------------------------------------- */
+  function ask() {
+    var form = $("#ask");
+    if (!form) return;
+    var done = $("#ask-done");
+    function err(id, msg) {
+      var p = $('[data-err-for="' + id + '"]');
+      if (p) p.textContent = msg || "";
+      var f = $("#" + id);
+      if (f) f.setAttribute("aria-invalid", msg ? "true" : "false");
+      return !msg;
+    }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = $("#c-name"), email = $("#c-email"), msg = $("#c-msg");
+      var ok = true;
+      ok = err("c-name", name.value.trim() ? "" : "We need something to call you.") && ok;
+      ok = err("c-email", /.+@.+\..+/.test(email.value.trim()) ? "" : "An email address, so somebody can answer.") && ok;
+      ok = err("c-msg", msg.value.trim() ? "" : "Ask us anything at all.") && ok;
+      if (!ok) {
+        var first = !name.value.trim() ? name : !/.+@.+\..+/.test(email.value.trim()) ? email : msg;
+        first.focus();
+        return;
+      }
+      done.hidden = false;
+      form.querySelector('button[type="submit"]').disabled = true;
+      done.setAttribute("tabindex", "-1");
+      done.focus();
+    });
+  }
+
+  function boot() { board(); ask(); }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else { boot(); }
 })();

@@ -3,209 +3,204 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cuts &amp; prices — Fairweather Barbers</title>
-<meta name="description" content="Every cut, beard and shave with the time it takes and what it costs. No hidden extras." />
+<title>Cuts and prices — Fairweather Barbers</title>
+<meta name="description" content="Every price, on one page. Cut and finish £24, skin fade £28, hot towel shave £30. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
 <meta name="theme-color" content="#14110f" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M-6 26 L10 -2 M2 26 L18 -2 M10 26 L26 -2 M18 26 L34 -2' stroke='%23e0761f' stroke-width='5'/%3E%3C/svg%3E" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2314110f'/%3E%3Cpath d='M11 5h10v22H11z' fill='%23efe9df'/%3E%3Cpath d='M11 8l10-3v4l-10 3zM11 15l10-3v4l-10 3zM11 22l10-3v4l-10 3z' fill='%23c9a227'/%3E%3C/svg%3E" />
 <link rel="preload" href="../../assets/fonts/bebas-normal-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<a class="demobar" href="../../work.html">
+<a class="skip" href="#main">Skip to content</a>
+
+<a class="demobar" href="../../demos.html">
   <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> This is a <b>Business Growth</b> demo — five pages, built by Orion.</span>
+  <span class="demobar__txt"><b>Fairweather Barbers is not a real shop.</b> It is a <b>Business Growth</b> demo — five pages, a gallery and a live opening-hours sign, built by Orion.</span>
   <span class="demobar__back">Back to Orion &rarr;</span>
 </a>
 
-<a class="skip" href="#main">Skip to content</a>
-
-<header class="top">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="top__in">
-    <a class="mark" href="index.html">
-      <span class="mark__n">Fairweather</span>
-      <span class="mark__s">Barbers &middot; est. 2011</span>
-    </a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html">Home</a>
-      <a href="about.html">The shop</a>
-      <a href="services.html" aria-current="page">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
-    </nav>
-    <a class="cta" href="contact.html">Book a chair</a>
-    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-    <a href="index.html">Home</a>
-      <a href="about.html">The shop</a>
-      <a href="services.html" aria-current="page">Cuts &amp; prices</a>
-      <a href="gallery.html">Work</a>
-      <a href="contact.html">Find us</a>
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Fairweather Barbers — home">
+    <svg class="mark__ico" viewBox="0 0 26 30" fill="none" aria-hidden="true">
+      <rect x="7" y="1.5" width="12" height="27" stroke="currentColor" stroke-width="1.4" />
+      <path d="M7 6.5 19 3v3.6L7 10.1zM7 14 19 10.5v3.6L7 17.6zM7 21.5 19 18v3.6L7 25.1z" fill="var(--accent)" />
+    </svg>
+    <span class="mark__name">Fairweather<em>Barbers, est. 2011</em></span>
+  </a>
+  <nav class="nav" aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="services.html" aria-current="page">Cuts &amp; prices</a>
+        <a href="gallery.html">The work</a>
+        <a href="about.html">The shop</a>
+        <a href="contact.html">Find us</a>
+    <span class="sign" data-sign hidden>
+      <i class="sign__dot"></i><span data-sign-text>Checking</span>
+    </span>
   </nav>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
+  </button>
 </header>
 
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">Home</a>
+    <a href="services.html" style="--i:1">Cuts &amp; prices</a>
+    <a href="gallery.html" style="--i:2">The work</a>
+    <a href="about.html" style="--i:3">The shop</a>
+    <a href="contact.html" style="--i:4">Find us</a>
+</div>
+
 <main id="main">
-  <section class="phead">
-    <div class="wrap">
-      <p class="kick">Cuts &amp; prices</p>
-      <h1 class="phead__h">Everything, and<br />what it costs</h1>
-      <p class="lede">
-        The time next to each one is the time we book, not the time we hope for. Nothing on this
-        list has an extra at the till.
+
+  <section class="pagehead">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="portrait" data-art-opts='{"cut":"crop","seed":14,"x":0.7,"y":0.5,"scale":0.22,"flip":true,"back":"#14110f","ink":"#f0e9dd","accent":"#c9a227"}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>The whole list</p>
+      <h1 class="d1" data-rev><span data-split>Cuts and prices</span></h1>
+      <p class="lede" data-rev="0.12">
+        On the wall since 2011, and the same at the till as it is here.
       </p>
     </div>
   </section>
 
   <section class="band">
-    <div class="wrap">
-      <div class="plist">
-        <h2 class="plist__h">Cuts</h2>
-        <div class="plist__rows">
-          <div class="prow">
-            <p class="prow__n">Cut</p>
-            <p class="prow__d">Scissor, clipper or both. Wash and finish included.</p>
-            <p class="prow__t">30 min</p>
-            <p class="prow__p">£24</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Cut &amp; beard</p>
-            <p class="prow__d">The pair, booked together so neither gets rushed.</p>
-            <p class="prow__t">45 min</p>
-            <p class="prow__p">£34</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Restyle</p>
-            <p class="prow__d">Longer sit-down when you want something genuinely different.</p>
-            <p class="prow__t">45 min</p>
-            <p class="prow__p">£30</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Skin fade</p>
-            <p class="prow__d">Down to skin, blended by hand rather than by guard.</p>
-            <p class="prow__t">35 min</p>
-            <p class="prow__p">£26</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Under-12 / over-70</p>
-            <p class="prow__d">Same cut, same time, standing price.</p>
-            <p class="prow__t">30 min</p>
-            <p class="prow__p">£14</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Clipper cut, one length</p>
-            <p class="prow__d">In and out. No wash unless you want one.</p>
-            <p class="prow__t">15 min</p>
-            <p class="prow__p">£16</p>
-          </div>
-        </div>
+    <div class="wrap wrap--tight">
+
+      <section class="pricegroup" aria-labelledby="pg-0">
+        <h2 class="pricegroup__h" id="pg-0" data-rev>The cut</h2>
+        <ul class="prices">
+          <li class="price" data-rev="0">
+            <span class="price__n">Cut and finish</span>
+            <span class="price__d">Forty minutes. Washed, cut, dried, and told the truth about what suits you.</span>
+            <span class="price__p">£24</span>
+          </li>
+          <li class="price" data-rev="0.05">
+            <span class="price__n">Skin fade</span>
+            <span class="price__d">Clippers to a zero and blended by eye. Book fifty minutes if it is your first.</span>
+            <span class="price__p">£28</span>
+          </li>
+          <li class="price" data-rev="0.1">
+            <span class="price__n">Restyle</span>
+            <span class="price__d">An hour. For when you want to look like someone else by Friday.</span>
+            <span class="price__p">£34</span>
+          </li>
+          <li class="price" data-rev="0.15000000000000002">
+            <span class="price__n">Under 12s</span>
+            <span class="price__d">There is a booster seat and nobody minds noise.</span>
+            <span class="price__p">£14</span>
+          </li>
+        </ul>
+      </section>
+      <section class="pricegroup" aria-labelledby="pg-1">
+        <h2 class="pricegroup__h" id="pg-1" data-rev>The beard</h2>
+        <ul class="prices">
+          <li class="price" data-rev="0">
+            <span class="price__n">Beard trim</span>
+            <span class="price__d">Shaped, edged, oiled. Fifteen minutes.</span>
+            <span class="price__p">£14</span>
+          </li>
+          <li class="price" data-rev="0.05">
+            <span class="price__n">Hot towel shave</span>
+            <span class="price__d">Cloths, badger brush, an open razor and forty-five unhurried minutes.</span>
+            <span class="price__p">£30</span>
+          </li>
+          <li class="price" data-rev="0.1">
+            <span class="price__n">Cut and beard</span>
+            <span class="price__d">Both, one appointment, one price.</span>
+            <span class="price__p">£34</span>
+          </li>
+        </ul>
+      </section>
+      <section class="pricegroup" aria-labelledby="pg-2">
+        <h2 class="pricegroup__h" id="pg-2" data-rev>The rest</h2>
+        <ul class="prices">
+          <li class="price" data-rev="0">
+            <span class="price__n">Grey blending</span>
+            <span class="price__d">Softened rather than removed. Nobody will be able to tell you did it.</span>
+            <span class="price__p">£16</span>
+          </li>
+          <li class="price" data-rev="0.05">
+            <span class="price__n">Head shave</span>
+            <span class="price__d">Clippers, then razor, then balm.</span>
+            <span class="price__p">£22</span>
+          </li>
+          <li class="price" data-rev="0.1">
+            <span class="price__n">Wedding morning</span>
+            <span class="price__d">We open early and bring the coffee. Up to six of you.</span>
+            <span class="price__p">From £120</span>
+          </li>
+        </ul>
+      </section>
+
+      <div class="note mt-lg" data-rev>
+        Cash, card, or a phone. No booking fee, no deposit, and no charge if you
+        cancel — just tell us, so the chair does not sit empty.
       </div>
-      <div class="plist">
-        <h2 class="plist__h">Beards</h2>
-        <div class="plist__rows">
-          <div class="prow">
-            <p class="prow__n">Beard trim</p>
-            <p class="prow__d">Shaped and lined, hot towel finish.</p>
-            <p class="prow__t">20 min</p>
-            <p class="prow__p">£14</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Beard shape-up</p>
-            <p class="prow__d">Full reshape when it has got away from you.</p>
-            <p class="prow__t">30 min</p>
-            <p class="prow__p">£20</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Head shave</p>
-            <p class="prow__d">Razor to skin, two passes, towels either side.</p>
-            <p class="prow__t">30 min</p>
-            <p class="prow__p">£26</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Wet shave</p>
-            <p class="prow__d">Cut-throat, the proper forty minutes.</p>
-            <p class="prow__t">40 min</p>
-            <p class="prow__p">£32</p>
-          </div>
-        </div>
-      </div>
-      <div class="plist">
-        <h2 class="plist__h">Extras</h2>
-        <div class="plist__rows">
-          <div class="prow">
-            <p class="prow__n">Wash &amp; style</p>
-            <p class="prow__d">On its own, or added to anything above.</p>
-            <p class="prow__t">15 min</p>
-            <p class="prow__p">£8</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Grey blending</p>
-            <p class="prow__d">Softened rather than covered. Booked with a cut.</p>
-            <p class="prow__t">20 min</p>
-            <p class="prow__p">£18</p>
-          </div>
-          <div class="prow">
-            <p class="prow__n">Kids first cut</p>
-            <p class="prow__d">Certificate, a lock in an envelope, and no hurrying.</p>
-            <p class="prow__t">30 min</p>
-            <p class="prow__p">£14</p>
-          </div>
-        </div>
-      </div>
-      <p class="note">
-        Prices held since March 2024. Card and cash both fine, no minimum. If two of you come in
-        together we will always try to run both chairs so nobody is sitting reading a magazine.
-      </p>
     </div>
   </section>
 
-  <section class="band band--dark">
-    <div class="wrap split">
-      <div>
-        <p class="kick">Booking</p>
-        <h2 class="h2">Ring, or walk in</h2>
-        <p class="body">
-          Saturdays fill by about ten and the last week before Christmas fills in November.
-          Everything else you can usually get within a couple of days.
-        </p>
-        <p class="body">
-          We hold two unbooked slots a day for walk-ins. If we cannot fit you in we will tell you
-          when to come back rather than leave you sitting.
-        </p>
-      </div>
-      <div>
-        <a class="btn btn--fill" href="contact.html">Send a booking request</a>
-      </div>
+  <section class="band band--flush">
+    <div class="wrap">
+      <div class="head" data-rev><span class="num">&mdash;</span><span class="eyebrow head__line">What happens</span></div>
+      <ol class="steps4">
+        <li data-rev="0"><span class="steps4__n">01</span><h3>You sit down</h3><p>And we ask what you have been doing with it, not what you want it to look like.</p></li>
+        <li data-rev="0.06"><span class="steps4__n">02</span><h3>We wash it</h3><p>Properly, at the basin, because you cannot cut hair you cannot see the shape of.</p></li>
+        <li data-rev="0.12"><span class="steps4__n">03</span><h3>We cut it</h3><p>Forty minutes for a cut and finish. Fifty if it is a first fade.</p></li>
+        <li data-rev="0.18"><span class="steps4__n">04</span><h3>We show you</h3><p>Two mirrors, and time to say if it is not right, before you have paid.</p></li>
+      </ol>
     </div>
   </section>
+
 </main>
 
 <footer class="foot">
-  <div class="pole" aria-hidden="true"></div>
-  <div class="foot__in">
-    <div>
-      <p class="foot__n">Fairweather</p>
-      <p class="foot__d">42 Cross Street<br />Marbury, CH3 8QP</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3">Walk in, or don't.<br />Either works.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:32ch;opacity:.75">
+          Two chairs on Sedgewick Street. No app, no membership, no upselling.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Opening</p>
+        <ul class="foot__list" data-hours-mini>
+          <li><span>Tuesday</span><span>09:00–18:00</span></li>
+          <li><span>Wednesday</span><span>09:00–18:00</span></li>
+          <li><span>Thursday</span><span>09:00–20:00</span></li>
+          <li><span>Friday</span><span>08:00–18:00</span></li>
+          <li><span>Saturday</span><span>08:00–16:00</span></li>
+          <li><span>Sunday</span><span>Closed</span></li>
+          <li><span>Monday</span><span>Closed</span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Cuts &amp; prices</a></li>
+          <li><a href="gallery.html">The work</a></li>
+          <li><a href="about.html">The shop</a></li>
+          <li><a href="contact.html">Find us</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Hours</p>
-      <p class="foot__d">Tue&ndash;Fri 9&ndash;6<br />Sat 8&ndash;4 &middot; Sun&ndash;Mon closed</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">Home</a><br /><a href="about.html">The shop</a><br /><a href="services.html">Cuts &amp; prices</a><br /><a href="gallery.html">Work</a><br /><a href="contact.html">Find us</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional shop, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Fairweather Barbers &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

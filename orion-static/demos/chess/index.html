@@ -4,260 +4,191 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Alderley Chess Club — Thursday nights, all strengths welcome</title>
-<meta name="description" content="A friendly chess club meeting every Thursday evening. Beginners genuinely welcome. Demo site built by Orion." />
+<meta name="description" content="A friendly chess club meeting every Thursday evening in Alderley Village Hall. Beginners genuinely welcome. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
-<meta name="theme-color" content="#f4f3ef" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f3f3ef'/%3E%3Crect width='16' height='16' fill='%232f4739'/%3E%3Crect x='16' y='16' width='16' height='16' fill='%232f4739'/%3E%3C/svg%3E" />
+<meta name="theme-color" content="#f2f0e8" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23f2f0e8'/%3E%3Crect width='16' height='16' fill='%231f3a2e'/%3E%3Crect x='16' y='16' width='16' height='16' fill='%231f3a2e'/%3E%3C/svg%3E" />
 <link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Alderley Chess Club is not a real club.</b> This is a <b>Starter Launch</b> demo — one page, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body data-page="home">
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <a class="mark" href="#top">
-    <span class="mark__board" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-    <span class="mark__name">Alderley<br /><em>Chess Club</em></span>
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Alderley Chess Club is not a real club.</b> It is a <b>Starter Launch</b> demo — three pages, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Alderley Chess Club — home">
+    <svg class="mark__ico" viewBox="0 0 24 24" aria-hidden="true">
+      <rect width="12" height="12" fill="var(--accent)" />
+      <rect x="12" y="12" width="12" height="12" fill="var(--accent)" />
+      <rect x="12" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="1" />
+      <rect y="12" width="12" height="12" fill="none" stroke="var(--accent)" stroke-width="1" />
+    </svg>
+    <span class="mark__name">Alderley<em>Chess Club</em></span>
   </a>
-  <nav class="topnav" aria-label="Sections">
-    <a href="#visit">Visit</a>
-    <a href="#board">Openings</a>
-    <a href="#league">League</a>
-    <a href="#about">About</a>
-    <a href="#ask">Get in touch</a>
+  <nav class="nav" aria-label="Main">
+        <a href="index.html" aria-current="page">The club</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Get in touch</a>
   </nav>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
+  </button>
 </header>
+
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">The club</a>
+    <a href="about.html" style="--i:1">About</a>
+    <a href="contact.html" style="--i:2">Get in touch</a>
+</div>
 
 <main id="main">
 
-  <section class="hero" id="top">
-    <div class="hero__grid" aria-hidden="true"></div>
+  <section class="hero">
+    <div class="hero__art" aria-hidden="true">
+      <canvas data-art="board" data-art-opts='{"light":"#e9e3d3","dark":"#22392f","back":"#f2f0e8","tilt":0.46,"seed":11}'></canvas>
+    </div>
+    <div class="hero__fade" aria-hidden="true"></div>
     <div class="wrap hero__in">
-      <p class="eyebrow">Est. 1974 &middot; Alderley Village Hall</p>
-      <h1>Thursday nights,<br />and a board<br />that is always free.</h1>
-      <p class="lede">
-        Forty of us, every strength from "I know how the horse moves" to county league.
-        No membership form, no grading requirement, no one who will mind if you lose.
+      <p class="eyebrow" data-rev>Est. 1974 &middot; Alderley Village Hall</p>
+      <h1 class="d1" data-rev><span data-split>Thursday nights, and a board that is always free.</span></h1>
+      <p class="lede" data-rev="0.16">
+        Forty of us, every strength from &ldquo;I know how the horse moves&rdquo; to county
+        league. No membership form, no grading requirement, and nobody who will
+        mind if you lose.
       </p>
-      <div class="row">
-        <a class="btn btn--fill" href="#visit">When to come</a>
-        <a class="btn" href="#ask">Ask a question</a>
+      <div class="row mt" data-rev="0.26">
+        <a class="btn btn--solid" href="#visit" data-mag="0.2">When to come</a>
+        <a class="btn" href="contact.html" data-mag="0.2">Ask a question</a>
       </div>
     </div>
-    <div class="hero__piece" aria-hidden="true">&#9822;</div>
   </section>
 
-  <section class="band" id="visit">
+  <section class="band" id="visit" aria-labelledby="visit-h">
     <div class="wrap">
-      <h2 class="h2">Turn up, that is the whole process</h2>
-      <div class="cards">
-        <article class="card">
-          <span class="card__k">When</span>
-          <p class="card__v">Thursdays<br />7:00&ndash;10:30pm</p>
-          <p class="card__d">Doors from quarter to. The first hour is casual games; the league match starts at eight if there is one on.</p>
-        </article>
-        <article class="card">
-          <span class="card__k">Where</span>
-          <p class="card__v">Alderley<br />Village Hall</p>
-          <p class="card__d">Mill Lane, back room past the kitchen. Parking on the lane is free after six.</p>
-        </article>
-        <article class="card">
-          <span class="card__k">Cost</span>
-          <p class="card__v">&pound;3<br />a night</p>
-          <p class="card__d">Covers the hall and the tea. Under-18s and students come free, always have.</p>
-        </article>
-        <article class="card">
-          <span class="card__k">Bring</span>
-          <p class="card__v">Nothing<br />at all</p>
-          <p class="card__d">We have twenty sets, clocks, and more scoresheets than anyone could ever need.</p>
-        </article>
+      <div class="head" data-rev>
+        <span class="num">01</span>
+        <span class="eyebrow head__line">Turn up, that is the whole process</span>
       </div>
+      <h2 id="visit-h" class="sr">When and where</h2>
+      <ul class="facts">
+        <li data-rev="0"><span class="facts__k">When</span><p class="facts__v">Thursdays<br />7:00&ndash;10:30pm</p><p class="facts__d">Doors from quarter to. The first hour is casual games; the league match starts at eight if there is one on.</p></li>
+        <li data-rev="0.06"><span class="facts__k">Where</span><p class="facts__v">Alderley<br />Village Hall</p><p class="facts__d">Mill Lane, the back room past the kitchen. Parking on the lane is free after six.</p></li>
+        <li data-rev="0.12"><span class="facts__k">Cost</span><p class="facts__v">£3<br />a night</p><p class="facts__d">Covers the hall and the tea. Under-18s and students come free, and always have.</p></li>
+        <li data-rev="0.18"><span class="facts__k">Bring</span><p class="facts__v">Nothing<br />at all</p><p class="facts__d">There are twenty sets, eight clocks, and more scoresheets than anyone could use.</p></li>
+      </ul>
     </div>
   </section>
 
-  <section class="band band--alt" id="board">
-    <div class="wrap split">
-      <div>
-        <p class="eyebrow">Thursday teaching game</p>
-        <h2 class="h2">The Italian, four moves in</h2>
-        <p class="body">
-          Somebody asks how to start almost every week, so here is the answer we usually give.
-          Step through it. White takes the centre, brings out a knight, then a bishop pointed
-          straight at the weakest square on Black's side of the board.
-        </p>
-        <p class="body">
-          You do not need to memorise it. You need to notice what each piece is <em>doing</em>,
-          which is the entire game in one sentence.
-        </p>
-        <div class="moves" id="moves" role="group" aria-label="Move list"></div>
-        <div class="row">
-          <button class="btn btn--fill" type="button" id="next">Next move</button>
-          <button class="btn" type="button" id="reset">Back to the start</button>
-        </div>
-        <p class="cap" id="say" role="status" aria-live="polite">The starting position. White to move.</p>
-      </div>
-      <div class="boardwrap">
-        <div class="board" id="cb" role="img" aria-label="Chess board showing the Italian Game opening"></div>
-        <p class="cap cap--c">Fig. 1 — Giuoco Piano, the quiet game</p>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="band" id="league">
+  <section class="band band--flush" aria-labelledby="board-h">
     <div class="wrap">
-      <div class="head-row">
-        <div>
-          <p class="eyebrow">County League &middot; Division 3</p>
-          <h2 class="h2">How the first team is doing</h2>
+      <div class="split">
+        <div class="stack">
+          <p class="eyebrow" data-rev>02 &middot; A first opening</p>
+          <h2 id="board-h" class="d2" data-rev>The Italian Game,<br /><em>four moves in.</em></h2>
+          <p data-rev="0.08">
+            This is what we teach on somebody's first Thursday. Step through it —
+            it is the oldest opening still played, and it explains more about
+            chess in four moves than an hour of talking does.
+          </p>
+          <div class="row mt" data-rev="0.14">
+            <button class="btn" type="button" id="mv-prev" disabled>Back</button>
+            <button class="btn btn--solid" type="button" id="mv-next">Next move</button>
+          </div>
+          <p class="movecap" id="mv-cap" aria-live="polite" data-rev="0.2"></p>
         </div>
-        <p class="cap cap--right">Played 7 &middot; Won 4 &middot; Drawn 1 &middot; Lost 2<br />Fourth of nine, two matches in hand</p>
-      </div>
 
-      <div class="tbl-wrap">
-        <table class="fix">
-          <caption class="cap">Home matches are at the village hall, 7:30pm start. Anyone is welcome to come and watch — bring a coat, the back room is cold.</caption>
+        <div class="boardwrap" data-rev="mask">
+          <div class="board" id="board" role="img" aria-label="A chess board showing the Italian Game"></div>
+          <ol class="moves" id="moves" aria-label="Moves played"></ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="league-h">
+    <div class="wrap">
+      <div class="head" data-rev>
+        <span class="num">03</span>
+        <span class="eyebrow head__line">Division three, this season</span>
+        <span class="num">Nine played</span>
+      </div>
+      <h2 id="league-h" class="sr">League table</h2>
+      <div class="tablewrap" data-rev>
+        <table class="league">
+          <caption class="sr">Division three league table</caption>
           <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Opponent</th>
-              <th scope="col">H/A</th>
-              <th scope="col" class="fix__r">Result</th>
-            </tr>
+            <tr><th scope="col">Club</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">Pts</th></tr>
           </thead>
           <tbody>
-            <tr><td>2 Oct</td><td>Nantwich B</td><td>H</td><td class="fix__r"><b class="w">3&ndash;1</b></td></tr>
-            <tr><td>16 Oct</td><td>Crewe Mechanics</td><td>A</td><td class="fix__r"><b class="l">1&frac12;&ndash;2&frac12;</b></td></tr>
-            <tr><td>30 Oct</td><td>Sandbach A</td><td>H</td><td class="fix__r"><b class="w">3&frac12;&ndash;&frac12;</b></td></tr>
-            <tr><td>13 Nov</td><td>Holmes Chapel</td><td>A</td><td class="fix__r"><b class="d">2&ndash;2</b></td></tr>
-            <tr><td>27 Nov</td><td>Middlewich</td><td>H</td><td class="fix__r"><b class="w">3&ndash;1</b></td></tr>
-            <tr><td>11 Dec</td><td>Winsford Knights</td><td>A</td><td class="fix__r"><b class="l">1&ndash;3</b></td></tr>
-            <tr><td>15 Jan</td><td>Nantwich B</td><td>A</td><td class="fix__r"><b class="w">2&frac12;&ndash;1&frac12;</b></td></tr>
-            <tr class="fix__next"><td>29 Jan</td><td>Crewe Mechanics</td><td>H</td><td class="fix__r"><span>Next up</span></td></tr>
-            <tr><td>12 Feb</td><td>Sandbach A</td><td>A</td><td class="fix__r"><span>&mdash;</span></td></tr>
-            <tr><td>26 Feb</td><td>Holmes Chapel</td><td>H</td><td class="fix__r"><span>&mdash;</span></td></tr>
+            <tr data-us="true"><th scope="row">Alderley A</th><td>9</td><td>6</td><td>2</td><td>1</td><td><b>14</b></td></tr>
+            <tr><th scope="row">Marchbank</th><td>9</td><td>6</td><td>1</td><td>2</td><td><b>13</b></td></tr>
+            <tr><th scope="row">Thorne Institute</th><td>9</td><td>5</td><td>2</td><td>2</td><td><b>12</b></td></tr>
+            <tr data-us="true"><th scope="row">Alderley B</th><td>9</td><td>3</td><td>3</td><td>3</td><td><b>9</b></td></tr>
+            <tr><th scope="row">Cranleigh Mechanics</th><td>9</td><td>2</td><td>2</td><td>5</td><td><b>6</b></td></tr>
+            <tr><th scope="row">Netherby</th><td>9</td><td>1</td><td>2</td><td>6</td><td><b>4</b></td></tr>
           </tbody>
         </table>
       </div>
-
-      <p class="cap">
-        The second team plays in Division 5 and is having a harder time of it, which is exactly
-        what a second team is for. Board order is posted on the noticeboard the Thursday before.
+      <p class="note mt" data-rev>
+        Two teams, and anybody who wants a league game will get one. Nobody is
+        dropped for losing.
       </p>
     </div>
   </section>
 
-  <section class="band band--alt" id="about">
-    <div class="wrap split split--wide">
-      <div>
-        <p class="eyebrow">About</p>
-        <h2 class="h2">Fifty-one years of Thursdays</h2>
-      </div>
-      <div>
-        <p class="body">
-          The club started in 1974 in the back room of the Fox &amp; Hounds, moved to the village
-          hall when the pub stopped doing food, and has met every Thursday since apart from three
-          weeks of snow in 2010 and the obvious gap in 2020.
-        </p>
-        <p class="body">
-          We run two teams in the county league, a summer rapidplay ladder that nobody takes
-          seriously, and a junior hour before the main session on the first Thursday of the month.
-          Two of our juniors are now stronger than most of the adults, which is exactly how it
-          should go.
-        </p>
-        <p class="body">
-          If you have not played since school, you are the person we are most pleased to see.
-          Come and lose a few games. Everyone here did.
-        </p>
-        <dl class="facts">
-          <div><dt>Members</dt><dd>41</dd></div>
-          <div><dt>League teams</dt><dd>2</dd></div>
-          <div><dt>Boards</dt><dd>20</dd></div>
-          <div><dt>Thursdays missed</dt><dd>3</dd></div>
-        </dl>
-      </div>
-    </div>
-  </section>
-
-  <section class="band" id="ask">
-    <div class="wrap split">
-      <div>
-        <p class="eyebrow">Get in touch</p>
-        <h2 class="h2">Ask us anything before you come</h2>
-        <p class="body">
-          Whether it is "is my nine-year-old too young" or "do I need to know notation", somebody
-          will write back. Nobody here is trying to sell you anything.
-        </p>
-        <p class="body cap">
-          The answer to both of those, by the way, is no.
-        </p>
-      </div>
-      <div>
-        <form id="f" novalidate>
-          <p class="alert" id="alert" role="alert" hidden></p>
-          <label class="fld">
-            <span>Your name</span>
-            <input type="text" name="name" id="f-name" autocomplete="name" required />
-            <em class="err" aria-live="polite"></em>
-          </label>
-          <label class="fld">
-            <span>Email</span>
-            <input type="email" name="email" id="f-email" autocomplete="email" required />
-            <em class="err" aria-live="polite"></em>
-          </label>
-          <label class="fld">
-            <span>Roughly how well do you play?</span>
-            <select name="level" id="f-level" required>
-              <option value="" selected disabled>Pick one</option>
-              <option>Never played properly</option>
-              <option>I know the rules</option>
-              <option>I play online a bit</option>
-              <option>Club standard</option>
-              <option>Graded player</option>
-            </select>
-            <em class="err" aria-live="polite"></em>
-          </label>
-          <label class="fld">
-            <span>Your question</span>
-            <textarea name="msg" id="f-msg" rows="4" required></textarea>
-            <em class="err" aria-live="polite"></em>
-          </label>
-          <button class="btn btn--fill" type="submit">Send it</button>
-        </form>
-        <div id="done" hidden tabindex="-1">
-          <p class="done__h">That is ready to send.</p>
-          <pre class="out" id="out"></pre>
-          <p class="cap">
-            This demo has no server, so nothing was transmitted. On a real build this would post to
-            the club's inbox.
-          </p>
-          <div class="row">
-            <button class="btn btn--fill" type="button" id="copy">Copy it</button>
-            <button class="btn" type="button" id="again">Change something</button>
-          </div>
-          <p class="cap" id="copied" role="status" aria-live="polite"></p>
-        </div>
-      </div>
+  <section class="cta">
+    <div class="wrap cta__in">
+      <p class="eyebrow" data-rev>Any Thursday</p>
+      <h2 class="d2" data-rev>Come and lose a few.</h2>
+      <a class="btn btn--solid mt" href="contact.html" data-mag="0.22" data-rev="0.1">Ask a question first</a>
     </div>
   </section>
 
 </main>
 
 <footer class="foot">
-  <div class="wrap foot__in">
-    <p><b>Alderley Chess Club</b><br />Alderley Village Hall, Mill Lane</p>
-    <p>Thursdays, 7:00pm<br />All strengths welcome</p>
-    <p class="cap">A fictional club, invented for a demo.<br />Site built by <a href="../../home.html">Orion</a>.</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3">Thursday nights, and a board that is always free.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:32ch;opacity:.75">
+          Alderley Village Hall, Mill Lane. Since 1974.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">When</p>
+        <ul class="foot__list">
+          <li>Thursdays, 7:00 &ndash; 10:30pm</li>
+          <li>Doors from quarter to</li>
+          <li>£3 a night, under-18s free</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">The club</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Get in touch</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot__end">
+      <span>Alderley Chess Club &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
+    </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

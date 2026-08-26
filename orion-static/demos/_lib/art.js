@@ -387,15 +387,18 @@
 
      Everything is in units of `u` (one head width), so the whole drawing
      scales from one number. */
-  function profilePath(ctx, w, h, cut, seed) {
-    var u = Math.min(w * 0.34, h * 0.40);
-    var cx = w * 0.56, cy = h * 0.42;
+  function profilePath(ctx, w, h, cut, seed, place) {
+    place = place || {};
+    var u = Math.min(w * (place.scale || 0.4), h * 0.44);
+    var cx = w * (place.x == null ? 0.5 : place.x), cy = h * (place.y == null ? 0.44 : place.y);
     function P(x, y) { return [cx + x * u, cy + y * u]; }
     function M(p) { ctx.moveTo(p[0], p[1]); }
     function L(p) { ctx.lineTo(p[0], p[1]); }
     function C(a1, a2, a3) { ctx.bezierCurveTo(a1[0], a1[1], a2[0], a2[1], a3[0], a3[1]); }
 
-    /* ---- face and skull, running clockwise from the crown ---- */
+    /* Each part is begun, closed and filled on its own. Filling head, hair
+       and beard as one path lets their winding directions cancel where they
+       overlap, and nonzero then punches a hole through the crown. */
     ctx.beginPath();
     M(P(0.06, -0.74));                                  /* crown */
     C(P(0.44, -0.72), P(0.52, -0.34), P(0.50, -0.04));  /* back of the skull */
@@ -417,20 +420,22 @@
     C(P(-0.52, -0.52), P(-0.44, -0.62), P(-0.34, -0.68));/* brow and forehead */
     C(P(-0.24, -0.74), P(-0.10, -0.76), P(0.06, -0.74));
     ctx.closePath();
+    ctx.fill();
 
     /* ---- the cut: the only thing that separates one of these from another ---- */
     var t = 0.0;
+    ctx.beginPath();
     ctx.moveTo.apply(ctx, P(-0.36, -0.66));
     if (cut === "quiff") {
       C(P(-0.46, -1.06), P(-0.08, -1.28), P(0.16, -1.04));
       C(P(0.34, -0.90), P(0.52, -0.56), P(0.51, -0.16));
-      C(P(0.46, -0.44), P(0.36, -0.68), P(0.06, -0.76));
-      C(P(-0.12, -0.80), P(-0.28, -0.76), P(-0.36, -0.66));
+      C(P(0.44, -0.42), P(0.34, -0.60), P(0.06, -0.62));
+      C(P(-0.12, -0.64), P(-0.28, -0.66), P(-0.36, -0.66));
     } else if (cut === "crop") {
       C(P(-0.44, -0.86), P(-0.10, -0.94), P(0.14, -0.88));
       C(P(0.40, -0.80), P(0.53, -0.50), P(0.51, -0.10));
-      C(P(0.47, -0.42), P(0.34, -0.68), P(0.06, -0.77));
-      C(P(-0.12, -0.81), P(-0.28, -0.76), P(-0.36, -0.66));
+      C(P(0.45, -0.40), P(0.34, -0.58), P(0.06, -0.62));
+      C(P(-0.12, -0.64), P(-0.28, -0.66), P(-0.36, -0.66));
     } else if (cut === "curls") {
       var n = 13;
       for (var k = 0; k <= n; k++) {
@@ -438,30 +443,32 @@
         var bump = 0.90 + hash(k, 4, seed) * 0.26;
         ctx.lineTo(cx + Math.cos(a2) * u * 0.62 * bump, cy - u * 0.16 - Math.sin(a2) * u * 0.72 * bump);
       }
-      C(P(0.47, -0.40), P(0.32, -0.68), P(0.06, -0.77));
-      C(P(-0.12, -0.81), P(-0.28, -0.76), P(-0.36, -0.66));
+      C(P(0.45, -0.38), P(0.32, -0.58), P(0.06, -0.62));
+      C(P(-0.12, -0.64), P(-0.28, -0.66), P(-0.36, -0.66));
     } else if (cut === "long") {
       C(P(-0.50, -0.92), P(-0.06, -1.02), P(0.24, -0.84));
       C(P(0.62, -0.60), P(0.72, 0.10), P(0.62, 0.62));
       C(P(0.56, 0.80), P(0.44, 0.78), P(0.42, 0.60));
-      C(P(0.48, 0.20), P(0.50, -0.24), P(0.36, -0.52));
-      C(P(0.22, -0.74), P(-0.14, -0.80), P(-0.36, -0.66));
+      C(P(0.48, 0.20), P(0.50, -0.24), P(0.34, -0.50));
+      C(P(0.20, -0.66), P(-0.14, -0.68), P(-0.36, -0.66));
     } else if (cut === "shaved") {
       C(P(-0.40, -0.76), P(-0.16, -0.82), P(0.02, -0.80));
       C(P(0.28, -0.76), P(0.46, -0.52), P(0.50, -0.20));
-      C(P(0.47, -0.44), P(0.32, -0.70), P(0.04, -0.78));
-      C(P(-0.14, -0.82), P(-0.28, -0.75), P(-0.36, -0.66));
+      C(P(0.45, -0.42), P(0.32, -0.60), P(0.04, -0.63));
+      C(P(-0.14, -0.65), P(-0.28, -0.66), P(-0.36, -0.66));
     } else { /* fade — short at the sides, weight left on top */
       C(P(-0.46, -0.94), P(-0.04, -1.02), P(0.18, -0.90));
       C(P(0.42, -0.76), P(0.53, -0.48), P(0.51, -0.14));
-      C(P(0.48, -0.46), P(0.34, -0.70), P(0.06, -0.78));
-      C(P(-0.12, -0.82), P(-0.28, -0.76), P(-0.36, -0.66));
+      C(P(0.46, -0.44), P(0.34, -0.60), P(0.06, -0.63));
+      C(P(-0.12, -0.65), P(-0.28, -0.66), P(-0.36, -0.66));
     }
     ctx.closePath();
+    ctx.fill();
     void t;
 
     /* ---- beard, when the cut carries one ---- */
     if (cut === "beard" || cut === "long") {
+      ctx.beginPath();
       ctx.moveTo.apply(ctx, P(-0.56, 0.04));
       C(P(-0.72, 0.30), P(-0.68, 0.62), P(-0.46, 0.78));
       C(P(-0.24, 0.94), P(0.10, 0.86), P(0.24, 0.62));
@@ -469,6 +476,7 @@
       C(P(0.10, 0.62), P(-0.24, 0.60), P(-0.40, 0.42));
       C(P(-0.48, 0.32), P(-0.50, 0.18), P(-0.56, 0.04));
       ctx.closePath();
+      ctx.fill();
     }
   }
 
@@ -499,10 +507,10 @@
     var oc = off.getContext("2d");
     oc.fillStyle = "#000"; oc.fillRect(0, 0, w, h);
     oc.fillStyle = "#fff";
-    profilePath(oc, w, h, cut, seed);
-    /* nonzero, not evenodd: the hair and the beard overlap the skull on
-       purpose, and evenodd would punch those overlaps back out again */
-    oc.fill();
+    var place = { x: o.flip ? 1 - (o.x == null ? 0.5 : o.x) : o.x, y: o.y, scale: o.scale };
+    if (o.flip) { oc.save(); oc.translate(w, 0); oc.scale(-1, 1); }
+    profilePath(oc, w, h, cut, seed, place);   /* fills as it goes */
+    if (o.flip) oc.restore();
 
     var src = oc.getImageData(0, 0, off.width, off.height).data;
     var cell = Math.max(3.4, Math.min(w, h) / 78);
@@ -510,7 +518,9 @@
     /* One key light, high and in front of the face. Both terms matter: the
        falloff alone gives a flat disc, the direction alone gives a hard edge.
        Together the cheek catches it and the back of the skull rolls off. */
-    var lightX = w * 0.2, lightY = h * 0.16, reach = Math.max(w, h) * 0.82;
+    var hx = w * (o.x == null ? 0.5 : o.x);
+    var faceDir = o.flip ? 1 : -1;
+    var lightX = hx + faceDir * Math.min(w, h) * 0.34, lightY = h * 0.16, reach = Math.max(w, h) * 0.82;
 
     for (var ry = 0; ry < rows; ry++) {
       for (var rx = 0; rx < cols; rx++) {
@@ -530,7 +540,8 @@
         if (cov < 0.04) continue;
         /* one key light: dots fatten towards it and thin into the shadow */
         var fall = 1 - Math.min(1, Math.hypot(x0 - lightX, y0 - lightY) / reach);
-        var dir = 1 - Math.min(1, Math.max(0, (x0 - w * 0.2) / (w * 0.62)));
+        var edge0 = hx + faceDir * Math.min(w, h) * 0.3;
+        var dir = 1 - Math.min(1, Math.max(0, ((x0 - edge0) * faceDir * -1) / (w * 0.62)));
         var lit = Math.min(1, Math.max(0, fall * 0.45 + dir * 0.75));
         var r = (cell * 0.66) * Math.pow(cov, 0.45) * (0.1 + lit * 1.3);
         if (r < 0.3) continue;
@@ -544,18 +555,22 @@
 
     /* the ear and the jaw line, drawn over the dots rather than cut out of
        them — a hole in the silhouette reads as damage, a line reads as a face */
-    var u2 = Math.min(w * 0.34, h * 0.40);
-    var ex = w * 0.56, ey = h * 0.42;
-    ctx.strokeStyle = rgba(mix(back, ink, 0.34), 0.85);
-    ctx.lineWidth = Math.max(1, u2 * 0.018);
+    var u2 = Math.min(w * (o.scale || 0.4), h * 0.44);
+    var ex = w * (o.x == null ? 0.5 : o.x), ey = h * (o.y == null ? 0.44 : o.y);
+    ctx.save();
+    if (o.flip) { ctx.translate(w, 0); ctx.scale(-1, 1); ex = w - ex; }
+    ctx.fillStyle = rgba(mix(back, ink, 0.5), 0.55);
     ctx.beginPath();
-    ctx.moveTo(ex + 0.12 * u2, ey + 0.02 * u2);
-    ctx.bezierCurveTo(ex + 0.28 * u2, ey - 0.08 * u2, ex + 0.32 * u2, ey + 0.16 * u2, ex + 0.19 * u2, ey + 0.25 * u2);
-    ctx.bezierCurveTo(ex + 0.13 * u2, ey + 0.28 * u2, ex + 0.10 * u2, ey + 0.14 * u2, ex + 0.12 * u2, ey + 0.02 * u2);
-    ctx.stroke();
+    ctx.moveTo(ex + 0.10 * u2, ey - 0.05 * u2);
+    ctx.bezierCurveTo(ex + 0.21 * u2, ey - 0.10 * u2, ex + 0.23 * u2, ey + 0.08 * u2, ex + 0.15 * u2, ey + 0.14 * u2);
+    ctx.bezierCurveTo(ex + 0.11 * u2, ey + 0.17 * u2, ex + 0.08 * u2, ey + 0.05 * u2, ex + 0.10 * u2, ey - 0.05 * u2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = rgba(mix(back, ink, 0.22), 0.7);
+    ctx.lineWidth = Math.max(1, u2 * 0.013);
     ctx.beginPath();
-    ctx.moveTo(ex + 0.17 * u2, ey + 0.06 * u2);
-    ctx.quadraticCurveTo(ex + 0.24 * u2, ey + 0.10 * u2, ex + 0.18 * u2, ey + 0.18 * u2);
+    ctx.moveTo(ex + 0.13 * u2, ey - 0.03 * u2);
+    ctx.quadraticCurveTo(ex + 0.18 * u2, ey + 0.01 * u2, ex + 0.14 * u2, ey + 0.08 * u2);
     ctx.stroke();
 
     /* the brow and the eye. Two short strokes, and the profile stops being a
@@ -575,6 +590,8 @@
     ctx.beginPath();
     ctx.arc(ex - 0.335 * u2, ey - 0.192 * u2, u2 * 0.026, 0, TAU);
     ctx.fill();
+
+    ctx.restore();
 
     vignette(ctx, w, h, 0.52, mix(back, [0, 0, 0], 0.65));
     grain(ctx, w, h, 0.7, seed + 2);
@@ -908,6 +925,93 @@
     ctx.fillStyle = lgl;
     ctx.fillRect(0, 0, w, h);
     grain(ctx, w, h, 0.42, seed);
+  });
+
+  /* --- 4c-ii. A STREET MAP ----------------------------------------------
+     Blocks, then the roads between them, then one marker. Generated from
+     a seed so it is a plausible town rather than a real one — putting a
+     real street plan on a demo for a shop that does not exist would be
+     claiming an address. */
+  register("map", function (ctx, w, h, o) {
+    var paper = hex(o.paper || "#17130f");
+    var road = hex(o.road || "#2b241c");
+    var line = hex(o.line || "#3d3428");
+    var accent = hex(o.accent || "#c9a227");
+    var water = hex(o.water || "#1b2a2e");
+    var seed = o.seed == null ? 3 : o.seed;
+
+    ctx.fillStyle = rgba(paper, 1);
+    ctx.fillRect(0, 0, w, h);
+
+    /* the river, cutting a corner off */
+    ctx.fillStyle = rgba(water, 1);
+    ctx.beginPath();
+    ctx.moveTo(w * 1.05, h * 0.1);
+    for (var rx = 1.05; rx >= -0.05; rx -= 0.04) {
+      ctx.lineTo(w * rx, h * (0.72 + Math.sin(rx * 3.1 + seed) * 0.09));
+    }
+    ctx.lineTo(-w * 0.05, h * 1.05);
+    ctx.lineTo(w * 1.05, h * 1.05);
+    ctx.closePath();
+    ctx.fill();
+
+    /* a grid of roads, jittered off the square */
+    var cols = 6, rows = 5;
+    var vx = [], hy = [];
+    for (var c = 0; c <= cols; c++) vx.push(w * (c / cols) + (hash(c, 1, seed) - 0.5) * w * 0.07);
+    for (var r = 0; r <= rows; r++) hy.push(h * (r / rows) + (hash(r, 2, seed) - 0.5) * h * 0.07);
+
+    /* blocks first, so the roads sit on top */
+    ctx.fillStyle = rgba(mix(paper, [255, 255, 255], 0.045), 1);
+    for (var bc = 0; bc < cols; bc++) {
+      for (var br = 0; br < rows; br++) {
+        if (hy[br] > h * 0.66 && hash(bc, br + 9, seed) > 0.3) continue;   /* the far bank */
+        var pad = Math.min(w, h) * 0.012;
+        ctx.fillRect(vx[bc] + pad, hy[br] + pad, vx[bc + 1] - vx[bc] - pad * 2, hy[br + 1] - hy[br] - pad * 2);
+      }
+    }
+
+    ctx.strokeStyle = rgba(road, 1);
+    ctx.lineCap = "square";
+    for (var v = 0; v <= cols; v++) {
+      ctx.lineWidth = v % 3 === 1 ? Math.max(5, w * 0.011) : Math.max(2.5, w * 0.005);
+      ctx.beginPath(); ctx.moveTo(vx[v], -10); ctx.lineTo(vx[v] + (hash(v, 5, seed) - 0.5) * w * 0.05, h + 10); ctx.stroke();
+    }
+    for (var hh = 0; hh <= rows; hh++) {
+      if (hy[hh] > h * 0.7) continue;
+      ctx.lineWidth = hh % 2 === 0 ? Math.max(5, w * 0.011) : Math.max(2.5, w * 0.005);
+      ctx.beginPath(); ctx.moveTo(-10, hy[hh]); ctx.lineTo(w + 10, hy[hh] + (hash(hh, 7, seed) - 0.5) * h * 0.05); ctx.stroke();
+    }
+
+    /* centre lines on the two main roads */
+    ctx.strokeStyle = rgba(line, 1);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 8]);
+    ctx.beginPath(); ctx.moveTo(vx[1], -10); ctx.lineTo(vx[1] + (hash(1, 5, seed) - 0.5) * w * 0.05, h + 10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-10, hy[2]); ctx.lineTo(w + 10, hy[2] + (hash(2, 7, seed) - 0.5) * h * 0.05); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* the marker */
+    var mx = o.mx == null ? w * 0.42 : w * o.mx;
+    var my = o.my == null ? h * 0.44 : h * o.my;
+    var mr = Math.min(w, h) * 0.055;
+    var halo = ctx.createRadialGradient(mx, my, 0, mx, my, mr * 3.4);
+    halo.addColorStop(0, rgba(accent, 0.32));
+    halo.addColorStop(1, rgba(accent, 0));
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(mx, my, mr * 3.4, 0, TAU); ctx.fill();
+
+    ctx.fillStyle = rgba(accent, 1);
+    ctx.beginPath();
+    ctx.moveTo(mx, my + mr * 1.5);
+    ctx.bezierCurveTo(mx - mr * 1.05, my + mr * 0.15, mx - mr, my - mr * 1.1, mx, my - mr * 1.1);
+    ctx.bezierCurveTo(mx + mr, my - mr * 1.1, mx + mr * 1.05, my + mr * 0.15, mx, my + mr * 1.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = rgba(paper, 1);
+    ctx.beginPath(); ctx.arc(mx, my - mr * 0.28, mr * 0.34, 0, TAU); ctx.fill();
+
+    grain(ctx, w, h, 0.4, seed);
   });
 
   /* --- 4d. FIELD -------------------------------------------------------
