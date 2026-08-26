@@ -4,198 +4,192 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Book a table — Saltmarsh</title>
-<meta name="description" content="One sitting a night, Wednesday to Saturday, and Sunday lunch. Choose a date, a time and a table." />
+<meta name="description" content="Three steps: a date, a time, and who is coming. Demo booking system built by Orion." />
 <meta name="robots" content="noindex, follow" />
-<meta name="theme-color" content="#e8eae4" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8eae4'/%3E%3Cpath d='M0 20 Q8 15 16 20 T32 20' stroke='%231f3038' stroke-width='2' fill='none'/%3E%3Cpath d='M0 26 Q8 21 16 26 T32 26' stroke='%23a8552e' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
-<link rel="preload" href="../../assets/fonts/cormorant-normal-300-700.woff2" as="font" type="font/woff2" crossorigin />
+<meta name="theme-color" content="#efece4" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d1214'/%3E%3Cpath d='M2 19 Q9 13 16 19 T30 19' stroke='%23efece4' stroke-width='1.8' fill='none'/%3E%3Cpath d='M2 25 Q9 19 16 25 T30 25' stroke='%238f3a1c' stroke-width='1.8' fill='none'/%3E%3C/svg%3E" />
+<link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> This is a <b>Premium Custom</b> demo — four pages and a working booking system, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body data-page="book">
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <a class="mark" href="index.html">
-    <svg class="mark__w" viewBox="0 0 60 20" aria-hidden="true" fill="none">
-      <path d="M0 12 Q10 5 20 12 T40 12 T60 12" stroke="currentColor" stroke-width="1.2" />
-      <path d="M0 17 Q10 10 20 17 T40 17 T60 17" stroke="currentColor" stroke-width="1.2" opacity=".45" />
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> It is a <b>Premium Custom</b> demo — four pages, a scroll film and a working booking system, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Saltmarsh — home">
+    <svg class="mark__ico" viewBox="0 0 34 26" fill="none" aria-hidden="true">
+      <path d="M1 10 Q8.5 2 17 10 T33 10" stroke="currentColor" stroke-width="1.5" />
+      <path d="M1 17 Q8.5 9 17 17 T33 17" stroke="var(--accent)" stroke-width="1.5" />
+      <path d="M1 24 Q8.5 16 17 24 T33 24" stroke="currentColor" stroke-width="1.5" opacity=".4" />
     </svg>
-    <span class="mark__n">Saltmarsh</span>
+    <span class="mark__name">Saltmarsh<em>Wraith Point</em></span>
   </a>
   <nav class="nav" aria-label="Main">
-    <a href="index.html">The room</a>
-      <a href="menu.html">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" aria-current="page" class="nav__book">Book a table</a>
+        <a href="index.html">The room</a>
+        <a href="menu.html">The card</a>
+        <a href="story.html">Journal</a>
+        <a href="book.html" aria-current="page">Book a table</a>
+    <a class="btn btn--solid" href="book.html">Book</a>
   </nav>
-  <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-    <span></span><span></span>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
   </button>
 </header>
-<nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-  <a href="index.html">The room</a>
-      <a href="menu.html">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" aria-current="page" class="nav__book">Book a table</a>
-</nav>
+
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">The room</a>
+    <a href="menu.html" style="--i:1">The card</a>
+    <a href="story.html" style="--i:2">Journal</a>
+    <a href="book.html" style="--i:3">Book a table</a>
+</div>
 
 <main id="main">
-  <section class="phead phead--tight">
-    <div class="wrap">
-      <p class="kick">Book a table</p>
-      <h1 class="phead__h">Three steps,<br />no account</h1>
-      <p class="lede">
-        Wednesday to Saturday evenings, and one sitting for Sunday lunch. Eleven tables, so the
-        good dates go about five weeks out.
-      </p>
+
+  <section class="pagehead pagehead--short">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.8,"tide":0.7,"seed":77,"horizon":0.5}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Twenty-two covers</p>
+      <h1 class="d1" data-rev>Book a table</h1>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </section>
 
   <section class="band">
-    <div class="wrap">
-      <ol class="steps" id="steps">
-        <li data-step="1" aria-current="step"><span>1</span>Party &amp; date</li>
-        <li data-step="2"><span>2</span>Time</li>
-        <li data-step="3"><span>3</span>Your details</li>
+    <div class="wrap wrap--tight">
+
+      <ol class="steps" id="steps" aria-label="Booking steps">
+        <li class="steps__i" data-on="true"><span class="steps__n">1</span><span>Date</span></li>
+        <li class="steps__i"><span class="steps__n">2</span><span>Time &amp; party</span></li>
+        <li class="steps__i"><span class="steps__n">3</span><span>Details</span></li>
       </ol>
 
-      <div class="bk" id="bk">
+      <form class="bk" id="bk" novalidate>
 
         <!-- step 1 -->
-        <section class="pane" data-pane="1">
-          <div class="pane__grid">
-            <div>
-              <h2 class="h2">How many of you?</h2>
-              <div class="party" id="party" role="radiogroup" aria-label="Party size"></div>
-              <p class="note note--tight" id="party-note">
-                Tables of seven or more take the whole end of the room, so we handle those by
-                phone. Ring the shed and ask for Nell.
-              </p>
-              <div class="aside">
-                <p class="aside__k">One sitting a night</p>
-                <p class="aside__d">
-                  The table is yours from the time you choose until you are done with it. Nobody
-                  is waiting for it and nobody will bring you a bill you did not ask for.
-                </p>
-                <p class="aside__k">If you are late</p>
-                <p class="aside__d">
-                  Ring us. We hold a table twenty-five minutes on a normal night and rather longer
-                  if the trains are being the trains.
-                </p>
-              </div>
+        <fieldset class="bk__step" data-step="1" data-on="true">
+          <legend class="sr">Choose a date</legend>
+          <div class="cal">
+            <div class="cal__head">
+              <button class="cal__nav" type="button" data-cal-prev aria-label="Previous month">&lsaquo;</button>
+              <p class="cal__month" id="cal-month" aria-live="polite"></p>
+              <button class="cal__nav" type="button" data-cal-next aria-label="Next month">&rsaquo;</button>
             </div>
-            <div>
-              <h2 class="h2">Which evening?</h2>
-              <div class="cal" id="cal">
-                <div class="cal__bar">
-                  <button type="button" id="prev" aria-label="Previous month">&larr;</button>
-                  <p id="mon" aria-live="polite">&nbsp;</p>
-                  <button type="button" id="nextm" aria-label="Next month">&rarr;</button>
-                </div>
-                <div class="cal__dow" aria-hidden="true"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>
-                <div class="cal__grid" id="grid" role="grid" aria-label="Available dates"></div>
-              </div>
-              <p class="legend"><i class="legend__on"></i>Open &nbsp; <i class="legend__off"></i>Closed or full</p>
+            <div class="cal__dows" aria-hidden="true">
+              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
+            <div class="cal__grid" id="cal-grid" role="grid" aria-label="Available dates"></div>
+            <p class="cal__key">
+              <span><i class="cal__sw cal__sw--open"></i> Open</span>
+              <span><i class="cal__sw cal__sw--few"></i> Nearly full</span>
+              <span><i class="cal__sw cal__sw--shut"></i> Closed</span>
+            </p>
           </div>
-          <div class="pane__foot">
-            <p class="pick" id="pick1">Choose a party size and a date.</p>
-            <button class="btn btn--fill" type="button" id="to2" disabled>Choose a time</button>
-          </div>
-        </section>
+        </fieldset>
 
         <!-- step 2 -->
-        <section class="pane" data-pane="2" hidden>
-          <h2 class="h2">What time suits?</h2>
-          <p class="body" id="slot-line">&nbsp;</p>
-          <div class="slots" id="slots" role="radiogroup" aria-label="Available times"></div>
-          <div class="pane__foot">
-            <button class="btn" type="button" id="back1">Back</button>
-            <p class="pick" id="pick2">Pick a time.</p>
-            <button class="btn btn--fill" type="button" id="to3" disabled>Add your details</button>
-          </div>
-        </section>
+        <fieldset class="bk__step" data-step="2">
+          <legend class="sr">Choose a time and a party size</legend>
+          <p class="bk__chosen" id="bk-chosen"></p>
+
+          <p class="bk__lab">How many of you?</p>
+          <div class="pips" id="pips" role="radiogroup" aria-label="Party size"></div>
+
+          <p class="bk__lab mt">What time?</p>
+          <div class="slots" id="slots" role="radiogroup" aria-label="Sitting time"></div>
+          <p class="bk__none" id="bk-none" hidden>Nothing left at that size on this date. Try another day, or a smaller table.</p>
+        </fieldset>
 
         <!-- step 3 -->
-        <section class="pane" data-pane="3" hidden>
-          <div class="pane__grid">
-            <div>
-              <h2 class="h2">And who shall we expect?</h2>
-              <form id="bform" novalidate>
-                <p class="alert" id="alert" role="alert" hidden></p>
-                <label class="fld"><span>Name the table is under</span>
-                  <input type="text" name="name" id="b-name" autocomplete="name" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Email</span>
-                  <input type="email" name="email" id="b-email" autocomplete="email" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Phone, for the night itself</span>
-                  <input type="tel" name="phone" id="b-phone" autocomplete="tel" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Allergies, or anything we should know</span>
-                  <textarea name="notes" id="b-notes" rows="3"></textarea>
-                  <em class="err" aria-live="polite"></em></label>
-                <div class="pane__foot pane__foot--form">
-                  <button class="btn" type="button" id="back2">Back</button>
-                  <button class="btn btn--fill" type="submit">Confirm the table</button>
-                </div>
-              </form>
+        <fieldset class="bk__step" data-step="3">
+          <legend class="sr">Your details</legend>
+          <p class="bk__chosen" id="bk-chosen-2"></p>
+          <div class="bk__fields">
+            <div class="field">
+              <label for="bk-name">Name</label>
+              <input id="bk-name" name="name" type="text" autocomplete="name" required />
+              <p class="field__err" data-err-for="bk-name" aria-live="polite"></p>
             </div>
-            <aside class="sum" id="sum" aria-label="Your booking so far"></aside>
+            <div class="field">
+              <label for="bk-email">Email</label>
+              <input id="bk-email" name="email" type="email" autocomplete="email" required />
+              <p class="field__err" data-err-for="bk-email" aria-live="polite"></p>
+            </div>
+            <div class="field bk__wide">
+              <label for="bk-notes">Anything we should know?</label>
+              <textarea id="bk-notes" name="notes" placeholder="Allergies, a birthday, a pushchair, a dog."></textarea>
+            </div>
           </div>
-        </section>
+        </fieldset>
 
-        <!-- done -->
-        <section class="pane pane--done" data-pane="4" hidden tabindex="-1">
-          <p class="kick">Confirmed</p>
-          <h2 class="h2 h2--big" id="done-h">The table is yours</h2>
-          <div class="ticket" id="ticket"></div>
-          <p class="note">
-            This demo has no server, so nothing was actually reserved and no email was sent. On a
-            live build this writes to the diary, emails you a confirmation and texts you on the
-            morning. Everything above it is real — the calendar, the availability rules and the
-            validation all run in your browser.
-          </p>
-          <div class="row">
-            <button class="btn" type="button" id="restart">Book another</button>
-            <a class="btn" href="menu.html">See the menu</a>
-          </div>
-        </section>
+        <div class="bk__nav">
+          <button class="btn" type="button" id="bk-back" hidden>Back</button>
+          <button class="btn btn--solid" type="button" id="bk-next" disabled>Choose a date</button>
+        </div>
+      </form>
 
+      <div class="bk__done" id="bk-done" hidden>
+        <p class="eyebrow eyebrow--accent">Held for ten minutes</p>
+        <h2 class="d2">That is the table.</h2>
+        <dl class="recap" id="bk-recap"></dl>
+        <p class="note mt">
+          This is a demonstration, so nothing was sent and no table was actually
+          held. On a real build this would post to the restaurant's booking system
+          and email you a confirmation.
+        </p>
+        <button class="btn mt" type="button" id="bk-again">Start again</button>
       </div>
+
     </div>
   </section>
+
 </main>
 
 <footer class="foot">
-  <div class="wrap foot__in">
-    <div>
-      <p class="foot__n">Saltmarsh</p>
-      <p class="foot__d">The Old Netting Shed<br />Harbour Road, Wraith Point</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3" style="max-width:18ch">Whatever the boats landed, cooked over fire.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:34ch;opacity:.72">
+          One room, twenty-two covers, at the end of the lane on Wraith Point.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Hours</p>
+        <ul class="foot__list">
+          <li>Wednesday &ndash; Saturday</li>
+          <li>Dinner from 6:30pm</li>
+          <li>Sunday lunch, one sitting at 1pm</li>
+          <li>Closed Monday and Tuesday</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">The room</a></li>
+          <li><a href="menu.html">The card</a></li>
+          <li><a href="story.html">Journal</a></li>
+          <li><a href="book.html">Book a table</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Service</p>
-      <p class="foot__d">Wed&ndash;Sat, dinner from 6<br />Sunday lunch, one sitting at 1</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">The room</a><br /><a href="menu.html">Menu</a><br /><a href="story.html">Journal</a><br /><a href="book.html">Book a table</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional restaurant, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Saltmarsh &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

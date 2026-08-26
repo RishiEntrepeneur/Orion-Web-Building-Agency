@@ -3,194 +3,310 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Saltmarsh — Wraith Point</title>
-<meta name="description" content="Twenty-two covers in an old netting shed. Whatever the boats landed, cooked over fire." />
+<title>Saltmarsh — whatever the boats landed, cooked over fire</title>
+<meta name="description" content="A twenty-two cover room at the end of the lane on Wraith Point. No fixed menu, because there is no fixed catch. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
-<meta name="theme-color" content="#e8eae4" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8eae4'/%3E%3Cpath d='M0 20 Q8 15 16 20 T32 20' stroke='%231f3038' stroke-width='2' fill='none'/%3E%3Cpath d='M0 26 Q8 21 16 26 T32 26' stroke='%23a8552e' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
-<link rel="preload" href="../../assets/fonts/cormorant-normal-300-700.woff2" as="font" type="font/woff2" crossorigin />
+<meta name="theme-color" content="#efece4" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d1214'/%3E%3Cpath d='M2 19 Q9 13 16 19 T30 19' stroke='%23efece4' stroke-width='1.8' fill='none'/%3E%3Cpath d='M2 25 Q9 19 16 25 T30 25' stroke='%238f3a1c' stroke-width='1.8' fill='none'/%3E%3C/svg%3E" />
+<link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> This is a <b>Premium Custom</b> demo — four pages and a working booking system, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body data-page="home">
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <a class="mark" href="index.html">
-    <svg class="mark__w" viewBox="0 0 60 20" aria-hidden="true" fill="none">
-      <path d="M0 12 Q10 5 20 12 T40 12 T60 12" stroke="currentColor" stroke-width="1.2" />
-      <path d="M0 17 Q10 10 20 17 T40 17 T60 17" stroke="currentColor" stroke-width="1.2" opacity=".45" />
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> It is a <b>Premium Custom</b> demo — four pages, a scroll film and a working booking system, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Saltmarsh — home">
+    <svg class="mark__ico" viewBox="0 0 34 26" fill="none" aria-hidden="true">
+      <path d="M1 10 Q8.5 2 17 10 T33 10" stroke="currentColor" stroke-width="1.5" />
+      <path d="M1 17 Q8.5 9 17 17 T33 17" stroke="var(--accent)" stroke-width="1.5" />
+      <path d="M1 24 Q8.5 16 17 24 T33 24" stroke="currentColor" stroke-width="1.5" opacity=".4" />
     </svg>
-    <span class="mark__n">Saltmarsh</span>
+    <span class="mark__name">Saltmarsh<em>Wraith Point</em></span>
   </a>
   <nav class="nav" aria-label="Main">
-    <a href="index.html" aria-current="page">The room</a>
-      <a href="menu.html">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" class="nav__book">Book a table</a>
+        <a href="index.html" aria-current="page">The room</a>
+        <a href="menu.html">The card</a>
+        <a href="story.html">Journal</a>
+        <a href="book.html">Book a table</a>
+    <a class="btn btn--solid" href="book.html">Book</a>
   </nav>
-  <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-    <span></span><span></span>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
   </button>
 </header>
-<nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-  <a href="index.html" aria-current="page">The room</a>
-      <a href="menu.html">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" class="nav__book">Book a table</a>
-</nav>
+
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">The room</a>
+    <a href="menu.html" style="--i:1">The card</a>
+    <a href="story.html" style="--i:2">Journal</a>
+    <a href="book.html" style="--i:3">Book a table</a>
+</div>
 
 <main id="main">
+
+  <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="hero__sky" aria-hidden="true"><canvas id="sky"></canvas></div>
+    <div class="hero__art" aria-hidden="true">
+      <canvas data-art="marsh" data-art-opts='{"hour":0.74,"tide":0.42,"seed":7,"horizon":0.56}'></canvas>
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
     <div class="wrap hero__in">
-      <p class="kick">Wraith Point &middot; twenty-two covers</p>
-      <h1>Whatever the<br />boats landed,<br /><em>cooked over fire</em></h1>
-      <p class="lede">
-        There is no fixed menu because there is no fixed catch. We write the card at four
-        o'clock, once we know what came in, and we cook it in one room with the sea behind it.
+      <p class="eyebrow hero__eye" data-rev>Wraith Point &middot; twenty-two covers</p>
+      <h1 class="d1 hero__h" data-rev>
+        <span data-split>Whatever the boats landed,</span>
+        <em data-split>cooked over fire.</em>
+      </h1>
+      <p class="lede hero__l" data-rev="0.18">
+        There is no fixed menu because there is no fixed catch. We write the card
+        at four o'clock, once we know what came in.
       </p>
-      <div class="row">
-        <a class="btn btn--fill" href="book.html">Book a table</a>
-        <a class="btn" href="menu.html">Yesterday's card</a>
+      <div class="row mt" data-rev="0.28">
+        <a class="btn btn--solid" href="book.html" data-mag="0.22">Book a table</a>
+        <a class="btn btn--ghost" href="menu.html" data-mag="0.22">Yesterday's card</a>
       </div>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
+    <a class="hero__cue" href="#tide" aria-label="Scroll">
+      <span class="hero__cue-l" aria-hidden="true"></span>
+      <span class="eyebrow">The tide</span>
+    </a>
   </section>
 
-  <section class="band">
-    <div class="wrap thirds">
-      <article>
-        <p class="kick">The room</p>
-        <h2 class="h2">One room, one fire</h2>
-        <p class="body">Eleven tables in a shed the netting crews used until 1978. The floor is the original brick and the acoustics are terrible, which is why nobody books it for a party of twenty.</p>
-      </article>
-      <article>
-        <p class="kick">The card</p>
-        <h2 class="h2">Written at four</h2>
-        <p class="body">Six or seven plates, whatever the day gave us. If you have an allergy, tell us when you book and we will build around it rather than apologise on the night.</p>
-      </article>
-      <article>
-        <p class="kick">The sitting</p>
-        <h2 class="h2">Yours for the evening</h2>
-        <p class="body">One sitting a night. The table is yours until you are done with it, and nobody will bring you a bill you did not ask for.</p>
-      </article>
-    </div>
-  </section>
+  <!-- ============ THE TIDE — a film, driven by the scroll ============ -->
+  <section class="tide" id="tide" data-seq aria-labelledby="tide-h">
+    <div class="seq__pin">
+      <canvas class="tide__art" id="tide-art" aria-hidden="true"
+              data-art="marsh" data-art-opts='{"hour":0.08,"tide":0.05,"seed":12,"horizon":0.54}'></canvas>
+      <div class="tide__scrim" aria-hidden="true"></div>
 
-  <section class="band band--deep">
-    <div class="wrap feature">
-      <div class="feature__plate"><canvas data-tide="1" width="640" height="800"></canvas></div>
-      <div>
-        <p class="kick">Since 2019</p>
-        <h2 class="h2 h2--big">We buy from four boats<br />and one grower</h2>
-        <p class="body">
-          The <em>Wraith Belle</em>, the <em>Kittiwake</em>, the <em>Ann Hardy</em> and the
-          <em>Sea Pink</em> land at the point most mornings. Everything green comes from a
-          market garden four miles inland that has been in one family since the war.
-        </p>
-        <p class="body">
-          That is the entire supply chain. It means some nights there is no fish at all and we
-          cook mutton and roots instead, and it means we can tell you the name of the boat that
-          caught what is on your plate.
-        </p>
-        <dl class="facts">
-          <div><dt>Covers a night</dt><dd>22</dd></div>
-          <div><dt>Boats</dt><dd>4</dd></div>
-          <div><dt>Sittings</dt><dd>1</dd></div>
-          <div><dt>Miles to the grower</dt><dd>4</dd></div>
-        </dl>
-      </div>
-    </div>
-  </section>
+      <h2 id="tide-h" class="sr">A day on Wraith Point</h2>
 
-  <section class="tide" id="tide" aria-labelledby="tide-h">
-    <div class="tide__track" id="tide-track">
-      <div class="tide__stage">
-        <canvas id="tide-c" aria-hidden="true"></canvas>
-        <div class="tide__hud">
-          <div class="wrap tide__in">
-            <p class="kick" id="tide-time">Low water &middot; 06:14</p>
-            <h2 id="tide-h" class="tide__h">The marsh at<br /><em id="tide-state">low water</em></h2>
-            <p class="tide__d" id="tide-cap">
-              Six hours out, the channels are mud and you can walk to the far bank.
-              This is when the boats leave.
-            </p>
-            <div class="tide__gauge" aria-hidden="true">
-              <span class="tide__bar"><i id="tide-fill"></i></span>
-              <span class="tide__m" id="tide-m">0.0m</span>
-            </div>
-            <p class="tide__note">Scroll to bring the tide in</p>
-          </div>
+      <div class="tide__hud wrap">
+        <div class="tide__meta">
+          <span class="num" id="tide-clock">04:40</span>
+          <span class="num" id="tide-state">Low water</span>
         </div>
+        <div class="tide__caps">
+          <p class="tide__cap" data-on="true">
+            <span class="eyebrow eyebrow--accent">First light</span>
+            <span class="d3">The boats go out before anybody is awake.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Nine o'clock</span>
+            <span class="d3">The marsh drains, and the samphire beds show.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Four o'clock</span>
+            <span class="d3">Whatever is in the boxes becomes tonight's card.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Half past six</span>
+            <span class="d3">The tide is back, the fire is lit, and the room fills.</span>
+          </p>
+        </div>
+        <div class="tide__bar" aria-hidden="true"><i></i></div>
       </div>
     </div>
   </section>
 
-  <section class="band">
+  <!-- ============ TONIGHT ============ -->
+  <section class="band" aria-labelledby="tonight-h">
     <div class="wrap">
-      <div class="head-row">
-        <div>
-          <p class="kick">From the journal</p>
-          <h2 class="h2">What we have been thinking about</h2>
-        </div>
-        <a class="arrow" href="story.html">All entries &rarr;</a>
+      <div class="head" data-rev>
+        <span class="num">01</span>
+        <span class="eyebrow head__line">Tonight, probably</span>
+        <span class="num" id="today-date"></span>
       </div>
-      <div class="jlist">
-        <a class="jrow" href="story.html#gurnard">
-          <span class="jrow__d">14 August</span>
-          <span class="jrow__t">In praise of the ugliest fish on the quay</span>
-          <span class="jrow__x">Gurnard is bony, spiny, and better than most of what gets flown in. Here is how we cook it.</span>
-        </a>
-        <a class="jrow" href="story.html#fire">
-          <span class="jrow__d">2 August</span>
-          <span class="jrow__t">Why everything goes over fire</span>
-          <span class="jrow__x">Not for the theatre. Because a hard, dry heat does something to a fillet that a pan cannot.</span>
-        </a>
-        <a class="jrow" href="story.html#closed">
-          <span class="jrow__d">19 July</span>
-          <span class="jrow__t">The week we shut with no notice</span>
-          <span class="jrow__x">A storm kept every boat in for six days. What we did instead, and what we learned from it.</span>
-        </a>
+      <div class="split">
+        <div class="stack" data-rev>
+          <h2 id="tonight-h" class="d2">The card is written<br /><em>at four o'clock.</em></h2>
+          <p>
+            Four courses, one sitting, and a version of it for anyone who does not
+            eat what came off the boat. If you tell us in advance we will cook for
+            you properly rather than apologetically.
+          </p>
+          <a class="lnk mt" href="menu.html">See the whole card <span class="lnk__ar" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ul class="card" data-rev="0.1">
+
+        <li class="dish" data-cat="sea" data-rev="0">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Oysters, seaweed vinegar</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£3.50 each</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Opened to order. The vinegar is our own, from bladderwrack picked off the point.</p></div>
+        </li>
+        <li class="dish" data-cat="sea" data-rev="0.05">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Cured pollock, cucumber, dill oil</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£12</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Three days in salt and sugar, sliced thin. Pollock because it was what came in.</p></div>
+        </li>
+        <li class="dish" data-cat="land" data-rev="0.1">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Hogget, wild garlic, burnt onion</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£28</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Over embers, rested twenty minutes, carved at the pass. Garlic from the lane.</p></div>
+        </li>
+        <li class="dish" data-cat="sea" data-rev="0.15000000000000002">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Whole turbot for two, brown butter</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£62</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Whatever size the boat brought. We will tell you the weight before you commit.</p></div>
+        </li>
+        <li class="dish" data-cat="green" data-rev="0">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Marsh samphire, brown shrimp</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£9</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Cut on the falling tide, cooked for ninety seconds, not a minute more.</p></div>
+        </li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <section class="band band--rust">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Wednesday to Saturday.<br />One sitting. Book early.</h2>
-      <a class="btn btn--pale" href="book.html">Book a table</a>
+  <!-- ============ THE ROOM ============ -->
+  <section class="band band--flush" aria-labelledby="room-h">
+    <div class="wrap">
+      <div class="split split--even">
+        <button class="fig fig--4x5" data-lb data-lb-cap="The room, before service" data-rev="mask">
+          <canvas data-art="interior" data-art-opts='{"warm":"#ff9a44","cool":"#2b465e","dark":"#0b0e10","lamps":3,"seed":17}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+        <div class="stack">
+          <p class="eyebrow" data-rev>02 &middot; The room</p>
+          <h2 id="room-h" class="d2" data-rev>Twenty-two seats<br />and one fire.</h2>
+          <p data-rev="0.08">
+            It was a chandlery, then a garage, then nothing for eleven years. The
+            floor is the floor it always was. Everything is cooked in the room you
+            are sitting in, which means it is loud, and warm, and you will smell of
+            woodsmoke on the way home.
+          </p>
+          <dl class="stats" data-rev="0.16">
+            <div><dt>Covers</dt><dd><span data-count="22">22</span></dd></div>
+            <div><dt>Tables</dt><dd><span data-count="7">7</span></dd></div>
+            <div><dt>Miles to the boat</dt><dd><span data-count="2">2</span></dd></div>
+          </dl>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- ============ WHAT CAME IN ============ -->
+  <section class="strip" aria-label="What came in today">
+    <div data-marquee="26">
+      <div>
+        <span>Turbot</span><span class="strip__dot">&bull;</span>
+        <span>Brown shrimp</span><span class="strip__dot">&bull;</span>
+        <span>Samphire</span><span class="strip__dot">&bull;</span>
+        <span>Pollock</span><span class="strip__dot">&bull;</span>
+        <span>Native oysters</span><span class="strip__dot">&bull;</span>
+        <span>Sea beet</span><span class="strip__dot">&bull;</span>
+        <span>Hogget</span><span class="strip__dot">&bull;</span>
+        <span>Wild garlic</span><span class="strip__dot">&bull;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VOICES ============ -->
+  <section class="band" aria-labelledby="voices-h">
+    <div class="wrap wrap--tight">
+      <h2 id="voices-h" class="sr">What people say</h2>
+      <div class="quotes" data-quotes>
+        <blockquote class="quote" data-on="true">
+          <p class="d3">&ldquo;We drove ninety minutes for a plate of shrimp and I would do it again on Tuesday.&rdquo;</p>
+          <footer class="eyebrow">A person who is not real &middot; September</footer>
+        </blockquote>
+        <blockquote class="quote">
+          <p class="d3">&ldquo;They told us the turbot's weight before we ordered it. Nobody does that.&rdquo;</p>
+          <footer class="eyebrow">Also not real &middot; August</footer>
+        </blockquote>
+        <blockquote class="quote">
+          <p class="d3">&ldquo;One room, one fire, and the best thing I ate all year.&rdquo;</p>
+          <footer class="eyebrow">Entirely invented &middot; June</footer>
+        </blockquote>
+      </div>
+      <div class="quotes__dots" role="tablist" aria-label="Quotes">
+        <button type="button" role="tab" aria-selected="true" aria-label="Quote 1"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Quote 2"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Quote 3"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BOOK ============ -->
+  <section class="cta" aria-labelledby="cta-h">
+    <canvas class="cta__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.94,"tide":0.8,"seed":21,"horizon":0.5,"birds":false}'></canvas>
+    <div class="cta__scrim" aria-hidden="true"></div>
+    <div class="wrap cta__in">
+      <p class="eyebrow" data-rev>Wednesday to Sunday</p>
+      <h2 id="cta-h" class="d1" data-rev>Come at dusk.</h2>
+      <a class="btn btn--solid mt" href="book.html" data-mag="0.24" data-rev="0.12">Book a table</a>
+    </div>
+  </section>
+
 </main>
 
 <footer class="foot">
-  <div class="wrap foot__in">
-    <div>
-      <p class="foot__n">Saltmarsh</p>
-      <p class="foot__d">The Old Netting Shed<br />Harbour Road, Wraith Point</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3" style="max-width:18ch">Whatever the boats landed, cooked over fire.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:34ch;opacity:.72">
+          One room, twenty-two covers, at the end of the lane on Wraith Point.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Hours</p>
+        <ul class="foot__list">
+          <li>Wednesday &ndash; Saturday</li>
+          <li>Dinner from 6:30pm</li>
+          <li>Sunday lunch, one sitting at 1pm</li>
+          <li>Closed Monday and Tuesday</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">The room</a></li>
+          <li><a href="menu.html">The card</a></li>
+          <li><a href="story.html">Journal</a></li>
+          <li><a href="book.html">Book a table</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Service</p>
-      <p class="foot__d">Wed&ndash;Sat, dinner from 6<br />Sunday lunch, one sitting at 1</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">The room</a><br /><a href="menu.html">Menu</a><br /><a href="story.html">Journal</a><br /><a href="book.html">Book a table</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional restaurant, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Saltmarsh &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>

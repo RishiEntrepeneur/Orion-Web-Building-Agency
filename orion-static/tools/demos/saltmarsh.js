@@ -1,6 +1,12 @@
 /* ---------------------------------------------------------------
-   Saltmarsh — a Premium Custom demo (four pages + a booking system).
-   Generated from one shell. Run via: node tools/demos/build.js
+   Saltmarsh — the Premium Custom demo.
+
+   Four pages, a cinematic scroll sequence, a filterable card and a
+   three-step booking system. Everything a Premium build is supposed
+   to buy you, on a site that has to look like a restaurant's rather
+   than like a demo of one.
+
+   Run via: node tools/demos/build.js
    --------------------------------------------------------------- */
 const fs = require("fs");
 const path = require("path");
@@ -8,475 +14,581 @@ const OUT = path.resolve(__dirname, "../../demos/saltmarsh");
 
 const NAV = [
   ["index.html", "The room"],
-  ["menu.html", "Menu"],
+  ["menu.html", "The card"],
   ["story.html", "Journal"],
   ["book.html", "Book a table"]
 ];
 
 const ICON =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E" +
-  "%3Crect width='32' height='32' fill='%23e8eae4'/%3E%3Cpath d='M0 20 Q8 15 16 20 T32 20' stroke='%231f3038' stroke-width='2' fill='none'/%3E" +
-  "%3Cpath d='M0 26 Q8 21 16 26 T32 26' stroke='%23a8552e' stroke-width='2' fill='none'/%3E%3C/svg%3E";
+  "%3Crect width='32' height='32' fill='%230d1214'/%3E" +
+  "%3Cpath d='M2 19 Q9 13 16 19 T30 19' stroke='%23efece4' stroke-width='1.8' fill='none'/%3E" +
+  "%3Cpath d='M2 25 Q9 19 16 25 T30 25' stroke='%238f3a1c' stroke-width='1.8' fill='none'/%3E%3C/svg%3E";
 
-function shell(page, opts) {
+/* the wave mark, drawn rather than set in a typeface */
+const MARK = `<svg class="mark__ico" viewBox="0 0 34 26" fill="none" aria-hidden="true">
+      <path d="M1 10 Q8.5 2 17 10 T33 10" stroke="currentColor" stroke-width="1.5" />
+      <path d="M1 17 Q8.5 9 17 17 T33 17" stroke="var(--accent)" stroke-width="1.5" />
+      <path d="M1 24 Q8.5 16 17 24 T33 24" stroke="currentColor" stroke-width="1.5" opacity=".4" />
+    </svg>`;
+
+function shell(page, o) {
   const nav = NAV.map(([href, label]) =>
-    `<a href="${href}"${href === page ? ' aria-current="page"' : ""}${href === "book.html" ? ' class="nav__book"' : ""}>${label}</a>`).join("\n      ");
+    `<a href="${href}"${href === page ? ' aria-current="page"' : ""}>${label}</a>`).join("\n        ");
+  const drawer = NAV.map(([href, label], i) =>
+    `<a href="${href}" style="--i:${i}">${label}</a>`).join("\n    ");
+
   return `<!doctype html>
 <html lang="en-GB">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${opts.title}</title>
-<meta name="description" content="${opts.desc}" />
+<title>${o.title}</title>
+<meta name="description" content="${o.desc}" />
 <meta name="robots" content="noindex, follow" />
-<meta name="theme-color" content="#e8eae4" />
+<meta name="theme-color" content="#efece4" />
 <link rel="icon" href="${ICON}" />
-<link rel="preload" href="../../assets/fonts/cormorant-normal-300-700.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> This is a <b>Premium Custom</b> demo — four pages and a working booking system, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body${o.body || ""}>
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <a class="mark" href="index.html">
-    <svg class="mark__w" viewBox="0 0 60 20" aria-hidden="true" fill="none">
-      <path d="M0 12 Q10 5 20 12 T40 12 T60 12" stroke="currentColor" stroke-width="1.2" />
-      <path d="M0 17 Q10 10 20 17 T40 17 T60 17" stroke="currentColor" stroke-width="1.2" opacity=".45" />
-    </svg>
-    <span class="mark__n">Saltmarsh</span>
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> It is a <b>Premium Custom</b> demo — four pages, a scroll film and a working booking system, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Saltmarsh — home">
+    ${MARK}
+    <span class="mark__name">Saltmarsh<em>Wraith Point</em></span>
   </a>
   <nav class="nav" aria-label="Main">
-    ${nav}
+        ${nav}
+    <a class="btn btn--solid" href="book.html">Book</a>
   </nav>
-  <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-    <span></span><span></span>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
   </button>
 </header>
-<nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-  ${nav}
-</nav>
+
+<div class="drawer" data-drawer data-open="false">
+    ${drawer}
+</div>
 
 <main id="main">
-${opts.body}
+${o.body_html}
 </main>
 
 <footer class="foot">
-  <div class="wrap foot__in">
-    <div>
-      <p class="foot__n">Saltmarsh</p>
-      <p class="foot__d">The Old Netting Shed<br />Harbour Road, Wraith Point</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3" style="max-width:18ch">Whatever the boats landed, cooked over fire.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:34ch;opacity:.72">
+          One room, twenty-two covers, at the end of the lane on Wraith Point.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Hours</p>
+        <ul class="foot__list">
+          <li>Wednesday &ndash; Saturday</li>
+          <li>Dinner from 6:30pm</li>
+          <li>Sunday lunch, one sitting at 1pm</li>
+          <li>Closed Monday and Tuesday</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+${NAV.map(([h, l]) => `          <li><a href="${h}">${l}</a></li>`).join("\n")}
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Service</p>
-      <p class="foot__d">Wed&ndash;Sat, dinner from 6<br />Sunday lunch, one sitting at 1</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d">${NAV.map(([h, l]) => `<a href="${h}">${l}</a>`).join("<br />")}</p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional restaurant, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Saltmarsh &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>
 `;
 }
 
+/* =====================================================================
+   THE CARD — one list, used by the menu page and the home page preview
+   ===================================================================== */
+const CARD = [
+  { c: "sea", n: "Oysters, seaweed vinegar", p: "£3.50 each", d: "Opened to order. The vinegar is our own, from bladderwrack picked off the point." },
+  { c: "sea", n: "Cured pollock, cucumber, dill oil", p: "£12", d: "Three days in salt and sugar, sliced thin. Pollock because it was what came in." },
+  { c: "land", n: "Hogget, wild garlic, burnt onion", p: "£28", d: "Over embers, rested twenty minutes, carved at the pass. Garlic from the lane." },
+  { c: "sea", n: "Whole turbot for two, brown butter", p: "£62", d: "Whatever size the boat brought. We will tell you the weight before you commit." },
+  { c: "green", n: "Marsh samphire, brown shrimp", p: "£9", d: "Cut on the falling tide, cooked for ninety seconds, not a minute more." },
+  { c: "land", n: "Beef shin, barley, bone marrow", p: "£24", d: "Six hours in the oven that was already on. The barley does the rest." },
+  { c: "green", n: "Sea beet, cream, nutmeg", p: "£7", d: "The nettle of the shoreline. Better than spinach and nobody believes us." },
+  { c: "sweet", n: "Burnt honey custard", p: "£9", d: "Honey from three miles inland, taken further than is sensible." },
+  { c: "sweet", n: "Blackberry, bay leaf ice", p: "£9", d: "Picked along the sea wall in September and frozen for the rest of the year." },
+  { c: "sweet", n: "A wedge of something local, oatcakes", p: "£11", d: "Ask. It changes, and whoever is on the pass will have a view." }
+];
+
+const FILTERS = [
+  ["all", "Everything"],
+  ["sea", "From the water"],
+  ["land", "From the land"],
+  ["green", "From the marsh"],
+  ["sweet", "To finish"]
+];
+
+const cardRows = (items) => items.map((it, i) => `
+        <li class="dish" data-cat="${it.c}" data-rev="${(i % 4) * 0.05}">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">${it.n}</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">${it.p}</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>${it.d}</p></div>
+        </li>`).join("");
+
+/* =====================================================================
+   PAGES
+   ===================================================================== */
 const page = {};
 
-/* ---------- home ---------- */
+/* ---------------------------------------------------------- index --- */
 page["index.html"] = {
-  title: "Saltmarsh — Wraith Point",
-  desc: "Twenty-two covers in an old netting shed. Whatever the boats landed, cooked over fire.",
-  body: `  <section class="hero">
-    <div class="hero__sky" aria-hidden="true"><canvas id="sky"></canvas></div>
+  title: "Saltmarsh — whatever the boats landed, cooked over fire",
+  desc: "A twenty-two cover room at the end of the lane on Wraith Point. No fixed menu, because there is no fixed catch. Demo site built by Orion.",
+  body: ' data-page="home"',
+  body_html: `
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero__art" aria-hidden="true">
+      <canvas data-art="marsh" data-art-opts='{"hour":0.74,"tide":0.42,"seed":7,"horizon":0.56}'></canvas>
+    </div>
+    <div class="hero__scrim" aria-hidden="true"></div>
     <div class="wrap hero__in">
-      <p class="kick">Wraith Point &middot; twenty-two covers</p>
-      <h1>Whatever the<br />boats landed,<br /><em>cooked over fire</em></h1>
-      <p class="lede">
-        There is no fixed menu because there is no fixed catch. We write the card at four
-        o'clock, once we know what came in, and we cook it in one room with the sea behind it.
+      <p class="eyebrow hero__eye" data-rev>Wraith Point &middot; twenty-two covers</p>
+      <h1 class="d1 hero__h" data-rev>
+        <span data-split>Whatever the boats landed,</span>
+        <em data-split>cooked over fire.</em>
+      </h1>
+      <p class="lede hero__l" data-rev="0.18">
+        There is no fixed menu because there is no fixed catch. We write the card
+        at four o'clock, once we know what came in.
       </p>
-      <div class="row">
-        <a class="btn btn--fill" href="book.html">Book a table</a>
-        <a class="btn" href="menu.html">Yesterday's card</a>
+      <div class="row mt" data-rev="0.28">
+        <a class="btn btn--solid" href="book.html" data-mag="0.22">Book a table</a>
+        <a class="btn btn--ghost" href="menu.html" data-mag="0.22">Yesterday's card</a>
       </div>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
+    <a class="hero__cue" href="#tide" aria-label="Scroll">
+      <span class="hero__cue-l" aria-hidden="true"></span>
+      <span class="eyebrow">The tide</span>
+    </a>
   </section>
 
-  <section class="band">
-    <div class="wrap thirds">
-      <article>
-        <p class="kick">The room</p>
-        <h2 class="h2">One room, one fire</h2>
-        <p class="body">Eleven tables in a shed the netting crews used until 1978. The floor is the original brick and the acoustics are terrible, which is why nobody books it for a party of twenty.</p>
-      </article>
-      <article>
-        <p class="kick">The card</p>
-        <h2 class="h2">Written at four</h2>
-        <p class="body">Six or seven plates, whatever the day gave us. If you have an allergy, tell us when you book and we will build around it rather than apologise on the night.</p>
-      </article>
-      <article>
-        <p class="kick">The sitting</p>
-        <h2 class="h2">Yours for the evening</h2>
-        <p class="body">One sitting a night. The table is yours until you are done with it, and nobody will bring you a bill you did not ask for.</p>
-      </article>
+  <!-- ============ THE TIDE — a film, driven by the scroll ============ -->
+  <section class="tide" id="tide" data-seq aria-labelledby="tide-h">
+    <div class="seq__pin">
+      <canvas class="tide__art" id="tide-art" aria-hidden="true"
+              data-art="marsh" data-art-opts='{"hour":0.08,"tide":0.05,"seed":12,"horizon":0.54}'></canvas>
+      <div class="tide__scrim" aria-hidden="true"></div>
+
+      <h2 id="tide-h" class="sr">A day on Wraith Point</h2>
+
+      <div class="tide__hud wrap">
+        <div class="tide__meta">
+          <span class="num" id="tide-clock">04:40</span>
+          <span class="num" id="tide-state">Low water</span>
+        </div>
+        <div class="tide__caps">
+          <p class="tide__cap" data-on="true">
+            <span class="eyebrow eyebrow--accent">First light</span>
+            <span class="d3">The boats go out before anybody is awake.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Nine o'clock</span>
+            <span class="d3">The marsh drains, and the samphire beds show.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Four o'clock</span>
+            <span class="d3">Whatever is in the boxes becomes tonight's card.</span>
+          </p>
+          <p class="tide__cap">
+            <span class="eyebrow eyebrow--accent">Half past six</span>
+            <span class="d3">The tide is back, the fire is lit, and the room fills.</span>
+          </p>
+        </div>
+        <div class="tide__bar" aria-hidden="true"><i></i></div>
+      </div>
     </div>
   </section>
 
-  <section class="band band--deep">
-    <div class="wrap feature">
-      <div class="feature__plate"><canvas data-tide="1" width="640" height="800"></canvas></div>
+  <!-- ============ TONIGHT ============ -->
+  <section class="band" aria-labelledby="tonight-h">
+    <div class="wrap">
+      <div class="head" data-rev>
+        <span class="num">01</span>
+        <span class="eyebrow head__line">Tonight, probably</span>
+        <span class="num" id="today-date"></span>
+      </div>
+      <div class="split">
+        <div class="stack" data-rev>
+          <h2 id="tonight-h" class="d2">The card is written<br /><em>at four o'clock.</em></h2>
+          <p>
+            Four courses, one sitting, and a version of it for anyone who does not
+            eat what came off the boat. If you tell us in advance we will cook for
+            you properly rather than apologetically.
+          </p>
+          <a class="lnk mt" href="menu.html">See the whole card <span class="lnk__ar" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ul class="card" data-rev="0.1">
+${cardRows(CARD.slice(0, 5))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE ROOM ============ -->
+  <section class="band band--flush" aria-labelledby="room-h">
+    <div class="wrap">
+      <div class="split split--even">
+        <button class="fig fig--4x5" data-lb data-lb-cap="The room, before service" data-rev="mask">
+          <canvas data-art="interior" data-art-opts='{"warm":"#ff9a44","cool":"#2b465e","dark":"#0b0e10","lamps":3,"seed":17}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+        <div class="stack">
+          <p class="eyebrow" data-rev>02 &middot; The room</p>
+          <h2 id="room-h" class="d2" data-rev>Twenty-two seats<br />and one fire.</h2>
+          <p data-rev="0.08">
+            It was a chandlery, then a garage, then nothing for eleven years. The
+            floor is the floor it always was. Everything is cooked in the room you
+            are sitting in, which means it is loud, and warm, and you will smell of
+            woodsmoke on the way home.
+          </p>
+          <dl class="stats" data-rev="0.16">
+            <div><dt>Covers</dt><dd><span data-count="22">22</span></dd></div>
+            <div><dt>Tables</dt><dd><span data-count="7">7</span></dd></div>
+            <div><dt>Miles to the boat</dt><dd><span data-count="2">2</span></dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT CAME IN ============ -->
+  <section class="strip" aria-label="What came in today">
+    <div data-marquee="26">
       <div>
-        <p class="kick">Since 2019</p>
-        <h2 class="h2 h2--big">We buy from four boats<br />and one grower</h2>
-        <p class="body">
-          The <em>Wraith Belle</em>, the <em>Kittiwake</em>, the <em>Ann Hardy</em> and the
-          <em>Sea Pink</em> land at the point most mornings. Everything green comes from a
-          market garden four miles inland that has been in one family since the war.
-        </p>
-        <p class="body">
-          That is the entire supply chain. It means some nights there is no fish at all and we
-          cook mutton and roots instead, and it means we can tell you the name of the boat that
-          caught what is on your plate.
-        </p>
-        <dl class="facts">
-          <div><dt>Covers a night</dt><dd>22</dd></div>
-          <div><dt>Boats</dt><dd>4</dd></div>
-          <div><dt>Sittings</dt><dd>1</dd></div>
-          <div><dt>Miles to the grower</dt><dd>4</dd></div>
-        </dl>
+        <span>Turbot</span><span class="strip__dot">&bull;</span>
+        <span>Brown shrimp</span><span class="strip__dot">&bull;</span>
+        <span>Samphire</span><span class="strip__dot">&bull;</span>
+        <span>Pollock</span><span class="strip__dot">&bull;</span>
+        <span>Native oysters</span><span class="strip__dot">&bull;</span>
+        <span>Sea beet</span><span class="strip__dot">&bull;</span>
+        <span>Hogget</span><span class="strip__dot">&bull;</span>
+        <span>Wild garlic</span><span class="strip__dot">&bull;</span>
       </div>
     </div>
   </section>
 
-  <section class="tide" id="tide" aria-labelledby="tide-h">
-    <div class="tide__track" id="tide-track">
-      <div class="tide__stage">
-        <canvas id="tide-c" aria-hidden="true"></canvas>
-        <div class="tide__hud">
-          <div class="wrap tide__in">
-            <p class="kick" id="tide-time">Low water &middot; 06:14</p>
-            <h2 id="tide-h" class="tide__h">The marsh at<br /><em id="tide-state">low water</em></h2>
-            <p class="tide__d" id="tide-cap">
-              Six hours out, the channels are mud and you can walk to the far bank.
-              This is when the boats leave.
-            </p>
-            <div class="tide__gauge" aria-hidden="true">
-              <span class="tide__bar"><i id="tide-fill"></i></span>
-              <span class="tide__m" id="tide-m">0.0m</span>
-            </div>
-            <p class="tide__note">Scroll to bring the tide in</p>
-          </div>
-        </div>
+  <!-- ============ VOICES ============ -->
+  <section class="band" aria-labelledby="voices-h">
+    <div class="wrap wrap--tight">
+      <h2 id="voices-h" class="sr">What people say</h2>
+      <div class="quotes" data-quotes>
+        <blockquote class="quote" data-on="true">
+          <p class="d3">&ldquo;We drove ninety minutes for a plate of shrimp and I would do it again on Tuesday.&rdquo;</p>
+          <footer class="eyebrow">A person who is not real &middot; September</footer>
+        </blockquote>
+        <blockquote class="quote">
+          <p class="d3">&ldquo;They told us the turbot's weight before we ordered it. Nobody does that.&rdquo;</p>
+          <footer class="eyebrow">Also not real &middot; August</footer>
+        </blockquote>
+        <blockquote class="quote">
+          <p class="d3">&ldquo;One room, one fire, and the best thing I ate all year.&rdquo;</p>
+          <footer class="eyebrow">Entirely invented &middot; June</footer>
+        </blockquote>
+      </div>
+      <div class="quotes__dots" role="tablist" aria-label="Quotes">
+        <button type="button" role="tab" aria-selected="true" aria-label="Quote 1"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Quote 2"></button>
+        <button type="button" role="tab" aria-selected="false" aria-label="Quote 3"></button>
       </div>
     </div>
   </section>
 
-  <section class="band">
-    <div class="wrap">
-      <div class="head-row">
-        <div>
-          <p class="kick">From the journal</p>
-          <h2 class="h2">What we have been thinking about</h2>
-        </div>
-        <a class="arrow" href="story.html">All entries &rarr;</a>
-      </div>
-      <div class="jlist">
-        <a class="jrow" href="story.html#gurnard">
-          <span class="jrow__d">14 August</span>
-          <span class="jrow__t">In praise of the ugliest fish on the quay</span>
-          <span class="jrow__x">Gurnard is bony, spiny, and better than most of what gets flown in. Here is how we cook it.</span>
-        </a>
-        <a class="jrow" href="story.html#fire">
-          <span class="jrow__d">2 August</span>
-          <span class="jrow__t">Why everything goes over fire</span>
-          <span class="jrow__x">Not for the theatre. Because a hard, dry heat does something to a fillet that a pan cannot.</span>
-        </a>
-        <a class="jrow" href="story.html#closed">
-          <span class="jrow__d">19 July</span>
-          <span class="jrow__t">The week we shut with no notice</span>
-          <span class="jrow__x">A storm kept every boat in for six days. What we did instead, and what we learned from it.</span>
-        </a>
-      </div>
+  <!-- ============ BOOK ============ -->
+  <section class="cta" aria-labelledby="cta-h">
+    <canvas class="cta__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.94,"tide":0.8,"seed":21,"horizon":0.5,"birds":false}'></canvas>
+    <div class="cta__scrim" aria-hidden="true"></div>
+    <div class="wrap cta__in">
+      <p class="eyebrow" data-rev>Wednesday to Sunday</p>
+      <h2 id="cta-h" class="d1" data-rev>Come at dusk.</h2>
+      <a class="btn btn--solid mt" href="book.html" data-mag="0.24" data-rev="0.12">Book a table</a>
     </div>
   </section>
-
-  <section class="band band--rust">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Wednesday to Saturday.<br />One sitting. Book early.</h2>
-      <a class="btn btn--pale" href="book.html">Book a table</a>
-    </div>
-  </section>`
+`
 };
 
-/* ---------- menu ---------- */
-const COURSE = [
-  ["To begin", [
-    ["Brown crab, cold, on toast", "Wraith Belle, landed yesterday. Dressed with nothing but lemon and its own brown meat.", "£11"],
-    ["Grilled sardines, fennel, burnt lemon", "Four to a plate, straight off the coals.", "£9"],
-    ["Cured pollock, cucumber, dill oil", "Three days in salt and sugar. The oil is from the garden.", "£10"],
-    ["Sourdough, cultured butter", "The bread is ours. The butter is not, and we are not pretending.", "£4"]
-  ]],
-  ["Over the fire", [
-    ["Whole gurnard, sea beet, brown butter", "For one, on the bone. Ask and we will fillet it at the table.", "£24"],
-    ["Turbot on the crown, for two", "The whole crown over embers, forty minutes, carved in the room.", "£62"],
-    ["Hogget chop, wild garlic, anchovy", "For nights the boats stay in. Twenty-eight days hung.", "£27"],
-    ["Sea vegetables and hen's egg", "The garden's whole basket, charred, with an egg cooked in the ash.", "£19"]
-  ]],
-  ["Alongside", [
-    ["Potatoes in beef fat", "", "£6"],
-    ["Buttered greens, brown shrimp", "", "£7"],
-    ["Tomatoes, if it has been sunny", "", "£6"]
-  ]],
-  ["To finish", [
-    ["Burnt honey custard", "The honey is from the point. It tastes of gorse and it should.", "£8"],
-    ["Blackcurrant leaf ice, shortbread", "Made the morning of.", "£8"],
-    ["A wedge of something from the trolley", "Three cheeses, all within sixty miles.", "£10"]
-  ]]
-];
-
+/* ----------------------------------------------------------- menu --- */
 page["menu.html"] = {
-  title: "Menu — Saltmarsh",
-  desc: "Yesterday's card, written at four o'clock once the boats came in.",
-  body: `  <section class="phead">
-    <div class="wrap">
-      <p class="kick">Menu</p>
-      <h1 class="phead__h">Yesterday's card</h1>
-      <p class="lede">
-        Written at four, cooked at six. Tonight's will be close to this but not the same — that
-        is rather the point. Prices have not moved since March.
-      </p>
-      <p class="note">
-        Everything is cooked over one fire in an open room. If you need something adapted, tell
-        us when you book and it will be built into the card rather than worked around on the night.
+  title: "The card — Saltmarsh",
+  desc: "Yesterday's card, which is the closest anyone can get to tonight's. Demo site built by Orion.",
+  body: ' data-page="menu"',
+  body_html: `
+  <section class="pagehead">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.36,"tide":0.62,"seed":33,"horizon":0.52}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Yesterday's card</p>
+      <h1 class="d1" data-rev><span data-split>The card, as it stood</span></h1>
+      <p class="lede" data-rev="0.14">
+        Tonight's is written at four. This is what we cooked yesterday, which is
+        the closest anyone can honestly get to it.
       </p>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </section>
 
   <section class="band">
-    <div class="wrap menu">
-${COURSE.map(([c, rows]) => `      <section class="course">
-        <h2 class="course__h">${c}</h2>
-${rows.map(([n, d, p]) => `        <div class="dish">
-          <p class="dish__n">${n}<span class="dish__leader" aria-hidden="true"></span><b>${p}</b></p>
-${d ? `          <p class="dish__d">${d}</p>` : ""}
-        </div>`).join("\n")}
-      </section>`).join("\n")}
-      <p class="note">
-        A discretionary 10% goes to the room and the kitchen in equal shares. Take it off if you
-        would rather; nobody will mind and nobody will ask why.
-      </p>
+    <div class="wrap">
+      <div class="filters" role="tablist" aria-label="Filter the card">
+${FILTERS.map(([k, l], i) => `        <button class="filters__b" type="button" role="tab" data-filter="${k}" aria-selected="${i === 0}">${l}</button>`).join("\n")}
+      </div>
+
+      <ul class="card card--full" id="card-list">
+${cardRows(CARD)}
+      </ul>
+
+      <p class="card__empty" id="card-empty" hidden>Nothing on the card under that heading yesterday.</p>
+
+      <div class="note mt-lg" data-rev>
+        Everything is cooked over wood in the room. If you cannot eat something,
+        tell us when you book rather than when you arrive, and we will cook you
+        the same number of courses rather than a plate of vegetables.
+      </div>
     </div>
   </section>
 
-  <section class="band band--rust">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Tonight's card is<br />written at four</h2>
-      <a class="btn btn--pale" href="book.html">Book a table</a>
+  <section class="band band--flush">
+    <div class="wrap">
+      <div class="split split--even">
+        <div class="stack">
+          <p class="eyebrow" data-rev>The wine</p>
+          <h2 class="d2" data-rev>Forty bottles,<br /><em>all of them tasted.</em></h2>
+          <p data-rev="0.08">
+            A short list on purpose. Nothing on it costs more than the food, there
+            is always something under thirty pounds, and whoever is pouring has
+            drunk all of it and will tell you the truth.
+          </p>
+        </div>
+        <button class="fig fig--3x2" data-lb data-lb-cap="Low water, from the sea wall" data-rev="mask">
+          <canvas data-art="marsh" data-art-opts='{"hour":0.2,"tide":0.1,"seed":44,"horizon":0.6}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+      </div>
     </div>
-  </section>`
+  </section>
+`
 };
 
-/* ---------- journal ---------- */
-const POSTS = [
-  ["gurnard", "14 August", "In praise of the ugliest fish on the quay", [
-    "Gurnard has a head like a helmet, spines that will draw blood if you are careless, and about forty per cent waste once it is dressed. For thirty years it went for pot bait. It is also, cooked properly, better than most of what arrives at a restaurant in a polystyrene box with a flight number on it.",
-    "The flesh is firm enough to take a hard fire without falling through the bars, which almost nothing else this size will do. It is sweet, closer to monkfish than to cod, and the bones make the best stock on the coast — you can build a whole sauce out of what most kitchens bin.",
-    "We buy it whole, off the Kittiwake, at a price that still feels like a mistake in our favour. It goes over the embers on the bone with sea beet and a brown butter we finish with the roe. If you have never eaten one, order it and do not fillet it first."
-  ]],
-  ["fire", "2 August", "Why everything goes over fire", [
-    "People assume the fire is theatre. It is not — we would happily cook where nobody could see it. The fire is there because a hard dry radiant heat does something to protein that a pan will not do, and because it is the only way to cook twenty-two covers out of a room this size.",
-    "A pan heats by conduction: the metal is hot, the fish touches the metal, the heat travels in. It is even, controllable and slightly dull. Embers heat by radiation, which arrives everywhere on the surface at once. You get a crust in ninety seconds while the middle is barely warm, and that gap is the whole dish.",
-    "The cost is that you cannot walk away from it, and that the fire is different at half past nine to how it was at six. So the last table of the night eats something slightly different to the first, and we would rather tell you that than pretend otherwise."
-  ]],
-  ["closed", "19 July", "The week we shut with no notice", [
-    "A storm sat over the point for six days in February and not one boat went out. We had eleven tables booked on the Thursday and nothing to give them that we would have been happy to serve.",
-    "So we shut. We rang every booking ourselves rather than sending an email, and about half of them said some version of \"well, obviously\" — which told us something about who books a place like this.",
-    "What we did instead: rebuilt the fire, which needed doing, and cooked for ourselves out of the freezer and the garden every night at the same table by the window. The week cost us more than we would like to write down. We would do exactly the same again."
-  ]]
-];
-
+/* ---------------------------------------------------------- story --- */
 page["story.html"] = {
   title: "Journal — Saltmarsh",
-  desc: "Notes from the room: what we cook, why we cook it that way, and what happens when the boats stay in.",
-  body: `  <section class="phead">
-    <div class="wrap">
-      <p class="kick">Journal</p>
-      <h1 class="phead__h">Notes from<br />the room</h1>
-      <p class="lede">
-        Occasional, unedited, and written by whoever had something to say. No recipes you could
-        follow at home without a fire pit.
-      </p>
+  desc: "How a chandlery became a dining room, and why the menu is written at four o'clock. Demo site built by Orion.",
+  body: ' data-page="story"',
+  body_html: `
+  <section class="pagehead pagehead--tall">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.12,"tide":0.24,"seed":55,"horizon":0.58}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Journal &middot; number four</p>
+      <h1 class="d1" data-rev><span data-split>Eleven years empty</span></h1>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </section>
 
-${POSTS.map((p, i) => `  <section class="band${i % 2 ? " band--deep" : ""}" id="${p[0]}">
-    <div class="wrap post">
-      <div class="post__meta">
-        <p class="kick">${p[1]}</p>
-        <p class="post__no">Entry ${("0" + (POSTS.length - i)).slice(-2)}</p>
-      </div>
-      <article>
-        <h2 class="h2">${p[2]}</h2>
-${p[3].map((para) => `        <p class="body body--wide">${para}</p>`).join("\n")}
-      </article>
-    </div>
-  </section>`).join("\n")}
+  <article class="band prose">
+    <div class="wrap wrap--tight">
+      <p class="drop" data-rev>
+        The building was a chandlery until 1974, a garage until 1998, and then
+        nothing at all for eleven years. When we got the keys there were two feet
+        of silt in the back room and a boat in the yard that nobody has ever
+        claimed.
+      </p>
+      <p data-rev>
+        We kept the floor. Not out of sentiment — it is a good floor, laid by
+        somebody who expected barrels to be rolled across it, and it has taken
+        everything since without complaint. The fire went in where the pit used
+        to be, which is why the flue is in an odd place and why the room is warm
+        at one end.
+      </p>
 
-  <section class="band band--rust">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Better read<br />at the table</h2>
-      <a class="btn btn--pale" href="book.html">Book a table</a>
+      <figure class="pull" data-rev>
+        <blockquote class="d2">The catch decides. We just have to be ready for whatever it decides.</blockquote>
+      </figure>
+
+      <p data-rev>
+        People ask why there is no menu online. The answer is that a menu printed
+        in March is a promise about a fish that has not been caught yet. Ours goes
+        up at four o'clock, when the boxes are in and we know what we are working
+        with. Sometimes that means turbot. Twice last winter it meant an awful lot
+        of grey mullet and a good deal of improvisation.
+      </p>
+
+      <button class="fig fig--wide mt-lg" data-lb data-lb-cap="The point, on the falling tide" data-rev="mask">
+        <canvas data-art="marsh" data-art-opts='{"hour":0.66,"tide":0.3,"seed":66,"horizon":0.55}'></canvas>
+        <span class="fig__zoom" aria-hidden="true">+</span>
+      </button>
+
+      <p class="mt-lg" data-rev>
+        The marsh itself does most of the work. Samphire from May, sea beet all
+        year, and blackberries along the wall in September that are better than
+        anything grown on purpose. None of it costs anything except the walk, and
+        the walk is the best part of the day.
+      </p>
+      <p data-rev>
+        We are open four nights and one lunch. That is not a strategy, it is
+        arithmetic: two of us cook, one of us pours, and none of us wants to do it
+        badly six days a week.
+      </p>
+
+      <div class="signoff" data-rev>
+        <span class="eyebrow">Written on the pass</span>
+        <span class="d3">— Saltmarsh</span>
+      </div>
     </div>
-  </section>`
+  </article>
+
+  <section class="cta cta--short">
+    <canvas class="cta__art" aria-hidden="true"
+            data-art="interior" data-art-opts='{"warm":"#ff9a44","cool":"#22384a","dark":"#0a0d0f","lamps":4,"seed":29}'></canvas>
+    <div class="cta__scrim" aria-hidden="true"></div>
+    <div class="wrap cta__in">
+      <h2 class="d2" data-rev>Four nights and one lunch.</h2>
+      <a class="btn btn--solid mt" href="book.html" data-mag="0.24" data-rev="0.1">Book a table</a>
+    </div>
+  </section>
+`
 };
 
-/* ---------- booking ---------- */
+/* ----------------------------------------------------------- book --- */
 page["book.html"] = {
   title: "Book a table — Saltmarsh",
-  desc: "One sitting a night, Wednesday to Saturday, and Sunday lunch. Choose a date, a time and a table.",
-  body: `  <section class="phead phead--tight">
-    <div class="wrap">
-      <p class="kick">Book a table</p>
-      <h1 class="phead__h">Three steps,<br />no account</h1>
-      <p class="lede">
-        Wednesday to Saturday evenings, and one sitting for Sunday lunch. Eleven tables, so the
-        good dates go about five weeks out.
-      </p>
+  desc: "Three steps: a date, a time, and who is coming. Demo booking system built by Orion.",
+  body: ' data-page="book"',
+  body_html: `
+  <section class="pagehead pagehead--short">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.8,"tide":0.7,"seed":77,"horizon":0.5}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Twenty-two covers</p>
+      <h1 class="d1" data-rev>Book a table</h1>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </section>
 
   <section class="band">
-    <div class="wrap">
-      <ol class="steps" id="steps">
-        <li data-step="1" aria-current="step"><span>1</span>Party &amp; date</li>
-        <li data-step="2"><span>2</span>Time</li>
-        <li data-step="3"><span>3</span>Your details</li>
+    <div class="wrap wrap--tight">
+
+      <ol class="steps" id="steps" aria-label="Booking steps">
+        <li class="steps__i" data-on="true"><span class="steps__n">1</span><span>Date</span></li>
+        <li class="steps__i"><span class="steps__n">2</span><span>Time &amp; party</span></li>
+        <li class="steps__i"><span class="steps__n">3</span><span>Details</span></li>
       </ol>
 
-      <div class="bk" id="bk">
+      <form class="bk" id="bk" novalidate>
 
         <!-- step 1 -->
-        <section class="pane" data-pane="1">
-          <div class="pane__grid">
-            <div>
-              <h2 class="h2">How many of you?</h2>
-              <div class="party" id="party" role="radiogroup" aria-label="Party size"></div>
-              <p class="note note--tight" id="party-note">
-                Tables of seven or more take the whole end of the room, so we handle those by
-                phone. Ring the shed and ask for Nell.
-              </p>
-              <div class="aside">
-                <p class="aside__k">One sitting a night</p>
-                <p class="aside__d">
-                  The table is yours from the time you choose until you are done with it. Nobody
-                  is waiting for it and nobody will bring you a bill you did not ask for.
-                </p>
-                <p class="aside__k">If you are late</p>
-                <p class="aside__d">
-                  Ring us. We hold a table twenty-five minutes on a normal night and rather longer
-                  if the trains are being the trains.
-                </p>
-              </div>
+        <fieldset class="bk__step" data-step="1" data-on="true">
+          <legend class="sr">Choose a date</legend>
+          <div class="cal">
+            <div class="cal__head">
+              <button class="cal__nav" type="button" data-cal-prev aria-label="Previous month">&lsaquo;</button>
+              <p class="cal__month" id="cal-month" aria-live="polite"></p>
+              <button class="cal__nav" type="button" data-cal-next aria-label="Next month">&rsaquo;</button>
             </div>
-            <div>
-              <h2 class="h2">Which evening?</h2>
-              <div class="cal" id="cal">
-                <div class="cal__bar">
-                  <button type="button" id="prev" aria-label="Previous month">&larr;</button>
-                  <p id="mon" aria-live="polite">&nbsp;</p>
-                  <button type="button" id="nextm" aria-label="Next month">&rarr;</button>
-                </div>
-                <div class="cal__dow" aria-hidden="true"><i>M</i><i>T</i><i>W</i><i>T</i><i>F</i><i>S</i><i>S</i></div>
-                <div class="cal__grid" id="grid" role="grid" aria-label="Available dates"></div>
-              </div>
-              <p class="legend"><i class="legend__on"></i>Open &nbsp; <i class="legend__off"></i>Closed or full</p>
+            <div class="cal__dows" aria-hidden="true">
+              <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
+            <div class="cal__grid" id="cal-grid" role="grid" aria-label="Available dates"></div>
+            <p class="cal__key">
+              <span><i class="cal__sw cal__sw--open"></i> Open</span>
+              <span><i class="cal__sw cal__sw--few"></i> Nearly full</span>
+              <span><i class="cal__sw cal__sw--shut"></i> Closed</span>
+            </p>
           </div>
-          <div class="pane__foot">
-            <p class="pick" id="pick1">Choose a party size and a date.</p>
-            <button class="btn btn--fill" type="button" id="to2" disabled>Choose a time</button>
-          </div>
-        </section>
+        </fieldset>
 
         <!-- step 2 -->
-        <section class="pane" data-pane="2" hidden>
-          <h2 class="h2">What time suits?</h2>
-          <p class="body" id="slot-line">&nbsp;</p>
-          <div class="slots" id="slots" role="radiogroup" aria-label="Available times"></div>
-          <div class="pane__foot">
-            <button class="btn" type="button" id="back1">Back</button>
-            <p class="pick" id="pick2">Pick a time.</p>
-            <button class="btn btn--fill" type="button" id="to3" disabled>Add your details</button>
-          </div>
-        </section>
+        <fieldset class="bk__step" data-step="2">
+          <legend class="sr">Choose a time and a party size</legend>
+          <p class="bk__chosen" id="bk-chosen"></p>
+
+          <p class="bk__lab">How many of you?</p>
+          <div class="pips" id="pips" role="radiogroup" aria-label="Party size"></div>
+
+          <p class="bk__lab mt">What time?</p>
+          <div class="slots" id="slots" role="radiogroup" aria-label="Sitting time"></div>
+          <p class="bk__none" id="bk-none" hidden>Nothing left at that size on this date. Try another day, or a smaller table.</p>
+        </fieldset>
 
         <!-- step 3 -->
-        <section class="pane" data-pane="3" hidden>
-          <div class="pane__grid">
-            <div>
-              <h2 class="h2">And who shall we expect?</h2>
-              <form id="bform" novalidate>
-                <p class="alert" id="alert" role="alert" hidden></p>
-                <label class="fld"><span>Name the table is under</span>
-                  <input type="text" name="name" id="b-name" autocomplete="name" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Email</span>
-                  <input type="email" name="email" id="b-email" autocomplete="email" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Phone, for the night itself</span>
-                  <input type="tel" name="phone" id="b-phone" autocomplete="tel" required />
-                  <em class="err" aria-live="polite"></em></label>
-                <label class="fld"><span>Allergies, or anything we should know</span>
-                  <textarea name="notes" id="b-notes" rows="3"></textarea>
-                  <em class="err" aria-live="polite"></em></label>
-                <div class="pane__foot pane__foot--form">
-                  <button class="btn" type="button" id="back2">Back</button>
-                  <button class="btn btn--fill" type="submit">Confirm the table</button>
-                </div>
-              </form>
+        <fieldset class="bk__step" data-step="3">
+          <legend class="sr">Your details</legend>
+          <p class="bk__chosen" id="bk-chosen-2"></p>
+          <div class="bk__fields">
+            <div class="field">
+              <label for="bk-name">Name</label>
+              <input id="bk-name" name="name" type="text" autocomplete="name" required />
+              <p class="field__err" data-err-for="bk-name" aria-live="polite"></p>
             </div>
-            <aside class="sum" id="sum" aria-label="Your booking so far"></aside>
+            <div class="field">
+              <label for="bk-email">Email</label>
+              <input id="bk-email" name="email" type="email" autocomplete="email" required />
+              <p class="field__err" data-err-for="bk-email" aria-live="polite"></p>
+            </div>
+            <div class="field bk__wide">
+              <label for="bk-notes">Anything we should know?</label>
+              <textarea id="bk-notes" name="notes" placeholder="Allergies, a birthday, a pushchair, a dog."></textarea>
+            </div>
           </div>
-        </section>
+        </fieldset>
 
-        <!-- done -->
-        <section class="pane pane--done" data-pane="4" hidden tabindex="-1">
-          <p class="kick">Confirmed</p>
-          <h2 class="h2 h2--big" id="done-h">The table is yours</h2>
-          <div class="ticket" id="ticket"></div>
-          <p class="note">
-            This demo has no server, so nothing was actually reserved and no email was sent. On a
-            live build this writes to the diary, emails you a confirmation and texts you on the
-            morning. Everything above it is real — the calendar, the availability rules and the
-            validation all run in your browser.
-          </p>
-          <div class="row">
-            <button class="btn" type="button" id="restart">Book another</button>
-            <a class="btn" href="menu.html">See the menu</a>
-          </div>
-        </section>
+        <div class="bk__nav">
+          <button class="btn" type="button" id="bk-back" hidden>Back</button>
+          <button class="btn btn--solid" type="button" id="bk-next" disabled>Choose a date</button>
+        </div>
+      </form>
 
+      <div class="bk__done" id="bk-done" hidden>
+        <p class="eyebrow eyebrow--accent">Held for ten minutes</p>
+        <h2 class="d2">That is the table.</h2>
+        <dl class="recap" id="bk-recap"></dl>
+        <p class="note mt">
+          This is a demonstration, so nothing was sent and no table was actually
+          held. On a real build this would post to the restaurant's booking system
+          and email you a confirmation.
+        </p>
+        <button class="btn mt" type="button" id="bk-again">Start again</button>
       </div>
+
     </div>
-  </section>`
+  </section>
+`
 };
 
 module.exports = function build() {

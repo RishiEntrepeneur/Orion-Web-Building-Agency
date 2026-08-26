@@ -3,172 +3,243 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Menu — Saltmarsh</title>
-<meta name="description" content="Yesterday's card, written at four o'clock once the boats came in." />
+<title>The card — Saltmarsh</title>
+<meta name="description" content="Yesterday's card, which is the closest anyone can get to tonight's. Demo site built by Orion." />
 <meta name="robots" content="noindex, follow" />
-<meta name="theme-color" content="#e8eae4" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23e8eae4'/%3E%3Cpath d='M0 20 Q8 15 16 20 T32 20' stroke='%231f3038' stroke-width='2' fill='none'/%3E%3Cpath d='M0 26 Q8 21 16 26 T32 26' stroke='%23a8552e' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
-<link rel="preload" href="../../assets/fonts/cormorant-normal-300-700.woff2" as="font" type="font/woff2" crossorigin />
+<meta name="theme-color" content="#efece4" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d1214'/%3E%3Cpath d='M2 19 Q9 13 16 19 T30 19' stroke='%23efece4' stroke-width='1.8' fill='none'/%3E%3Cpath d='M2 25 Q9 19 16 25 T30 25' stroke='%238f3a1c' stroke-width='1.8' fill='none'/%3E%3C/svg%3E" />
+<link rel="preload" href="../../assets/fonts/fraunces-normal-300-900.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="../_lib/base.css" />
 <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-
-<a class="demobar" href="../../work.html">
-  <span class="demobar__tag">Demo</span>
-  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> This is a <b>Premium Custom</b> demo — four pages and a working booking system, built by Orion.</span>
-  <span class="demobar__back">Back to Orion &rarr;</span>
-</a>
+<body data-page="menu">
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="top">
-  <a class="mark" href="index.html">
-    <svg class="mark__w" viewBox="0 0 60 20" aria-hidden="true" fill="none">
-      <path d="M0 12 Q10 5 20 12 T40 12 T60 12" stroke="currentColor" stroke-width="1.2" />
-      <path d="M0 17 Q10 10 20 17 T40 17 T60 17" stroke="currentColor" stroke-width="1.2" opacity=".45" />
+<a class="demobar" href="../../demos.html">
+  <span class="demobar__tag">Demo</span>
+  <span class="demobar__txt"><b>Saltmarsh is not a real restaurant.</b> It is a <b>Premium Custom</b> demo — four pages, a scroll film and a working booking system, built by Orion.</span>
+  <span class="demobar__back">Back to Orion &rarr;</span>
+</a>
+
+<header class="bar" data-bar>
+  <a class="mark" href="index.html" aria-label="Saltmarsh — home">
+    <svg class="mark__ico" viewBox="0 0 34 26" fill="none" aria-hidden="true">
+      <path d="M1 10 Q8.5 2 17 10 T33 10" stroke="currentColor" stroke-width="1.5" />
+      <path d="M1 17 Q8.5 9 17 17 T33 17" stroke="var(--accent)" stroke-width="1.5" />
+      <path d="M1 24 Q8.5 16 17 24 T33 24" stroke="currentColor" stroke-width="1.5" opacity=".4" />
     </svg>
-    <span class="mark__n">Saltmarsh</span>
+    <span class="mark__name">Saltmarsh<em>Wraith Point</em></span>
   </a>
   <nav class="nav" aria-label="Main">
-    <a href="index.html">The room</a>
-      <a href="menu.html" aria-current="page">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" class="nav__book">Book a table</a>
+        <a href="index.html">The room</a>
+        <a href="menu.html" aria-current="page">The card</a>
+        <a href="story.html">Journal</a>
+        <a href="book.html">Book a table</a>
+    <a class="btn btn--solid" href="book.html">Book</a>
   </nav>
-  <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="nav-m" aria-label="Open menu">
-    <span></span><span></span>
+  <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Menu">
+    <i></i><i></i><i></i>
   </button>
 </header>
-<nav class="nav-m" id="nav-m" aria-label="Main, small screens" data-open="false">
-  <a href="index.html">The room</a>
-      <a href="menu.html" aria-current="page">Menu</a>
-      <a href="story.html">Journal</a>
-      <a href="book.html" class="nav__book">Book a table</a>
-</nav>
+
+<div class="drawer" data-drawer data-open="false">
+    <a href="index.html" style="--i:0">The room</a>
+    <a href="menu.html" style="--i:1">The card</a>
+    <a href="story.html" style="--i:2">Journal</a>
+    <a href="book.html" style="--i:3">Book a table</a>
+</div>
 
 <main id="main">
-  <section class="phead">
-    <div class="wrap">
-      <p class="kick">Menu</p>
-      <h1 class="phead__h">Yesterday's card</h1>
-      <p class="lede">
-        Written at four, cooked at six. Tonight's will be close to this but not the same — that
-        is rather the point. Prices have not moved since March.
-      </p>
-      <p class="note">
-        Everything is cooked over one fire in an open room. If you need something adapted, tell
-        us when you book and it will be built into the card rather than worked around on the night.
+
+  <section class="pagehead">
+    <canvas class="pagehead__art" aria-hidden="true"
+            data-art="marsh" data-art-opts='{"hour":0.36,"tide":0.62,"seed":33,"horizon":0.52}'></canvas>
+    <div class="pagehead__scrim" aria-hidden="true"></div>
+    <div class="wrap pagehead__in">
+      <p class="eyebrow" data-rev>Yesterday's card</p>
+      <h1 class="d1" data-rev><span data-split>The card, as it stood</span></h1>
+      <p class="lede" data-rev="0.14">
+        Tonight's is written at four. This is what we cooked yesterday, which is
+        the closest anyone can honestly get to it.
       </p>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </section>
 
   <section class="band">
-    <div class="wrap menu">
-      <section class="course">
-        <h2 class="course__h">To begin</h2>
-        <div class="dish">
-          <p class="dish__n">Brown crab, cold, on toast<span class="dish__leader" aria-hidden="true"></span><b>£11</b></p>
-          <p class="dish__d">Wraith Belle, landed yesterday. Dressed with nothing but lemon and its own brown meat.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Grilled sardines, fennel, burnt lemon<span class="dish__leader" aria-hidden="true"></span><b>£9</b></p>
-          <p class="dish__d">Four to a plate, straight off the coals.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Cured pollock, cucumber, dill oil<span class="dish__leader" aria-hidden="true"></span><b>£10</b></p>
-          <p class="dish__d">Three days in salt and sugar. The oil is from the garden.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Sourdough, cultured butter<span class="dish__leader" aria-hidden="true"></span><b>£4</b></p>
-          <p class="dish__d">The bread is ours. The butter is not, and we are not pretending.</p>
-        </div>
-      </section>
-      <section class="course">
-        <h2 class="course__h">Over the fire</h2>
-        <div class="dish">
-          <p class="dish__n">Whole gurnard, sea beet, brown butter<span class="dish__leader" aria-hidden="true"></span><b>£24</b></p>
-          <p class="dish__d">For one, on the bone. Ask and we will fillet it at the table.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Turbot on the crown, for two<span class="dish__leader" aria-hidden="true"></span><b>£62</b></p>
-          <p class="dish__d">The whole crown over embers, forty minutes, carved in the room.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Hogget chop, wild garlic, anchovy<span class="dish__leader" aria-hidden="true"></span><b>£27</b></p>
-          <p class="dish__d">For nights the boats stay in. Twenty-eight days hung.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Sea vegetables and hen's egg<span class="dish__leader" aria-hidden="true"></span><b>£19</b></p>
-          <p class="dish__d">The garden's whole basket, charred, with an egg cooked in the ash.</p>
-        </div>
-      </section>
-      <section class="course">
-        <h2 class="course__h">Alongside</h2>
-        <div class="dish">
-          <p class="dish__n">Potatoes in beef fat<span class="dish__leader" aria-hidden="true"></span><b>£6</b></p>
+    <div class="wrap">
+      <div class="filters" role="tablist" aria-label="Filter the card">
+        <button class="filters__b" type="button" role="tab" data-filter="all" aria-selected="true">Everything</button>
+        <button class="filters__b" type="button" role="tab" data-filter="sea" aria-selected="false">From the water</button>
+        <button class="filters__b" type="button" role="tab" data-filter="land" aria-selected="false">From the land</button>
+        <button class="filters__b" type="button" role="tab" data-filter="green" aria-selected="false">From the marsh</button>
+        <button class="filters__b" type="button" role="tab" data-filter="sweet" aria-selected="false">To finish</button>
+      </div>
 
-        </div>
-        <div class="dish">
-          <p class="dish__n">Buttered greens, brown shrimp<span class="dish__leader" aria-hidden="true"></span><b>£7</b></p>
+      <ul class="card card--full" id="card-list">
 
-        </div>
-        <div class="dish">
-          <p class="dish__n">Tomatoes, if it has been sunny<span class="dish__leader" aria-hidden="true"></span><b>£6</b></p>
+        <li class="dish" data-cat="sea" data-rev="0">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Oysters, seaweed vinegar</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£3.50 each</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Opened to order. The vinegar is our own, from bladderwrack picked off the point.</p></div>
+        </li>
+        <li class="dish" data-cat="sea" data-rev="0.05">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Cured pollock, cucumber, dill oil</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£12</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Three days in salt and sugar, sliced thin. Pollock because it was what came in.</p></div>
+        </li>
+        <li class="dish" data-cat="land" data-rev="0.1">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Hogget, wild garlic, burnt onion</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£28</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Over embers, rested twenty minutes, carved at the pass. Garlic from the lane.</p></div>
+        </li>
+        <li class="dish" data-cat="sea" data-rev="0.15000000000000002">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Whole turbot for two, brown butter</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£62</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Whatever size the boat brought. We will tell you the weight before you commit.</p></div>
+        </li>
+        <li class="dish" data-cat="green" data-rev="0">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Marsh samphire, brown shrimp</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£9</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Cut on the falling tide, cooked for ninety seconds, not a minute more.</p></div>
+        </li>
+        <li class="dish" data-cat="land" data-rev="0.05">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Beef shin, barley, bone marrow</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£24</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Six hours in the oven that was already on. The barley does the rest.</p></div>
+        </li>
+        <li class="dish" data-cat="green" data-rev="0.1">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Sea beet, cream, nutmeg</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£7</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>The nettle of the shoreline. Better than spinach and nobody believes us.</p></div>
+        </li>
+        <li class="dish" data-cat="sweet" data-rev="0.15000000000000002">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Burnt honey custard</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£9</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Honey from three miles inland, taken further than is sensible.</p></div>
+        </li>
+        <li class="dish" data-cat="sweet" data-rev="0">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">Blackberry, bay leaf ice</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£9</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Picked along the sea wall in September and frozen for the rest of the year.</p></div>
+        </li>
+        <li class="dish" data-cat="sweet" data-rev="0.05">
+          <button class="dish__hd" type="button" aria-expanded="false">
+            <span class="dish__n">A wedge of something local, oatcakes</span>
+            <span class="dish__dots" aria-hidden="true"></span>
+            <span class="dish__p">£11</span>
+            <span class="dish__more" aria-hidden="true"></span>
+          </button>
+          <div class="dish__body"><p>Ask. It changes, and whoever is on the pass will have a view.</p></div>
+        </li>
+      </ul>
 
-        </div>
-      </section>
-      <section class="course">
-        <h2 class="course__h">To finish</h2>
-        <div class="dish">
-          <p class="dish__n">Burnt honey custard<span class="dish__leader" aria-hidden="true"></span><b>£8</b></p>
-          <p class="dish__d">The honey is from the point. It tastes of gorse and it should.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">Blackcurrant leaf ice, shortbread<span class="dish__leader" aria-hidden="true"></span><b>£8</b></p>
-          <p class="dish__d">Made the morning of.</p>
-        </div>
-        <div class="dish">
-          <p class="dish__n">A wedge of something from the trolley<span class="dish__leader" aria-hidden="true"></span><b>£10</b></p>
-          <p class="dish__d">Three cheeses, all within sixty miles.</p>
-        </div>
-      </section>
-      <p class="note">
-        A discretionary 10% goes to the room and the kitchen in equal shares. Take it off if you
-        would rather; nobody will mind and nobody will ask why.
-      </p>
+      <p class="card__empty" id="card-empty" hidden>Nothing on the card under that heading yesterday.</p>
+
+      <div class="note mt-lg" data-rev>
+        Everything is cooked over wood in the room. If you cannot eat something,
+        tell us when you book rather than when you arrive, and we will cook you
+        the same number of courses rather than a plate of vegetables.
+      </div>
     </div>
   </section>
 
-  <section class="band band--rust">
-    <div class="wrap endcap">
-      <h2 class="h2 h2--big">Tonight's card is<br />written at four</h2>
-      <a class="btn btn--pale" href="book.html">Book a table</a>
+  <section class="band band--flush">
+    <div class="wrap">
+      <div class="split split--even">
+        <div class="stack">
+          <p class="eyebrow" data-rev>The wine</p>
+          <h2 class="d2" data-rev>Forty bottles,<br /><em>all of them tasted.</em></h2>
+          <p data-rev="0.08">
+            A short list on purpose. Nothing on it costs more than the food, there
+            is always something under thirty pounds, and whoever is pouring has
+            drunk all of it and will tell you the truth.
+          </p>
+        </div>
+        <button class="fig fig--3x2" data-lb data-lb-cap="Low water, from the sea wall" data-rev="mask">
+          <canvas data-art="marsh" data-art-opts='{"hour":0.2,"tide":0.1,"seed":44,"horizon":0.6}'></canvas>
+          <span class="fig__zoom" aria-hidden="true">+</span>
+        </button>
+      </div>
     </div>
   </section>
+
 </main>
 
 <footer class="foot">
-  <div class="wrap foot__in">
-    <div>
-      <p class="foot__n">Saltmarsh</p>
-      <p class="foot__d">The Old Netting Shed<br />Harbour Road, Wraith Point</p>
+  <div class="wrap">
+    <div class="foot__grid">
+      <div>
+        <p class="d3" style="max-width:18ch">Whatever the boats landed, cooked over fire.</p>
+        <p class="mt" style="font-size:.9375rem;max-width:34ch;opacity:.72">
+          One room, twenty-two covers, at the end of the lane on Wraith Point.
+        </p>
+      </div>
+      <div>
+        <p class="foot__h">Hours</p>
+        <ul class="foot__list">
+          <li>Wednesday &ndash; Saturday</li>
+          <li>Dinner from 6:30pm</li>
+          <li>Sunday lunch, one sitting at 1pm</li>
+          <li>Closed Monday and Tuesday</li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot__h">Elsewhere</p>
+        <ul class="foot__list">
+          <li><a href="index.html">The room</a></li>
+          <li><a href="menu.html">The card</a></li>
+          <li><a href="story.html">Journal</a></li>
+          <li><a href="book.html">Book a table</a></li>
+          <li><a href="../../demos.html">Built by Orion</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <p class="foot__k">Service</p>
-      <p class="foot__d">Wed&ndash;Sat, dinner from 6<br />Sunday lunch, one sitting at 1</p>
-    </div>
-    <div>
-      <p class="foot__k">Pages</p>
-      <p class="foot__d"><a href="index.html">The room</a><br /><a href="menu.html">Menu</a><br /><a href="story.html">Journal</a><br /><a href="book.html">Book a table</a></p>
-    </div>
-    <div>
-      <p class="foot__k">About this page</p>
-      <p class="foot__d foot__d--dim">A fictional restaurant, invented for a demo.<br />Built by <a href="../../home.html">Orion</a>.</p>
+    <div class="foot__end">
+      <span>Saltmarsh &middot; a demonstration site</span>
+      <span>Designed and built by Orion</span>
     </div>
   </div>
 </footer>
 
+<script src="../_lib/art.js" defer></script>
+<script src="../_lib/motion.js" defer></script>
 <script src="app.js" defer></script>
 </body>
 </html>
