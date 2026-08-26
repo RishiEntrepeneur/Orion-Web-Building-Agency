@@ -213,6 +213,7 @@
     <div class="asm__track" id="asm-track">
       <div class="asm__stage">
         <div class="asm__canvas" aria-hidden="true"><canvas id="assembly"></canvas></div>
+        <canvas class="asm__burst" id="asm-burst" aria-hidden="true"></canvas>
 
         <div class="asm__rail" aria-hidden="true">
           <span class="asm__tick" data-asm-tick><span>Grid</span><i></i></span>
@@ -225,7 +226,10 @@
         <div class="shell asm__hud">
           <div class="asm__top">
             <span class="mono" data-scramble-in>Five layers</span>
-            <span class="mono mono--accent">Scroll to explode</span>
+            <button class="asm__fire" type="button" data-asm-fire>
+              <span class="asm__fire-dot" aria-hidden="true"></span>
+              <span class="asm__fire-lab">Detonate</span>
+            </button>
           </div>
 
           <h2 id="asm-h" class="sr-only">How a site is assembled</h2>
@@ -259,7 +263,7 @@
             <div class="asm__step" data-asm-step>
               <p class="asm__n">Assembled</p>
               <p class="asm__t">One object</p>
-              <p class="asm__d">Five decisions, taken by one person.</p>
+              <p class="asm__d">Five decisions, taken by one person. Blow it apart if you like — it puts itself back together.</p>
             </div>
           </div>
         </div>

@@ -2244,7 +2244,327 @@
 
 
   /* ============================================================
-     33. INTRO — the typed question, then the build
+     33. DETONATION
+     A real explosion, drawn on a 2D canvas: a flash, a pressure
+     ring, a pane of glass cut into shards and thrown outward, and
+     the sparks it throws off. Nothing here is a particle library —
+     it is four small systems that happen to fire at once.
+
+     makeBurst(canvas) is deliberately generic: the intro uses it
+     to blow the browser window apart, and the home page uses it to
+     detonate the assembled page.
+     ============================================================ */
+  function rngFrom(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a += 0x6d2b79f5;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function makeBurst(canvas) {
+    var ctx = canvas.getContext && canvas.getContext("2d");
+    if (!ctx) return null;
+
+    var dpr = 1, W = 0, H = 0;
+    var shards = [], sparks = [], rings = [], smoke = [];
+    var flash = 0, core = 0, shake = 0, age = 0, span = 0, running = false;
+    var cx = 0, cy = 0;
+    var tick = null;
+
+    /* warm palette, sampled off the site's own accents */
+    var HOT = ["#fff6e2", "#ffd479", "#ffab4c", "#ff7a45", "#e9c979"];
+
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth || canvas.offsetWidth || 1;
+      H = canvas.clientHeight || canvas.offsetHeight || 1;
+      canvas.width = Math.max(1, Math.round(W * dpr));
+      canvas.height = Math.max(1, Math.round(H * dpr));
+    }
+
+    /* A pane of glass, cut. The lattice is jittered once and shared between
+       neighbouring cells, so every shard edge matches the shard beside it —
+       which is what makes it read as one thing breaking rather than a grid
+       of rectangles flying apart. */
+    function cutPane(rnd, x0, y0, w, h, cols, rows) {
+      var pts = [], r, c;
+      for (r = 0; r <= rows; r++) {
+        pts[r] = [];
+        for (c = 0; c <= cols; c++) {
+          var u = c / cols, v = r / rows;
+          var edge = (c === 0 || c === cols || r === 0 || r === rows) ? 0 : 1;
+          pts[r][c] = {
+            x: x0 + u * w + (rnd() - 0.5) * (w / cols) * 0.66 * edge,
+            y: y0 + v * h + (rnd() - 0.5) * (h / rows) * 0.66 * edge
+          };
+        }
+      }
+      var out = [];
+      for (r = 0; r < rows; r++) {
+        for (c = 0; c < cols; c++) {
+          out.push([pts[r][c], pts[r][c + 1], pts[r + 1][c + 1], pts[r + 1][c]]);
+        }
+      }
+      return out;
+    }
+
+    function build(opts) {
+      var o = opts || {};
+      var rnd = rngFrom(o.seed || 20260826);
+      cx = o.x != null ? o.x : W * 0.5;
+      cy = o.y != null ? o.y : H * 0.5;
+      var power = o.power || 1;
+      var pw = o.paneW || Math.min(W * 0.72, 900);
+      var ph = o.paneH || pw * 0.58;
+
+      var quality = Q.tier;
+      var cols = Math.max(6, Math.round(12 * quality));
+      var rows = Math.max(4, Math.round(8 * quality));
+      var lobe = rnd() * 6.2832;
+
+      shards = cutPane(rnd, cx - pw / 2, cy - ph / 2, pw, ph, cols, rows).map(function (poly) {
+        var mx = 0, my = 0, i;
+        for (i = 0; i < 4; i++) { mx += poly[i].x; my += poly[i].y; }
+        mx /= 4; my /= 4;
+        var dx = mx - cx, dy = my - cy;
+        var d = Math.max(24, Math.hypot(dx, dy));
+        /* closer to the blast means faster, which is what puts the hole in
+           the middle first and peels the edges away after */
+        var speed = (620 * power) / Math.pow(d / 90, 0.55) * (0.72 + rnd() * 0.6);
+        return {
+          p: poly.map(function (q) { return { x: q.x - mx, y: q.y - my }; }),
+          x: mx, y: my,
+          vx: (dx / d) * speed + (rnd() - 0.5) * 120,
+          vy: (dy / d) * speed + (rnd() - 0.5) * 120 - 80 * power,
+          rot: 0, vr: (rnd() - 0.5) * 7 * power,
+          /* fragments of a page do not grow; a hair of scale only sells the
+             fact that they are coming towards the viewer */
+          sc: 1, vs: 0.03 + rnd() * 0.16,
+          hot: rnd() < 0.3,
+          life: 0, max: 1.15 + rnd() * 0.8
+        };
+      });
+
+      var nSpark = Math.round(230 * quality * power);
+      sparks = [];
+      for (var i = 0; i < nSpark; i++) {
+        var a = rnd() * Math.PI * 2;
+        /* An even fan of sparks reads as a firework, not a detonation. A slow
+           wave over the angle, plus a squashed vertical, breaks the ring into
+           the uneven bloom a real blast throws. */
+        var bias = 0.42 + 0.9 * Math.abs(Math.sin(a * 1.5 + lobe));
+        var sp = (200 + Math.pow(rnd(), 0.34) * 1600) * power * bias;
+        var r0 = Math.pow(rnd(), 2) * 46;
+        sparks.push({
+          x: cx + Math.cos(a) * r0, y: cy + Math.sin(a) * r0,
+          px: cx + Math.cos(a) * r0, py: cy + Math.sin(a) * r0,
+          vx: Math.cos(a) * sp * 1.22, vy: Math.sin(a) * sp * 0.82,
+          life: 0, max: 0.42 + rnd() * 1.1,
+          w: 0.8 + Math.pow(rnd(), 1.6) * 2.6,
+          col: HOT[(rnd() * HOT.length) | 0]
+        });
+      }
+
+      rings = [
+        { r: 0, v: 1750 * power, w: 9, life: 0, max: 0.72 },
+        { r: 0, v: 1120 * power, w: 4, life: 0, max: 0.96 },
+        { r: 0, v: 620 * power, w: 1.6, life: 0, max: 1.3 }
+      ];
+
+      smoke = [];
+      var nSmoke = Math.round(26 * quality);
+      for (var s = 0; s < nSmoke; s++) {
+        var sa = rnd() * Math.PI * 2;
+        var sd = rnd() * 90;
+        smoke.push({
+          x: cx + Math.cos(sa) * sd, y: cy + Math.sin(sa) * sd,
+          vx: Math.cos(sa) * (60 + rnd() * 210) * power,
+          vy: Math.sin(sa) * (50 + rnd() * 160) * power - 40,
+          r: 30 + rnd() * 80, vr: 70 + rnd() * 130,
+          life: 0, max: 1.4 + rnd() * 1.1
+        });
+      }
+
+      flash = 1;
+      core = 1;
+      shake = 26 * power;
+      age = 0;
+      span = 2.5;
+    }
+
+    function step(dt) {
+      var s = Math.min(dt, 50) / 1000;
+      age += s;
+      flash = Math.max(0, flash - s * 4.4);
+      core = Math.max(0, core - s * 2.1);
+      shake *= Math.pow(0.0016, s);
+
+      var i, o;
+      for (i = shards.length - 1; i >= 0; i--) {
+        o = shards[i];
+        o.life += s;
+        o.vx *= Math.pow(0.24, s);
+        o.vy = o.vy * Math.pow(0.24, s) + 1350 * s;
+        o.x += o.vx * s; o.y += o.vy * s;
+        o.rot += o.vr * s;
+        o.sc += o.vs * s;
+        if (o.life > o.max) shards.splice(i, 1);
+      }
+      for (i = sparks.length - 1; i >= 0; i--) {
+        o = sparks[i];
+        o.life += s;
+        o.px = o.x; o.py = o.y;
+        o.vx *= Math.pow(0.05, s);
+        o.vy = o.vy * Math.pow(0.05, s) + 780 * s;
+        o.x += o.vx * s; o.y += o.vy * s;
+        if (o.life > o.max) sparks.splice(i, 1);
+      }
+      for (i = rings.length - 1; i >= 0; i--) {
+        o = rings[i];
+        o.life += s;
+        o.r += o.v * s;
+        o.v *= Math.pow(0.06, s);
+        if (o.life > o.max) rings.splice(i, 1);
+      }
+      for (i = smoke.length - 1; i >= 0; i--) {
+        o = smoke[i];
+        o.life += s;
+        o.vx *= Math.pow(0.1, s); o.vy *= Math.pow(0.1, s);
+        o.x += o.vx * s; o.y += o.vy * s;
+        o.r += o.vr * s; o.vr *= Math.pow(0.35, s);
+        if (o.life > o.max) smoke.splice(i, 1);
+      }
+    }
+
+    function draw() {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      if (shake > 0.2) {
+        ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+      }
+
+      var i, o, k;
+
+      /* smoke first — it is the thing everything else is seen against */
+      ctx.globalCompositeOperation = "source-over";
+      for (i = 0; i < smoke.length; i++) {
+        o = smoke[i];
+        k = 1 - o.life / o.max;
+        var g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+        g.addColorStop(0, "rgba(64,44,30," + (0.3 * k * k).toFixed(3) + ")");
+        g.addColorStop(1, "rgba(20,14,12,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, 6.2832); ctx.fill();
+      }
+
+      /* shards */
+      for (i = 0; i < shards.length; i++) {
+        o = shards[i];
+        k = 1 - o.life / o.max;
+        ctx.save();
+        ctx.translate(o.x, o.y);
+        ctx.rotate(o.rot);
+        ctx.scale(o.sc, o.sc);
+        ctx.beginPath();
+        ctx.moveTo(o.p[0].x, o.p[0].y);
+        for (var j = 1; j < o.p.length; j++) ctx.lineTo(o.p[j].x, o.p[j].y);
+        ctx.closePath();
+        ctx.fillStyle = o.hot
+          ? "rgba(255,146,66," + (0.3 * k * k).toFixed(3) + ")"
+          : "rgba(246,242,233," + (0.055 * k).toFixed(3) + ")";
+        ctx.fill();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(233,201,121," + (0.66 * k).toFixed(3) + ")";
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      /* everything hot burns additively */
+      ctx.globalCompositeOperation = "lighter";
+
+      for (i = 0; i < rings.length; i++) {
+        o = rings[i];
+        k = 1 - o.life / o.max;
+        ctx.beginPath();
+        ctx.arc(cx, cy, o.r, 0, 6.2832);
+        ctx.lineWidth = o.w * k;
+        ctx.strokeStyle = "rgba(255,196,110," + (0.5 * k * k).toFixed(3) + ")";
+        ctx.stroke();
+      }
+
+      ctx.lineCap = "round";
+      for (i = 0; i < sparks.length; i++) {
+        o = sparks[i];
+        k = 1 - o.life / o.max;
+        ctx.beginPath();
+        ctx.moveTo(o.px, o.py);
+        ctx.lineTo(o.x, o.y);
+        ctx.lineWidth = o.w * k;
+        ctx.globalAlpha = Math.min(1, k * 1.5);
+        ctx.strokeStyle = o.col;
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+
+      /* the fireball: a small, very bright core that outlives the flash */
+      if (core > 0.004) {
+        var cr = Math.min(W, H) * (0.06 + (1 - core) * 0.3);
+        var cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+        cg.addColorStop(0, "rgba(255,252,242," + (0.85 * core * core).toFixed(3) + ")");
+        cg.addColorStop(0.28, "rgba(255,190,104," + (0.55 * core * core).toFixed(3) + ")");
+        cg.addColorStop(0.62, "rgba(255,116,60," + (0.22 * core * core).toFixed(3) + ")");
+        cg.addColorStop(1, "rgba(255,90,40,0)");
+        ctx.fillStyle = cg;
+        ctx.beginPath(); ctx.arc(cx, cy, cr, 0, 6.2832); ctx.fill();
+      }
+
+      if (flash > 0.002) {
+        var fr = Math.max(W, H) * (0.35 + (1 - flash) * 0.75);
+        var fg = ctx.createRadialGradient(cx, cy, 0, cx, cy, fr);
+        fg.addColorStop(0, "rgba(255,246,226," + (0.95 * flash).toFixed(3) + ")");
+        fg.addColorStop(0.35, "rgba(255,182,96," + (0.5 * flash * flash).toFixed(3) + ")");
+        fg.addColorStop(1, "rgba(255,122,69,0)");
+        ctx.fillStyle = fg;
+        ctx.fillRect(-W, -H, W * 3, H * 3);
+      }
+
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    function stop() {
+      running = false;
+      if (tick) { removeTicker(tick); tick = null; }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.setAttribute("data-on", "false");
+    }
+
+    return {
+      fire: function (opts) {
+        if (REDUCED) return;
+        size();
+        build(opts);
+        canvas.setAttribute("data-on", "true");
+        if (running) return;
+        running = true;
+        tick = addWriter(function (dt) {
+          step(dt);
+          draw();
+          if (age > span && !shards.length && !sparks.length && !smoke.length) stop();
+        });
+      },
+      stop: stop,
+      resize: size
+    };
+  }
+
+
+  /* ============================================================
+     34. INTRO — somebody else's browser, and then a new tab
      A cue list evaluated against elapsed time, so "skip" is just
      "run every cue that has not fired yet and jump to the end".
      ============================================================ */
@@ -2253,50 +2573,99 @@
     if (!stage) return;
 
     var QUERY = "how to build a website";
+    /* The search engine is nobody in particular, so its address uses the TLD
+       IANA reserves for exactly this — it can never be anyone's real site. And
+       Orion's own address is the site's name, not an invented domain: this is
+       a dramatisation, and a domain nobody owns is a claim, not a drawing. */
+    var URL_SEARCH = "search.example";
+    var URL_RESULTS = "search.example/search?q=how+to+build+a+website";
+    var URL_ORION = "orion/home";
+
     var root = document.documentElement;
-    var box = $("#ask-box");
+    var brw = $("#brw");
+    var pill = $("#sb-pill");
     var text = $("#ask-text");
-    var ask = $("#ask");
-    var srch = $("#srch");
-    var rows = $$(".srch__row", $("#sugg"));
-    var serp = $("#serp");
+    var sb = $("#sb");
+    var rows = $$(".sb__row", $("#sugg"));
+    var url = $("#brw-url");
+    var omni = $("#brw-omni");
+    var load = $("#brw-load");
+    var tabS = $("#tab-search");
+    var tabSTitle = $("#tab-search-title");
+    var tabO = $("#tab-orion");
+    var pgHome = $("#pg-home");
+    var pgSerp = $("#pg-serp");
+    var pgOrion = $("#pg-orion");
+    var ptr = $("#brw-ptr");
+    var win = $(".brw__win");
+    var hit = $("#serp-hit");
     var paper = $("#paper");
     var invert = $("#invert");
-    var build = $("#build");
-    var wires = $$(".wire", build);
     var enter = $("#intro-enter");
     var prog = $("#intro-prog i");
     var status = $("#intro-status");
-
-    var ZONE_FILL = ["--gold", "--violet", "--teal", "--blue", "--magenta", "--acid", "--flare"];
+    var burstEl = $("#burst");
+    var burst = burstEl ? makeBurst(burstEl) : null;
 
     /* Two separate things: the fixed chrome has to flip while the circle is
        mid-sweep (it paints above the invert layer), but the light ground must
-       survive until the circle has actually covered it — otherwise the paper
-       fades out underneath and there is nothing left to sweep over. */
+       survive until the circle has actually covered it. */
     function flipChrome() { root.removeAttribute("data-act"); }
     function dropPaper() { if (paper) paper.setAttribute("data-gone", "true"); }
+
+    function page(which) {
+      if (pgHome) pgHome.setAttribute("data-on", String(which === "home"));
+      if (pgSerp) pgSerp.setAttribute("data-on", String(which === "serp"));
+      if (pgOrion) pgOrion.setAttribute("data-on", String(which === "orion"));
+      if (brw) brw.setAttribute("data-page", which);
+    }
+    function navigate(to, title) {
+      if (url) url.innerHTML = to;
+      if (omni) omni.setAttribute("data-state", "load");
+      if (load) {
+        load.removeAttribute("data-run");
+        /* reading offsetWidth is the only way to restart a CSS animation, and
+           it happens once per navigation, not per frame */
+        void load.offsetWidth;
+        load.setAttribute("data-run", "true");
+      }
+      if (title && tabSTitle) tabSTitle.textContent = title;
+    }
+
+    /* The pointer is positioned against the window, so it needs one layout
+       read per move — batched into the reader phase. */
+    var ptrQueue = null;
+    function pointAt(el, opts) {
+      if (!ptr || !win || !el || REDUCED) return;
+      ptrQueue = { el: el, opts: opts || {} };
+    }
+    addReader(function () {
+      if (!ptrQueue) return;
+      var job = ptrQueue; ptrQueue = null;
+      var a = job.el.getBoundingClientRect();
+      var b = win.getBoundingClientRect();
+      var fx = job.opts.fx != null ? job.opts.fx : 0.5;
+      var fy = job.opts.fy != null ? job.opts.fy : 0.5;
+      ptr.style.setProperty("--px", Math.round(a.left - b.left + a.width * fx) + "px");
+      ptr.style.setProperty("--py", Math.round(a.top - b.top + a.height * fy) + "px");
+      ptr.setAttribute("data-on", "true");
+    });
+    function clickPtr() {
+      if (!ptr || REDUCED) return;
+      ptr.setAttribute("data-click", "true");
+      window.setTimeout(function () { ptr.removeAttribute("data-click"); }, 130);
+    }
 
     /* Reduced motion gets the destination, not the journey. */
     if (REDUCED) {
       text.textContent = QUERY;
-      ask.setAttribute("data-in", "true");
-      box.setAttribute("data-state", "sent");
-      ask.setAttribute("data-searched", "true");
+      if (brw) { brw.setAttribute("data-in", "true"); brw.setAttribute("data-done", "true"); }
       rows.forEach(function (r) { r.setAttribute("data-in", "true"); });
-      serp.setAttribute("data-in", "true");
-      serp.removeAttribute("aria-hidden");
-      ask.setAttribute("data-done", "true");
-      serp.setAttribute("data-done", "true");
+      page("serp");
+      if (url) url.textContent = URL_RESULTS;
       flipChrome();
       dropPaper();
       if (invert) { invert.setAttribute("data-on", "true"); invert.setAttribute("data-off", "true"); }
-      build.setAttribute("data-in", "true");
-      wires.forEach(function (w, i) {
-        w.setAttribute("data-in", "true");
-        w.setAttribute("data-fill", "true");
-        w.style.setProperty("--wire-fill", "var(" + ZONE_FILL[i % ZONE_FILL.length] + ")");
-      });
       enter.setAttribute("data-in", "true");
       if (prog) prog.style.transform = "scaleX(1)";
       if (status) status.textContent = "Ready";
@@ -2317,79 +2686,93 @@
     var typed = 0;
     var nextKeyAt = 0;
     function keyDelay(ch, prev) {
-      if (prev === " ") return 38 + hash2(typed, 3.1) * 42;
-      if (ch === " ") return 85 + hash2(typed, 7.7) * 70;
-      return 42 + hash2(typed, 1.3) * 78;
+      if (prev === " ") return 34 + hash2(typed, 3.1) * 38;
+      if (ch === " ") return 78 + hash2(typed, 7.7) * 64;
+      return 38 + hash2(typed, 1.3) * 70;
     }
 
     /* rows appear once the query is specific enough to complete */
     var shown = 0;
     function showSuggestions(len) {
-      if (len >= 6) srch.setAttribute("data-open", "true");
+      if (len >= 6) sb.setAttribute("data-open", "true");
       var want = len < 6 ? 0 : Math.min(rows.length, Math.floor((len - 4) / 4));
       while (shown < want) { rows[shown].setAttribute("data-in", "true"); shown++; }
     }
 
-    var DONE_AT = 8550;
+    var DONE_AT = 8900;
     var typing = false;
     var cues = [
       /* Reveal on the first frame, not a quarter of a second in: as the landing
          page this element is the LCP candidate, and anything held at opacity 0
          does not count as painted. */
-      [0,    function () { ask.setAttribute("data-in", "true"); if (status) status.textContent = "Listening"; }],
-      [760,  function () { typing = true; box.setAttribute("data-state", "typing"); if (status) status.textContent = "Typing"; }],
-      [2500, function () {
+      [0, function () {
+        if (brw) brw.setAttribute("data-in", "true");
+        if (status) status.textContent = "Listening";
+      }],
+      [520, function () {
+        if (url) url.innerHTML = URL_SEARCH;
+        if (tabSTitle) tabSTitle.textContent = "Search";
+        pointAt(pill, { fx: 0.34 });
+      }],
+      [880, function () {
+        typing = true;
+        pill.setAttribute("data-state", "typing");
+        if (status) status.textContent = "Typing";
+      }],
+      [2560, function () {
         typing = false;
         text.textContent = QUERY;
         showSuggestions(QUERY.length);
-        box.setAttribute("data-state", "armed");
-        ask.setAttribute("data-armed", "true");
+        pill.setAttribute("data-state", "armed");
       }],
-      [2950, function () {
+      [2900, function () {
         rows.forEach(function (r, i) { if (i < rows.length - 1) r.setAttribute("data-gone", "true"); });
+        pointAt(rows[rows.length - 1]);
       }],
-      [3250, function () {
-        box.setAttribute("data-state", "sent");
+      [3320, function () {
+        clickPtr();
+        pill.setAttribute("data-state", "sent");
         if (status) status.textContent = "Searching";
         if (window.OrionAudio) window.OrionAudio.click();
       }],
-      [3700, function () {
-        /* the query stays in the field — a results page never empties it */
-        ask.setAttribute("data-searched", "true");
-        srch.removeAttribute("data-open");
-        serp.setAttribute("data-in", "true");
-        serp.removeAttribute("aria-hidden");
+      [3560, function () {
+        navigate(URL_RESULTS, QUERY + " - Search");
+        page("serp");
+        sb.removeAttribute("data-open");
         if (status) status.textContent = "One result";
       }],
-      [5000, function () {
-        if (invert) invert.setAttribute("data-on", "true");
+      [4560, function () { if (hit) pointAt(hit, { fx: 0.2, fy: 0.62 }); }],
+      /* the click that opens Orion in a new tab — which is the whole point */
+      [5080, function () {
+        clickPtr();
+        if (window.OrionAudio) window.OrionAudio.click();
+      }],
+      [5240, function () {
+        if (tabO) { tabO.setAttribute("data-open", "true"); tabO.setAttribute("data-on", "true"); }
+        if (tabS) tabS.setAttribute("data-on", "false");
+        navigate(URL_ORION, null);
+        page("orion");
+        if (ptr) ptr.setAttribute("data-on", "false");
+        if (status) status.textContent = "Opening";
+      }],
+      [6280, function () {
+        if (brw) brw.setAttribute("data-zoom", "true");
         if (window.OrionAudio) window.OrionAudio.whoosh();
       }],
+      [7000, function () { if (invert) invert.setAttribute("data-on", "true"); }],
       /* The bar paints above the invert layer, so it has to flip — but only once
          the circle has actually reached the top corners, or it is grey-on-white
-         for half a second. Centre is 50%/45%, so the corners fall at about 81%
-         of the final radius, which the eased tween reaches around here. */
-      [5600, function () { flipChrome(); }],
-      [5760, function () {
+         for half a second. */
+      [7420, function () { flipChrome(); }],
+      [7560, function () {
         dropPaper();
-        /* the whole light act leaves with the paper */
-        ask.setAttribute("data-done", "true");
-        serp.setAttribute("data-done", "true");
-        serp.removeAttribute("data-in");
+        if (brw) brw.setAttribute("data-done", "true");
         if (invert) invert.setAttribute("data-off", "true");
-        build.setAttribute("data-in", "true");
-        wires.forEach(function (w) { w.setAttribute("data-in", "true"); });
+        if (burst) burst.fire({ power: 1, paneW: Math.min(window.innerWidth * 0.66, 860) });
+        if (window.OrionAudio) window.OrionAudio.chord([110.00, 164.81, 220.00, 329.63], 0.1);
         if (status) status.textContent = "Building";
       }],
-      [6950, function () {
-        wires.forEach(function (w, i) {
-          w.setAttribute("data-fill", "true");
-          w.style.setProperty("--wire-fill", "var(" + ZONE_FILL[i % ZONE_FILL.length] + ")");
-        });
-        if (window.OrionAudio) window.OrionAudio.chord([220.00, 329.63, 440.00, 659.25], 0.08);
-      }],
-      [7850, function () { build.setAttribute("data-rush", "true"); }],
-      [8300, function () {
+      [8400, function () {
         enter.setAttribute("data-in", "true");
         if (status) status.textContent = "Ready";
         if (window.OrionAudio) window.OrionAudio.success();
@@ -2432,6 +2815,7 @@
       text.textContent = QUERY;
       showSuggestions(QUERY.length);
       fireThrough(DONE_AT);
+      if (burst) burst.stop();
       if (prog) prog.style.transform = "scaleX(1)";
       removeTicker(tick);
       finished = true;
@@ -2468,6 +2852,29 @@
     var host = canvas.parentElement;
     var steps = $$("[data-asm-step]");
     var ticks = $$("[data-asm-tick]");
+    var fireBtn = $("[data-asm-fire]");
+    var burstEl = $("#asm-burst");
+    var burst = burstEl ? makeBurst(burstEl) : null;
+
+    /* The detonation adds to the layer separation and then decays out of it,
+       so the object visibly takes the hit rather than the explosion simply
+       being drawn on top of a still picture. */
+    var kick = 0;
+    var armed = true;
+    function detonate() {
+      if (!burst || REDUCED) return;
+      var r = burstEl.getBoundingClientRect();
+      burst.fire({
+        power: 0.85,
+        x: r.width / 2, y: r.height / 2,
+        paneW: Math.min(r.width * 0.82, 860),
+        paneH: Math.min(r.height * 0.72, 480),
+        seed: 90210
+      });
+      kick = 1;
+      if (window.OrionAudio) window.OrionAudio.whoosh();
+    }
+    on(fireBtn, "click", detonate);
 
     /* --- the five layers, built procedurally in local [-1,1] space --------
        Each is a plane of primitives; z separates them as the view explodes. */
@@ -2600,9 +3007,10 @@
     function draw() {
       if (!W) { resize(); if (!W) return; }
       ctx.clearRect(0, 0, W, H);
+      var boost = kick * 2.6;
 
       var order = LAYERS.map(function (L, i) {
-        var z = (i - 2) * 0.34 * cam.spread;
+        var z = (i - 2) * 0.34 * (cam.spread + boost);
         return { L: L, i: i, z: z, depth: project(0, 0, z)[2] };
       }).sort(function (a, b) { return b.depth - a.depth; });
 
@@ -2610,7 +3018,7 @@
         var L = order[o].L, li = order[o].i, z = order[o].z;
         /* the layer nearest the current step reads brightest */
         var focus = step < 0 ? 1 : 1 - Math.min(1, Math.abs(li - step)) * 0.66;
-        var base = cam.spread > 0.05 ? focus : 1;
+        var base = (cam.spread + boost) > 0.05 ? focus : 1;
         var col = L.hue ? palette[L.hue] : palette[ZONE[0]];
 
         ctx.lineWidth = li === 2 ? 1.15 : 1;
@@ -2674,6 +3082,15 @@
       cam.pitch = damp(cam.pitch, target.pitch, 110, dt);
       cam.dolly = damp(cam.dolly, target.dolly, 110, dt);
       cam.spread = damp(cam.spread, target.spread, 110, dt);
+      /* the kick is added at draw time, never written back into cam — a
+         damped value that is also being added to every frame converges on the
+         wrong number, not on the target */
+      if (kick > 0.0008) kick = damp(kick, 0, 230, dt); else kick = 0;
+
+      /* the object detonates once at the end of the track, and re-arms if you
+         scroll back up — otherwise it fires on every jitter at the bottom */
+      if (progress > 0.94 && armed) { armed = false; detonate(); }
+      if (progress < 0.86) armed = true;
 
       /* which layer is being talked about right now */
       var want = clamp(Math.floor(progress * LAYERS.length), 0, LAYERS.length - 1);

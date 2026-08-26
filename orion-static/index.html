@@ -78,93 +78,185 @@
 
     <div class="intro__stage" id="intro-stage">
 
-      <!-- act one: the question, on a light search surface -->
-      <div id="ask" class="ask">
-        <svg class="ask__mark" viewBox="0 0 200 74" aria-hidden="true" fill="none">
-          <line x1="18" y1="58" x2="182" y2="16" />
-          <line x1="18" y1="58" x2="30" y2="10" />
-          <line x1="182" y1="16" x2="170" y2="64" />
-          <circle cx="18" cy="58" r="5" />
-          <circle cx="100" cy="37" r="6.5" />
-          <circle cx="182" cy="16" r="4.5" />
-          <circle cx="30" cy="10" r="2.5" />
-          <circle cx="170" cy="64" r="2.5" />
-        </svg>
-        <p class="ask__eyebrow">Somebody, somewhere, right now</p>
+      <!-- ===========================================================
+           ACT ONE — a browser, on somebody else's desk
+           =========================================================== -->
+      <div class="brw" id="brw" data-in="false" data-page="blank">
+        <div class="brw__win">
 
-        <div class="srch" id="srch">
-          <div class="srch__pill" id="ask-box" data-state="idle">
-            <svg class="srch__glass" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-              <circle cx="8.5" cy="8.5" r="5.5" /><path d="M12.6 12.6 17 17" stroke-linecap="round" />
-            </svg>
-            <span class="srch__q" id="ask-text" data-placeholder="Search" role="textbox" aria-readonly="true" aria-label="Search query being typed"></span>
-            <span class="srch__caret" aria-hidden="true"></span>
-            <span class="srch__clear" aria-hidden="true">&times;</span>
-            <span class="srch__div" aria-hidden="true"></span>
-            <svg class="srch__act" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-              <path d="M3 10h13" stroke-linecap="round" /><path d="M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+          <!-- tab strip -->
+          <div class="brw__strip">
+            <span class="brw__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+
+            <div class="brw__tab" id="tab-search" data-on="true">
+              <span class="brw__fav brw__fav--s" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.6" stroke="#5f6368" stroke-width="1.7"/><path d="M10.4 10.4 13.6 13.6" stroke="#5f6368" stroke-width="1.9" stroke-linecap="round"/></svg>
+              </span>
+              <span class="brw__ttl" id="tab-search-title">New Tab</span>
+              <span class="brw__x" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+            </div>
+
+            <div class="brw__tab brw__tab--fresh" id="tab-orion" data-on="false">
+              <span class="brw__fav brw__fav--o" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M2.6 12.2 13.4 4.2" stroke="#e9c979" stroke-width="1.1"/><circle cx="2.6" cy="12.2" r="1.7" fill="#e9c979"/><circle cx="8" cy="8.2" r="2" fill="#e9c979"/><circle cx="13.4" cy="4.2" r="1.5" fill="#e9c979"/></svg>
+              </span>
+              <span class="brw__ttl">Orion — websites built by hand</span>
+              <span class="brw__x" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+            </div>
+
+            <span class="brw__plus" aria-hidden="true"><svg viewBox="0 0 14 14"><path d="M7 1.6v10.8M1.6 7h10.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
           </div>
 
-          <div class="srch__drop" id="sugg" role="listbox" aria-label="Suggestions">
-            <div class="srch__row" style="--i:0" role="option" aria-selected="false">
-              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
-              <span><i>how to build a website</i><b> free</b></span>
+          <!-- toolbar -->
+          <div class="brw__bar">
+            <span class="brw__ctl" aria-hidden="true">
+              <svg viewBox="0 0 18 18" class="brw__ico"><path d="M11 3.5 5.5 9l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 18 18" class="brw__ico brw__ico--dim"><path d="M7 3.5 12.5 9 7 14.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 18 18" class="brw__ico" id="brw-reload"><path d="M14.4 9a5.4 5.4 0 1 1-1.6-3.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M14.6 2.2v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+
+            <div class="brw__omni" id="brw-omni" data-state="idle">
+              <svg class="brw__lock" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="6.2" width="8" height="6" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M5 6.2V4.6a2 2 0 0 1 4 0v1.6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+              <span class="brw__url" id="brw-url" data-placeholder="Search or enter web address"></span>
+              <svg class="brw__star" viewBox="0 0 16 16" aria-hidden="true"><path d="m8 2.4 1.7 3.5 3.8.5-2.8 2.7.7 3.8L8 11.1l-3.4 1.8.7-3.8L2.5 6.4l3.8-.5z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
             </div>
-            <div class="srch__row" style="--i:1" role="option" aria-selected="false">
-              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.6V8l2.3 1.4" stroke-linecap="round" /></svg>
-              <span><i>how to build a website</i><b> from scratch</b></span>
+
+            <span class="brw__ctl brw__ctl--right" aria-hidden="true">
+              <span class="brw__avatar"></span>
+              <svg viewBox="0 0 18 18" class="brw__ico"><circle cx="9" cy="3.6" r="1.3" fill="currentColor"/><circle cx="9" cy="9" r="1.3" fill="currentColor"/><circle cx="9" cy="14.4" r="1.3" fill="currentColor"/></svg>
+            </span>
+          </div>
+
+          <!-- the page itself -->
+          <div class="brw__view" id="brw-view">
+            <span class="brw__load" id="brw-load" aria-hidden="true"></span>
+
+            <!-- 1. the search engine's home page -->
+            <div class="pg pg--home" id="pg-home" data-on="true">
+              <div class="pg__nav" aria-hidden="true">
+                <span>About</span><span>Store</span><span class="pg__nav-sp"></span>
+                <span>Images</span>
+                <svg viewBox="0 0 18 18" class="pg__grid"><g fill="currentColor"><circle cx="4" cy="4" r="1.5"/><circle cx="9" cy="4" r="1.5"/><circle cx="14" cy="4" r="1.5"/><circle cx="4" cy="9" r="1.5"/><circle cx="9" cy="9" r="1.5"/><circle cx="14" cy="9" r="1.5"/><circle cx="4" cy="14" r="1.5"/><circle cx="9" cy="14" r="1.5"/><circle cx="14" cy="14" r="1.5"/></g></svg>
+                <span class="pg__signin">Sign in</span>
+              </div>
+
+              <div class="pg__mid">
+                <p class="wm wm--big" aria-label="Search — a search engine">
+                  <span style="--c:var(--sg-b)">S</span><span style="--c:var(--sg-r)">e</span><span style="--c:var(--sg-y)">a</span><span style="--c:var(--sg-b)">r</span><span style="--c:var(--sg-g)">c</span><span style="--c:var(--sg-r)">h</span>
+                </p>
+
+                <div class="sb" id="sb">
+                  <div class="sb__pill" id="sb-pill" data-state="idle">
+                    <svg class="sb__glass" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.6" cy="8.6" r="5.6" stroke="currentColor" stroke-width="1.7"/><path d="M12.8 12.8 17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span class="sb__q" id="ask-text" data-placeholder="Search or type a URL" role="textbox" aria-readonly="true" aria-label="Search query being typed"></span>
+                    <span class="sb__caret" aria-hidden="true"></span>
+                    <span class="sb__tools" aria-hidden="true">
+                      <svg class="sb__mic" viewBox="0 0 20 20"><rect x="7.6" y="2.6" width="4.8" height="8.6" rx="2.4" fill="#4285f4"/><path d="M5 9.6a5 5 0 0 0 10 0" fill="none" stroke="#34a853" stroke-width="1.5" stroke-linecap="round"/><path d="M10 14.6V17" stroke="#ea4335" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      <svg class="sb__lens" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.4" fill="none" stroke="#4285f4" stroke-width="1.5"/><circle cx="10" cy="10" r="2.4" fill="#ea4335"/><path d="M15.6 4.4 17.6 2.4" stroke="#fbbc05" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </span>
+                  </div>
+
+                  <div class="sb__drop" id="sugg" role="listbox" aria-label="Suggestions">
+                    <div class="sb__row" style="--i:0" role="option" aria-selected="false">
+                      <svg class="sb__ico" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.5"/><path d="M10.4 10.4 13.6 13.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                      <span><i>how to build a website</i><b> free</b></span>
+                    </div>
+                    <div class="sb__row" style="--i:1" role="option" aria-selected="false">
+                      <svg class="sb__ico" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.6" stroke="currentColor" stroke-width="1.5"/><path d="M10.4 10.4 13.6 13.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                      <span><i>how to build a website</i><b> from scratch</b></span>
+                    </div>
+                    <div class="sb__row" style="--i:2" role="option" aria-selected="false">
+                      <svg class="sb__ico" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6V8l2.3 1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                      <span><i>how to build a website</i><b> that people remember</b></span>
+                    </div>
+                    <div class="sb__row sb__row--us" style="--i:3" role="option" aria-selected="true">
+                      <span class="sb__ico sb__ico--o" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M2.6 12.2 13.4 4.2" stroke="currentColor" stroke-width="1.1"/><circle cx="2.6" cy="12.2" r="1.7" fill="currentColor"/><circle cx="8" cy="8.2" r="2" fill="currentColor"/><circle cx="13.4" cy="4.2" r="1.5" fill="currentColor"/></svg>
+                      </span>
+                      <span><b>orion</b><i> — websites built by hand, in England</i></span>
+                    </div>
+                  </div>
+
+                  <div class="sb__btns">
+                    <span class="sb__btn" id="sb-go">Search</span>
+                    <span class="sb__btn">I'm feeling lucky</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pg__foot" aria-hidden="true">
+                <span>England</span>
+                <span class="pg__foot-r"><span>Advertising</span><span>Business</span><span>Settings</span></span>
+              </div>
             </div>
-            <div class="srch__row" style="--i:2" role="option" aria-selected="false">
-              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="7" cy="7" r="5" /><path d="M10.6 10.6 14 14" stroke-linecap="round" /></svg>
-              <span><i>how to build a website</i><b> that people remember</b></span>
+
+            <!-- 2. the results -->
+            <div class="pg pg--serp" id="pg-serp" data-on="false">
+              <div class="serp__head">
+                <p class="wm wm--sm" aria-hidden="true">
+                  <span style="--c:var(--sg-b)">S</span><span style="--c:var(--sg-r)">e</span><span style="--c:var(--sg-y)">a</span><span style="--c:var(--sg-b)">r</span><span style="--c:var(--sg-g)">c</span><span style="--c:var(--sg-r)">h</span>
+                </p>
+                <div class="serp__field" aria-hidden="true">
+                  <span class="serp__q" id="serp-q">how to build a website</span>
+                  <span class="serp__x">&times;</span>
+                  <span class="serp__rule"></span>
+                  <svg class="serp__glass" viewBox="0 0 20 20" fill="none"><circle cx="8.6" cy="8.6" r="5.6" stroke="#4285f4" stroke-width="1.7"/><path d="M12.8 12.8 17 17" stroke="#4285f4" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <span class="serp__avatar" aria-hidden="true"></span>
+              </div>
+
+              <div class="serp__tabs" aria-hidden="true">
+                <span data-on="true">All</span><span>Images</span><span>Videos</span><span>News</span><span>Maps</span>
+                <span class="serp__tools">Tools</span>
+              </div>
+
+              <div class="serp__body">
+                <p class="serp__stat" id="serp-stat">One result, and it is not a template</p>
+
+                <a class="hit hit--top" href="home.html" data-curtain="Orion" id="serp-hit">
+                  <span class="hit__line">
+                    <span class="hit__fav" aria-hidden="true">
+                      <svg viewBox="0 0 16 16" fill="none"><path d="M2.6 12.2 13.4 4.2" stroke="#e9c979" stroke-width="1.1"/><circle cx="2.6" cy="12.2" r="1.7" fill="#e9c979"/><circle cx="8" cy="8.2" r="2" fill="#e9c979"/><circle cx="13.4" cy="4.2" r="1.5" fill="#e9c979"/></svg>
+                    </span>
+                    <span class="hit__site">Orion<span class="hit__path">websites built by hand &rsaquo; England</span></span>
+                  </span>
+                  <span class="hit__title">Orion — websites built by hand</span>
+                  <span class="hit__snip">One person, in England. Every line written by hand — <b>no framework, no template, no tracker</b>. Three packages, from £299 and £39 a month.</span>
+                </a>
+
+                <div class="hit__links" aria-hidden="true">
+                  <span><b>Prices</b><i>Three packages, all of them printed.</i></span>
+                  <span><b>Demos</b><i>Three real sites you can click through.</i></span>
+                  <span><b>What I build</b><i>Hand-written HTML, CSS, JavaScript.</i></span>
+                  <span><b>Contact</b><i>Tell me what you need.</i></span>
+                </div>
+
+                <p class="serp__ghost" aria-hidden="true"><i style="--w:62%"></i><i style="--w:41%"></i><i style="--w:88%"></i></p>
+                <p class="serp__ghost" aria-hidden="true"><i style="--w:55%"></i><i style="--w:36%"></i><i style="--w:79%"></i></p>
+              </div>
             </div>
-            <div class="srch__row srch__row--us" style="--i:3" role="option" aria-selected="true">
-              <svg class="srch__ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2.5 12 13.5 4" /><circle cx="2.5" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="8" cy="8" r="1.9" fill="currentColor" stroke="none" /><circle cx="13.5" cy="4" r="1.4" fill="currentColor" stroke="none" /></svg>
-              <span><b>orion</b><i> — websites built by hand, in England</i></span>
-              <span class="srch__badge">Answer</span>
+
+            <!-- 3. the new tab, opening -->
+            <div class="pg pg--orion" id="pg-orion" data-on="false" aria-hidden="true">
+              <span class="pg__belt">
+                <svg viewBox="0 0 46 22" fill="none"><line x1="6" y1="16.5" x2="40" y2="5.5" stroke="currentColor" stroke-width="0.9"/><circle cx="6" cy="16.5" r="2.9" fill="currentColor"/><circle cx="23" cy="11" r="3.2" fill="currentColor"/><circle cx="40" cy="5.5" r="2.5" fill="currentColor"/></svg>
+              </span>
             </div>
           </div>
+
+          <!-- the pointer that does the clicking -->
+          <span class="brw__ptr" id="brw-ptr" aria-hidden="true">
+            <svg viewBox="0 0 18 24" fill="none"><path d="M2 1.6 15.4 12.2l-5.9.7 3.2 6.6-2.6 1.3-3.2-6.6-3.9 4z" fill="#fff" stroke="#1d1d1f" stroke-width="1.3" stroke-linejoin="round"/></svg>
+          </span>
         </div>
 
-        <div class="srch__keys" aria-hidden="true">
-          <span class="srch__key srch__key--go">Search</span>
-          <span class="srch__key">Press Enter</span>
-        </div>
+        <p class="brw__cap" aria-hidden="true">Somebody, somewhere, right now</p>
       </div>
 
-      <!-- the one result that matters -->
-      <div class="serp" id="serp" aria-hidden="true">
-        <p class="serp__stat">One result that is not a template</p>
-        <a class="serp__hit" href="home.html" data-curtain="Orion">
-          <span class="serp__crumb"><span class="serp__fav" aria-hidden="true">✳</span> orion &rsaquo; built by hand</span>
-          <span class="serp__title">Orion — websites built by hand</span>
-          <span class="serp__snip">One person, in England. Every line written by hand — <b>no framework, no template, no tracker</b>. Packages from £500.</span>
-        </a>
-      </div>
-
-      <!-- act two: the answer assembling itself -->
-      <div class="build" id="build" aria-hidden="true">
-        <div class="build__frame">
-          <div class="build__wire">
-          <span class="wire wire--line" style="--i:0;top:6%;left:0;width:100%"></span>
-          <span class="wire" style="--i:1;top:11%;left:0;width:16%;height:5%"></span>
-          <span class="wire" style="--i:2;top:11%;right:0;width:22%;height:5%"></span>
-          <span class="wire" style="--i:3;top:28%;left:0;width:58%;height:13%"></span>
-          <span class="wire" style="--i:4;top:44%;left:0;width:44%;height:13%"></span>
-          <span class="wire" style="--i:5;top:62%;left:0;width:30%;height:7%"></span>
-          <span class="wire" style="--i:6;top:30%;right:0;width:34%;height:39%"></span>
-          <span class="wire" style="--i:7;bottom:8%;left:0;width:19%;height:11%"></span>
-          <span class="wire" style="--i:8;bottom:8%;left:20.5%;width:19%;height:11%"></span>
-          <span class="wire" style="--i:9;bottom:8%;left:41%;width:19%;height:11%"></span>
-          <span class="wire wire--line" style="--i:10;bottom:0;left:0;width:100%"></span>
-          </div>
-          <div class="build__label" aria-hidden="true">
-            <span class="mono">FIG. 02 — ASSEMBLING</span>
-            <span class="mono mono--accent">ORION / HOME</span>
-          </div>
-        </div>
-      </div>
+      <!-- ===========================================================
+           ACT TWO — the answer, detonating into place
+           =========================================================== -->
+      <canvas class="burst" id="burst" aria-hidden="true"></canvas>
 
       <!-- the way in -->
       <div class="intro__enter" id="intro-enter">
