@@ -2751,6 +2751,43 @@
        to it should be shorter. */
     track.style.height = (narrow() ? 240 : 340) + "svh";
 
+    /* Clicking the machine flies you in, and clicking the way out flies you
+       back. Both do it by scrolling the track rather than by overriding the
+       camera: the flight is already a pure function of scroll position, so
+       driving the scroll keeps one source of truth and leaves the page where
+       the viewer expects it when they take over again. */
+    var view = $(".lab__view");
+    function trackTop() { return track.getBoundingClientRect().top + window.pageYOffset; }
+    function flyTo(where) {
+      var top = trackTop();
+      var span = Math.max(1, track.offsetHeight - S.vh);
+      window.scrollTo({ top: Math.round(top + span * where), behavior: REDUCED ? "auto" : "smooth" });
+    }
+    function enter(e) {
+      if (e) e.preventDefault();
+      flyTo(1);
+    }
+    function leave(e) {
+      if (e) e.preventDefault();
+      flyTo(0);
+    }
+    if (view) {
+      view.setAttribute("role", "button");
+      view.setAttribute("tabindex", "0");
+      view.setAttribute("aria-label", "Open the machine and go inside the demo");
+      view.removeAttribute("aria-hidden");
+      on(view, "click", function (e) {
+        /* once you are inside, the screen belongs to the site in it */
+        if (mach.getAttribute("data-live") === "true") return;
+        enter(e);
+      });
+      on(view, "keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") enter(e);
+      });
+    }
+    on($("#lab-enter"), "click", enter);
+    on($("#lab-exit"), "click", leave);
+
     var progress = 0, live = false;
     var cam = { p: 0 };
 
@@ -2811,10 +2848,19 @@
         wasLive = nowLive;
         mach.setAttribute("data-live", String(nowLive));
         if (frame) frame.setAttribute("tabindex", nowLive ? "0" : "-1");
-        if (stateEl) stateEl.textContent = nowLive ? "Live — scroll inside it" : "Closed";
+        var exitBtn = $("#lab-exit");
+        if (exitBtn) exitBtn.hidden = !nowLive;
+        var enterBtn = $("#lab-enter");
+        if (enterBtn) enterBtn.hidden = nowLive;
       }
-      if (stateEl && !nowLive) {
-        stateEl.textContent = openT < 1 ? "Opening" : "Coming in";
+      if (stateEl) {
+        /* order matters: at rest openT is 0, which is not "opening" — it is
+           an invitation */
+        stateEl.textContent =
+          nowLive     ? "Live — this is the real site, use it" :
+          p < 0.04    ? "Click it to go in" :
+          openT < 1   ? "Opening" :
+                        "Coming in";
       }
     });
   }

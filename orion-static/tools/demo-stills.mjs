@@ -11,7 +11,10 @@ for (const [page, out] of [
   ["demos/barbers/index.html", "full-barbers.jpg"],
   ["demos/saltmarsh/index.html", "full-saltmarsh.jpg"]
 ]) {
-  const ctx = await b.newContext({ viewport: { width: 1200, height: 750 }, deviceScaleFactor: 1 });
+  /* Reduced motion for the capture: it collapses the pinned tide track to a
+     single static frame and shows every scroll reveal, which is exactly what
+     a still of the page should contain. */
+  const ctx = await b.newContext({ viewport: { width: 1200, height: 750 }, deviceScaleFactor: 1, reducedMotion: "reduce" });
   const p = await ctx.newPage();
   await p.goto("http://127.0.0.1:8765/" + page, { waitUntil: "load" });
   /* let every canvas paint and every reveal settle before the capture */

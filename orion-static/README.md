@@ -160,6 +160,14 @@ live inside the screen in an iframe. Scrolling flies the camera into it: the lid
 comes up over the first fifth of the track, then the camera pushes in until the
 screen fills the viewport and the site inside becomes interactive.
 
+**Click it and it opens.** A click, or Enter on the focused machine, flies you
+all the way in; a "come back out" control flies you back. Both do it by
+scrolling the track rather than by overriding the camera — the flight is
+already a pure function of scroll position, so driving the scroll keeps one
+source of truth and leaves the page exactly where the viewer expects it when
+they take over again. Once you are inside, the iframe is live and the site in
+it is yours to use.
+
 The push is a **dolly, not a scale**. The scale you want is solved backwards for
 the z that produces it under the page's own perspective:
 
@@ -187,6 +195,26 @@ This was wrong once: the machine was hidden below 900px on the theory that it
 would be illegible, which meant anyone reading the preview in a side panel saw
 the tabs and an empty stage — they never saw the one thing the page exists for.
 A breakpoint that hides your centrepiece is not a responsive design.
+
+### Proving the ladder
+
+Three demos are only an argument if they visibly escalate, so they do:
+
+- **Starter** is one clean page. It is not the careless one — same contrast
+  discipline, same hand-written markup — it is simply *one page*, and it looks
+  it.
+- **Growth** adds four more pages, artwork generated for the shop, a drawn map
+  and a booking request.
+- **Premium** adds a working booking system *and* a signature moment neither of
+  the others has: a pinned sequence where the tide comes in over the survey
+  sheet. The height field and every contour are computed once; per frame all
+  that changes is which levels are under water, so the whole thing costs one
+  small `putImageData` and a few cached strokes. At low water you can walk to
+  the far bank; at high water there are three islands left.
+
+`demos.html` states the same thing as a table — thirteen rows, five ticked for
+Starter and twelve for Premium — because a customer deciding between £299 and
+£999 deserves to see the difference rather than be told about it.
 
 ### Quality passes the demos needed
 

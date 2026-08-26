@@ -1992,3 +1992,61 @@ a.work__card:hover .work__name { color: var(--accent); }
   font-optical-sizing: none; font-variation-settings: "opsz" var(--opsz, 15);
 }
 .dmo__spec { font-size: .6875rem; letter-spacing: .13em; color: var(--slate); margin-top: 1.1rem; }
+
+/* ---------- the machine is clickable ---------- */
+.lab__view { cursor: pointer; }
+.mach[data-live="true"] ~ * .lab__view, .lab__view:has(.mach[data-live="true"]) { cursor: default; }
+.lab__view:focus-visible { outline: 2px solid var(--accent); outline-offset: -6px; }
+/* a small lift on hover, so it reads as a thing you can open */
+.lab__view:hover .mach__rig, .lab__view:focus-visible .mach__rig { filter: brightness(1.06); }
+.mach__rig { transition: filter .4s var(--ease-out); }
+
+.lab__acts { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .8rem; pointer-events: auto; }
+.lab__act {
+  font: inherit; font-family: var(--f-mono); font-size: .625rem; letter-spacing: .16em;
+  text-transform: uppercase; cursor: pointer;
+  background: rgba(8,7,14,.72); border: 1px solid var(--rule); color: var(--ash);
+  padding: .55rem .9rem; backdrop-filter: blur(6px);
+  transition: border-color .25s, color .25s, background-color .25s;
+}
+.lab__act:hover { border-color: var(--accent); color: var(--bone); }
+.lab__act--go { border-color: var(--edge); color: var(--bone); }
+
+/* Once you are inside, the exit has to stay reachable even though the HUD
+   has faded out of the way of the screen. */
+.lab__hud[data-dim="true"] .lab__acts { opacity: 1; }
+.lab__hud[data-dim="true"] { opacity: 0; }
+.lab__hud[data-dim="true"]:focus-within { opacity: 1; }
+.mach[data-live="true"] { --x: 0; }
+.lab__stage:has(.mach[data-live="true"]) .lab__hud { opacity: 1; }
+.lab__stage:has(.mach[data-live="true"]) .lab__top,
+.lab__stage:has(.mach[data-live="true"]) .lab__pick,
+.lab__stage:has(.mach[data-live="true"]) .lab__note { opacity: 0; transition: opacity .3s; }
+.lab__stage:has(.mach[data-live="true"]) .lab__acts { position: relative; z-index: 5; }
+
+/* ---------- the tier ladder ---------- */
+.lad-wrap { overflow-x: auto; }
+.lad { width: 100%; border-collapse: collapse; min-width: 44rem; }
+.lad caption { caption-side: bottom; text-align: left; padding-top: 1.1rem; max-width: 62ch; }
+.lad th, .lad td { text-align: left; padding: .85rem 1rem; border-top: 1px solid var(--rule); vertical-align: middle; }
+.lad thead th { border-top: 0; padding-top: 0; vertical-align: bottom; }
+.lad thead th b {
+  display: block; font-family: var(--f-display); font-weight: 600; font-size: 1.0625rem;
+  line-height: 1.1; color: var(--bone);
+  font-optical-sizing: none; font-variation-settings: "opsz" var(--opsz, 15);
+}
+.lad thead th span {
+  display: block; font-family: var(--f-mono); font-size: .625rem; letter-spacing: .12em;
+  color: var(--slate); margin-top: .35rem;
+}
+.lad thead .lad__pop b { color: var(--accent); }
+.lad tbody th { font-weight: 400; color: var(--ash); font-size: .9375rem; }
+/* proportional, not fixed: fixed columns left the three tiers squeezed
+   against the right edge with the row labels hogging the rest */
+.lad thead th:first-child, .lad tbody th { width: 40%; }
+.lad thead th + th, .lad td { width: 20%; }
+.lad td { text-align: center; color: var(--ash); font-size: .875rem; }
+.lad__y { color: var(--accent); font-size: 1rem; }
+.lad__n { color: var(--rule-hi); }
+.lad tbody tr:hover th { color: var(--bone); }
+.lad tbody tr:hover td { background: rgba(255,255,255,.022); }

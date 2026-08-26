@@ -28,7 +28,7 @@
         <div class="lab__hud">
           <div class="lab__top">
             <span class="mono" data-scramble-in>Pick one</span>
-            <span class="mono mono--accent">Scroll to go in</span>
+            <span class="mono mono--accent">Click the machine to go in</span>
           </div>
           <h2 id="lab-h" class="sr-only">The three demo builds, running</h2>
           <div class="lab__pick" role="tablist" aria-label="Choose a demo">
@@ -49,13 +49,17 @@
             </button>
           </div>
           <p class="lab__note mono">
-            <span id="lab-state">Closed</span>
+            <span id="lab-state">Click it to go in</span>
             <span aria-hidden="true">·</span>
             <a id="lab-open" href="demos/chess/index.html">Open it full size &rarr;</a>
           </p>
+          <div class="lab__acts">
+            <button class="lab__act lab__act--go" type="button" id="lab-enter">Open the machine</button>
+            <button class="lab__act" type="button" id="lab-exit" hidden>&larr; Come back out</button>
+          </div>
         </div>
 
-        <div class="lab__view" aria-hidden="true">
+        <div class="lab__view">
           <div class="mach" id="mach">
             <div class="mach__rig" id="mach-rig">
               <div class="mach__lid" id="mach-lid">
@@ -84,12 +88,67 @@
     </div>
   </section>
 
+  <section class="section" data-sec="LADDER" data-zone-set="gold" data-3d="5" aria-labelledby="lad-h">
+    <div class="wash" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="sec-head">
+        <span class="sec-head__idx">02</span>
+        <span class="sec-head__label">What the money buys</span>
+        <span class="sec-head__spacer"></span>
+        <span class="sec-head__label">Each step adds, none replaces</span>
+      </div>
+      <h2 id="lad-h" class="display mb-lg" style="font-size:clamp(2rem,5.6vw,4rem);max-width:18ch" data-kin="word">
+        The difference, in one table
+      </h2>
+      <p class="lede" style="max-width:56ch">
+        Every tier is built to the same standard — the cheapest one is not the careless one.
+        What changes is how much there is, and how much of it is built specially for you.
+      </p>
+
+      <div class="lad-wrap mt-xl">
+        <table class="lad">
+          <caption class="mono">Each package includes everything in the one before it. Open any demo above to see the difference rather than take my word for it.</caption>
+          <thead>
+            <tr>
+              <th scope="col">&nbsp;</th>
+              <th scope="col"><b>Starter Launch</b><span>&pound;299 + &pound;39/mo</span></th>
+              <th scope="col" class="lad__pop"><b>Business Growth</b><span>&pound;599 + &pound;59/mo</span></th>
+              <th scope="col"><b>Premium Custom</b><span>from &pound;999 + &pound;99/mo</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Pages</th><td>One</td><td>Up to five</td><td>As many as it needs</td></tr>
+            <tr><th scope="row">Hand-written — no framework, no template</th><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Works on a phone, and on a bad connection</th><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Contrast computed, keyboard tested</th><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">A contact form that validates properly</th><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Prints properly — menus, price lists, notices</th><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Multi-page navigation</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Artwork generated for you, not bought in</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">A map, and local search set up</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Booking or ordering, built in</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">A journal you can add to yourself</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">A signature moment nobody else has</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+            <tr><th scope="row">Monthly performance and visitor report</th><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__n"><span aria-hidden="true">·</span><span class="sr-only">Not included</span></td><td class="lad__y"><span aria-hidden="true">●</span><span class="sr-only">Included</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="form__note mt-xl" style="max-width:62ch">
+        The three demos above are the honest version of this table. The chess club is one clean
+        page and looks it. The barbershop has five, its own artwork and a map. The restaurant has a
+        booking system and a scroll sequence built for it alone — which is what you are paying the
+        difference for.
+      </p>
+    </div>
+  </section>
+
   <!-- ============ THE THREE ============ -->
   <section class="section" data-sec="BUILDS" data-zone-set="violet" data-3d="5" aria-labelledby="blds-h">
     <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
-        <span class="sec-head__idx">01</span>
+        <span class="sec-head__idx">03</span>
         <span class="sec-head__label">The three</span>
         <span class="sec-head__spacer"></span>
         <span class="sec-head__label">One per package</span>

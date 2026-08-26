@@ -46,6 +46,9 @@ const form = section(contact, '<section class="section" id="contact" data-sec="B
    flight lands. The camera move is identical. */
 const demos = fs.readFileSync(path.join(R, "demos.html"), "utf8");
 let lab = section(demos, '<section class="section lab"');
+/* the tier ladder is the argument the machine is evidence for, so the
+   preview carries both */
+const ladder = section(demos, '<section class="section" data-sec="LADDER"');
 
 const shot = (name) =>
   "data:image/jpeg;base64," + fs.readFileSync(path.join(STILLS, "full-" + name + ".jpg")).toString("base64");
@@ -95,7 +98,7 @@ const labShim = `
 /* the home page's contact block is a CTA pointing at two pages that are not in
    this file; the real form says the same thing and actually works */
 const homeContact = section(body, '<section class="section" id="contact" data-sec="CONTACT"');
-body = body.replace(homeContact, packages + "\n\n" + lab + "\n\n" + form);
+body = body.replace(homeContact, packages + "\n\n" + ladder + "\n\n" + lab + "\n\n" + form);
 
 
 /* ---- links: keep the ones that resolve to a section here, drop the rest ---- */

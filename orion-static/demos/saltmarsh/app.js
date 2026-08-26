@@ -180,6 +180,142 @@
   });
 
   /* ============================================================
+     THE TIDE — a pinned sequence over the same survey sheet
+     ============================================================
+     The field and every contour are computed once. Per frame all that
+     changes is which levels are under water and how far the fill reaches,
+     so the whole sequence costs one small putImageData and a few cached
+     strokes rather than a fresh marching-squares pass. */
+  (function () {
+    var c = document.getElementById("tide-c");
+    var track = document.getElementById("tide-track");
+    if (!c || !track) return;
+    var x = c.getContext("2d");
+    var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var COLS = 132, ROWS = 88;
+    var f = field(4.5, COLS, ROWS);
+
+    /* the water mask is painted at grid resolution and scaled up, which is
+       what gives the edge its softness for free */
+    var small = document.createElement("canvas");
+    small.width = COLS; small.height = ROWS;
+    var sx = small.getContext("2d");
+    var img = sx.createImageData(COLS, ROWS);
+
+    var LEVELS = [];
+    for (var lv = -0.34; lv < 0.62; lv += 0.032) LEVELS.push(lv);
+    var cached = null, W = 0, H = 0;
+
+    function build() {
+      W = c.width = c.offsetWidth;
+      H = c.height = c.offsetHeight;
+      if (!W || !H) return;
+      cached = LEVELS.map(function (level) { return isoline(f, level, COLS, ROWS, W, H); });
+    }
+
+    var LO = -0.34, HI = 0.46;
+    var CAPS = [
+      ["Low water · 06:14", "low water", "Six hours out, the channels are mud and you can walk to the far bank. This is when the boats leave."],
+      ["Flooding · 09:02", "half tide", "The channels fill first, then the flats. Two hours from here the path to the point is gone."],
+      ["High water · 12:31", "high water", "Four metres over the marsh. The boats come back on this, and dinner is written from whatever they bring."]
+    ];
+    var lastCap = -1;
+
+    function draw(p) {
+      if (!W || !H || !cached) return;
+      var level = LO + (HI - LO) * p;
+
+      var g = x.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, "#22343c");
+      g.addColorStop(1, "#16232a");
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+
+      /* water */
+      var d = img.data;
+      for (var yy = 0; yy < ROWS; yy++) {
+        for (var xx = 0; xx < COLS; xx++) {
+          var i = (yy * COLS + xx) * 4;
+          var depth = level - f[yy][xx];
+          if (depth > 0) {
+            var t = Math.min(1, depth / 0.34);
+            d[i] = 28 + 10 * (1 - t);
+            d[i + 1] = 58 + 22 * (1 - t);
+            d[i + 2] = 74 + 26 * (1 - t);
+            d[i + 3] = 210 + 40 * t;
+          } else { d[i + 3] = 0; }
+        }
+      }
+      sx.putImageData(img, 0, 0);
+      x.imageSmoothingEnabled = true;
+      x.drawImage(small, 0, 0, W, H);
+
+      /* contours: dim under water, lit above it */
+      cached.forEach(function (segs, i) {
+        var lv2 = LEVELS[i];
+        var under = lv2 < level;
+        var index = i % 5 === 0;
+        if (under) x.strokeStyle = index ? "rgba(194,104,60,0.20)" : "rgba(207,217,210,0.10)";
+        else x.strokeStyle = index ? "rgba(194,104,60,0.66)" : "rgba(207,217,210,0.32)";
+        x.lineWidth = index ? 1.5 : 0.8;
+        x.beginPath();
+        for (var k = 0; k < segs.length; k++) {
+          x.moveTo(segs[k][0], segs[k][1]); x.lineTo(segs[k][2], segs[k][3]);
+        }
+        x.stroke();
+      });
+
+      /* the waterline itself, drawn heavy */
+      x.strokeStyle = "rgba(240,246,240,0.85)";
+      x.lineWidth = 2.2;
+      x.beginPath();
+      isoline(f, level, COLS, ROWS, W, H).forEach(function (s2) {
+        x.moveTo(s2[0], s2[1]); x.lineTo(s2[2], s2[3]);
+      });
+      x.stroke();
+
+      /* the readout */
+      var fill = document.getElementById("tide-fill");
+      var metres = (p * 4.1).toFixed(1);
+      if (fill) fill.style.width = (p * 100).toFixed(1) + "%";
+      var mEl = document.getElementById("tide-m");
+      if (mEl) mEl.textContent = metres + "m";
+      var ci = p < 0.34 ? 0 : p < 0.72 ? 1 : 2;
+      if (ci !== lastCap) {
+        lastCap = ci;
+        document.getElementById("tide-time").textContent = CAPS[ci][0];
+        document.getElementById("tide-state").textContent = CAPS[ci][1];
+        document.getElementById("tide-cap").textContent = CAPS[ci][2];
+      }
+    }
+
+    build();
+    addEventListener("resize", function () { build(); draw(current); });
+
+    var current = 0;
+    if (reduce) { track.style.height = "auto"; current = 0.62; draw(current); return; }
+
+    track.style.height = "300svh";
+    var target = 0, raf = 0;
+    function tick() {
+      raf = 0;
+      current += (target - current) * 0.16;
+      if (Math.abs(target - current) < 0.0008) current = target;
+      draw(current);
+      if (current !== target) raf = requestAnimationFrame(tick);
+    }
+    function onScroll() {
+      var r = track.getBoundingClientRect();
+      if (r.bottom < -200 || r.top > innerHeight + 200) return;
+      target = Math.max(0, Math.min(1, -r.top / Math.max(1, track.offsetHeight - innerHeight)));
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    draw(0);
+  })();
+
+  /* ============================================================
      BOOKING
      ============================================================ */
   var bk = document.getElementById("bk");
