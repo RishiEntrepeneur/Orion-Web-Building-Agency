@@ -3457,7 +3457,7 @@
        existing page curtain carries them, and buttons when they do not. */
     function control(cls, n, label) {
       var step = STEPS[n];
-      var cross = step && step.page !== here;
+      var cross = step && step.page !== "*" && step.page !== here;
       var el = document.createElement(cross ? "a" : "button");
       el.className = "tour__b " + cls;
       el.textContent = label;
@@ -3477,7 +3477,9 @@
       if (!step) return;
       write(n);
 
-      if (step.page !== here) { location.href = step.page + (step.at || ""); return; }
+      /* "*" means "wherever this is": the single-file preview folds every
+         page into one document, so its stops are all on the same page. */
+      if (step.page !== "*" && step.page !== here) { location.href = step.page + (step.at || ""); return; }
 
       if (!panel) {
         panel = document.createElement("aside");
@@ -3581,12 +3583,12 @@
       var step = STEPS[at];
       /* landed somewhere the tour does not go — keep the panel, but do not
          pretend this page is a stop */
-      if (step && step.page !== here) {
+      if (step && step.page !== "*" && step.page !== here) {
         for (var i = 0; i < STEPS.length; i++) {
           if (STEPS[i].page === here) { at = i; break; }
         }
       }
-      if (STEPS[at] && STEPS[at].page === here) {
+      if (STEPS[at] && (STEPS[at].page === "*" || STEPS[at].page === here)) {
         window.setTimeout(function () { show(at); }, 520);
       }
     }

@@ -53,8 +53,13 @@ const form = section(contact, "BRIEF")
    has no second page to point an iframe at, so the screen shows the real
    pages as full-length stills instead, and becomes scrollable once the
    flight lands. The camera move is identical. */
+const work = fs.readFileSync(path.join(R, "work.html"), "utf8");
+const measured = section(work, "MEASURED");
 const demos = fs.readFileSync(path.join(R, "demos.html"), "utf8");
 let lab = section(demos, "MACHINE");
+/* the three write-ups under the machine: the walkthrough stops on them, and
+   they are where the demos are actually described */
+const builds = section(demos, "BUILDS");
 /* the tier ladder is the argument the machine is evidence for, so the
    preview carries both */
 const ladder = section(prices, "LADDER");
@@ -108,8 +113,30 @@ const labShim = `
    this file; the real form says the same thing and actually works */
 const homeContact = section(body, "CONTACT");
 body = body.replace(homeContact,
-  packages + "\n\n" + ladder + "\n\n" + commitment + "\n\n" + lab + "\n\n" + form);
+  lab + "\n\n" + builds + "\n\n" + packages + "\n\n" + ladder + "\n\n" + commitment + "\n\n" + measured + "\n\n" + form);
 
+
+/* ---- the walkthrough ------------------------------------------------
+   Every page is folded into this one file, so a stop cannot navigate to
+   another document: each one is marked as belonging to whatever page it
+   finds itself on. Stops whose target did not come with it are dropped
+   rather than left pointing at nothing, and the rest renumber themselves
+   because the panel counts the list it is given. */
+body = body.replace(/<script type="application\/json" id="tour-steps">([\s\S]*?)<\/script>/, (whole, json) => {
+  let steps;
+  try { steps = JSON.parse(json); } catch (e) { throw new Error("tour data is not valid JSON"); }
+  const where = (st) => (st.at ? body.indexOf('id="' + st.at.replace(/^#/, "") + '"') : -1);
+  const kept = steps
+    .filter((st) => !st.at || where(st) > -1)
+    .map((st) => Object.assign({}, st, { page: "*" }))
+    /* the pages are stacked in a different order here than they are visited
+       on the real site, and a tour that jumps back up the page reads as a
+       bug, so the stops follow this document rather than that one */
+    .sort((a2, b2) => where(a2) - where(b2));
+  if (!kept.length) throw new Error("every walkthrough stop lost its target");
+  console.log("walkthrough: " + kept.length + " of " + steps.length + " stops kept");
+  return '<script type="application/json" id="tour-steps">\n' + JSON.stringify(kept, null, 1) + '\n</script>';
+});
 
 /* ---- links: keep the ones that resolve to a section here, drop the rest ---- */
 body = body
@@ -119,8 +146,16 @@ body = body
   .replace(/href="work\.html(#[a-z-]+)?"/g, 'href="#work"')
   /* the machine is in this file, so its page link becomes the section anchor */
   .replace(/href="demos\.html"/g, 'href="#lab"')
+  /* the demo sites themselves are not beside this file; the machine above is
+     showing those very pages, so their links point back at it */
+  .replace(/href="demos\/[a-z]+\/[a-z]+\.html"/g, 'href="#lab"')
   .replace(/href="prices\.html"/g, 'href="#packages"')
   .replace(/href="home\.html#/g, 'href="#');
+
+/* the label has to match where the link now goes */
+body = body
+  .replace(/(<a class="arrow-link mt-lg" href="#lab">)\s*Open the demo/g, "$1\n              Open it in the machine")
+  .replace(/(<a class="arrow-link mt-lg" href="#lab">)\s*Try the booking system/g, "$1\n              Open it in the machine");
 
 /* nav + drawer: About and Build notes have no section in this file */
 body = body.replace(/\s*<a class="nav__link" href="about\.html"[^>]*>[\s\S]*?<\/a>/, "");
