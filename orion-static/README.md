@@ -132,6 +132,31 @@ despite being an animation.
 
 ---
 
+## The walkthrough
+
+**Walk me through it** under the hero runs a nine-stop tour across five
+pages: the home page, the demos, the prices, the teardown, and the brief.
+Each stop scrolls to the thing it is describing and puts a ring round it.
+
+There is no router here — every page is a separate document — so the
+position lives in `sessionStorage` and the panel rebuilds itself wherever it
+lands. Next and Back are **links** when they cross a page boundary, so the
+existing page curtain carries them, and buttons when they do not. A stop
+inside a pinned track can walk a fraction of the way into it (`into`),
+because the top of a three-screen track is the frame where nothing has
+happened yet.
+
+The copy for all nine stops lives in one JSON block in the shared chrome, so
+the stops cannot drift between pages.
+
+Every stop argues by pointing at something the reader can check rather than
+by claiming anything — the words were written for this business, the
+pictures were drawn for these pages, the prices are printed, the numbers are
+measurable in their own browser. That is the only kind of argument this site
+is allowed to make.
+
+---
+
 ## The detonation
 
 `makeBurst(canvas)` is a real explosion on a 2D canvas: a white-hot core, a

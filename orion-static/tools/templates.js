@@ -158,7 +158,7 @@ ${LADDER_ROWS.map((r) => `            <tr><th scope="row">${r[0]}</th>${ladCell(
 /* ---------- what the monthly actually commits me to ----------
    A cap nobody can see is a cap you will quietly break. */
 function commitment(cap) {
-  return `  <section class="section" data-sec="CAPACITY" data-zone-set="teal" data-3d="5" aria-labelledby="cap-h">
+  return `  <section class="section" id="capacity" data-sec="CAPACITY" data-zone-set="teal" data-3d="5" aria-labelledby="cap-h">
       <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">

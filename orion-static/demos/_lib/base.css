@@ -460,6 +460,6 @@ html[data-lb-open="true"] { overflow: hidden; }
 .field textarea { min-height: 8rem; resize: vertical; }
 .field__err { font-size: 0.8125rem; color: #a8321f; min-height: 1.2em; }
 .note {
-  font-size: 0.8125rem; color: var(--muted);
+  font-size: 0.8125rem; color: var(--muted); max-width: 62ch;
   border-left: 2px solid var(--accent); padding-left: 0.9rem;
 }

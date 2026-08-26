@@ -1832,6 +1832,97 @@ a.work__card:hover .work__name { color: var(--accent); }
 }
 
 /* ============================================================
+   48b. THE WALKTHROUGH
+   A panel that survives leaving the page it started on, and a ring
+   around whatever it is currently talking about.
+   ============================================================ */
+.walk {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  font-family: var(--f-mono); font-size: 0.5625rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ash); background: none; border: 0; cursor: pointer;
+  padding: 0.6rem 0.2rem;
+  transition: color 0.3s var(--ease-out);
+}
+.walk:hover, .walk:focus-visible { color: var(--bone); }
+.walk__dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+  animation: walkpulse 2.8s var(--ease-out) infinite;
+}
+@keyframes walkpulse {
+  0%, 72%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  36%           { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+
+.tour {
+  position: fixed; z-index: 320;
+  inset: auto var(--gutter) clamp(1rem, 3vh, 1.75rem) auto;
+  width: min(calc(100vw - var(--gutter) * 2), 26rem);
+  display: grid; gap: 0.7rem;
+  padding: clamp(1.1rem, 2.4vw, 1.5rem);
+  background: color-mix(in srgb, var(--void) 92%, transparent);
+  backdrop-filter: blur(16px) saturate(1.15);
+  border: 1px solid var(--edge);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.72);
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 0.45s var(--ease-out), transform 0.55s var(--ease-out);
+}
+.tour[data-in="true"] { opacity: 1; transform: none; }
+.tour[data-out="true"] { opacity: 0; transform: translateY(10px); }
+.tour__meta { color: var(--slate); letter-spacing: 0.2em; }
+.tour__k {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 15; font-weight: 500;
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem); line-height: 1.14;
+  color: var(--bone);
+}
+.tour__t { font-size: 0.9375rem; line-height: 1.62; color: var(--ash); max-width: none; }
+.tour__bar { height: 1px; background: var(--rule); }
+.tour__bar i {
+  display: block; height: 100%; background: var(--accent);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+.tour__row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.15rem; }
+.tour__spacer { flex: 1; }
+.tour__b {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 2.4rem; padding: 0 0.9rem;
+  font-family: var(--f-mono); font-size: 0.5625rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ash); background: none; border: 1px solid var(--edge); cursor: pointer;
+  transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+.tour__b:hover, .tour__b:focus-visible { color: var(--bone); border-color: var(--accent); }
+.tour__b--go { background: var(--bone); border-color: var(--bone); color: var(--void); }
+.tour__b--go:hover, .tour__b--go:focus-visible { background: var(--accent); border-color: var(--accent); color: var(--void); }
+.tour__b--quit { border-color: transparent; padding-inline: 0; }
+.tour__b--quit:hover { border-color: transparent; text-decoration: underline; text-underline-offset: 3px; }
+
+/* whatever the current stop is talking about */
+[data-tour-lit="true"] {
+  position: relative;
+  outline: 1px solid var(--accent);
+  outline-offset: 10px;
+  animation: tourlit 3.6s var(--ease-out) infinite;
+}
+@keyframes tourlit {
+  0%, 100% { outline-color: color-mix(in srgb, var(--accent) 32%, transparent); }
+  50%      { outline-color: var(--accent); }
+}
+
+@media (max-width: 640px) {
+  .tour { inset: auto var(--gutter) clamp(0.75rem, 2vh, 1.25rem) var(--gutter); width: auto; }
+  .tour__row { flex-wrap: wrap; }
+  .tour__b--quit { order: 3; width: 100%; justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .walk__dot, [data-tour-lit="true"] { animation: none; }
+  .tour { transition: none; }
+}
+
+/* ============================================================
    49. THE ASSEMBLY
    A scroll-driven exploded view: five layers of a page, pulled
    apart and inspected from changing camera positions.

@@ -1941,15 +1941,25 @@
     var io = new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0 });
     io.observe(host);
 
-    var spin = 0, accentTick = 0;
+    /* getComputedStyle is a layout read. Sampling the accent from inside the
+       write phase forces a synchronous layout every time it fires, so the
+       writer only asks and the reader does the reading. */
+    var accentTick = 0, wantAccent = false;
+    addReader(function (dt) {
+      accentTick += dt;
+      if (accentTick > 400) { accentTick = 0; wantAccent = true; }
+      if (!wantAccent || !visible) return;
+      wantAccent = false;
+      readAccent();
+    });
+
+    var spin = 0;
     addWriter(function (dt) {
       if (!visible) return;
       spin += dt * 0.00021;
       yaw = damp(yaw, spin + (S.nx - 0.5) * 1.15, 200, dt);
       pitch = damp(pitch, 0.32 + (S.ny - 0.5) * -0.7 + S.progress * 0.45, 200, dt);
       roll = damp(roll, (S.nx - 0.5) * 0.16, 260, dt);
-      accentTick += dt;
-      if (accentTick > 400) { accentTick = 0; readAccent(); }
       draw();
     });
   }
@@ -2318,8 +2328,8 @@
       cx = o.x != null ? o.x : W * 0.5;
       cy = o.y != null ? o.y : H * 0.5;
       var power = o.power || 1;
-      var pw = o.paneW || Math.min(W * 0.72, 900);
-      var ph = o.paneH || pw * 0.58;
+      var pw = o.paneW || (o.paneF ? W * o.paneF : Math.min(W * 0.72, 900));
+      var ph = o.paneH || pw * (o.paneAspect || 0.58);
 
       var quality = Q.tier;
       var cols = Math.max(6, Math.round(12 * quality));
@@ -2543,21 +2553,33 @@
       canvas.setAttribute("data-on", "false");
     }
 
+    /* size() reads clientWidth, which is a layout read. Doing that inside
+       fire() would put a read in the middle of the write phase and force a
+       synchronous layout — so the charge is laid in the reader phase on the
+       next frame instead. One frame late is not perceptible; a forced layout
+       in the frame a detonation starts is exactly where it would be felt. */
+    var pending = null;
+    addReader(function () {
+      if (!pending) return;
+      var o = pending; pending = null;
+      size();
+      build(o);
+      canvas.setAttribute("data-on", "true");
+      if (running) return;
+      running = true;
+      tick = addWriter(function (dt) {
+        step(dt);
+        draw();
+        if (age > span && !shards.length && !sparks.length && !smoke.length) stop();
+      });
+    });
+
     return {
       fire: function (opts) {
         if (REDUCED) return;
-        size();
-        build(opts);
-        canvas.setAttribute("data-on", "true");
-        if (running) return;
-        running = true;
-        tick = addWriter(function (dt) {
-          step(dt);
-          draw();
-          if (age > span && !shards.length && !sparks.length && !smoke.length) stop();
-        });
+        pending = opts || {};
       },
-      stop: stop,
+      stop: function () { pending = null; stop(); },
       resize: size
     };
   }
@@ -2768,7 +2790,7 @@
         dropPaper();
         if (brw) brw.setAttribute("data-done", "true");
         if (invert) invert.setAttribute("data-off", "true");
-        if (burst) burst.fire({ power: 1, paneW: Math.min(window.innerWidth * 0.66, 860) });
+        if (burst) burst.fire({ power: 1, paneF: 0.66 });
         if (window.OrionAudio) window.OrionAudio.chord([110.00, 164.81, 220.00, 329.63], 0.1);
         if (status) status.textContent = "Building";
       }],
@@ -2863,14 +2885,9 @@
     var armed = true;
     function detonate() {
       if (!burst || REDUCED) return;
-      var r = burstEl.getBoundingClientRect();
-      burst.fire({
-        power: 0.85,
-        x: r.width / 2, y: r.height / 2,
-        paneW: Math.min(r.width * 0.82, 860),
-        paneH: Math.min(r.height * 0.72, 480),
-        seed: 90210
-      });
+      /* the pane is described in fractions so nothing here has to measure the
+         canvas: makeBurst does that once, in the reader phase */
+      burst.fire({ power: 0.85, paneF: 0.82, paneAspect: 0.58, seed: 90210 });
       kick = 1;
       if (window.OrionAudio) window.OrionAudio.whoosh();
     }
@@ -3066,7 +3083,12 @@
       return;
     }
 
-    addReader(function () {
+    var paletteAge = 0;
+    addReader(function (dt) {
+      /* same rule as the accent: the palette comes out of getComputedStyle,
+         so it is sampled here rather than in the middle of the writes */
+      paletteAge += dt;
+      if (paletteAge > 500) { paletteAge = 0; readPalette(); }
       if (!track) return;
       var r = track.getBoundingClientRect();
       live = !(r.bottom < -100 || r.top > S.vh + 100);
@@ -3074,7 +3096,6 @@
       progress = clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1);
     });
 
-    var paletteTick = 0;
     addWriter(function (dt, t) {
       if (!live) return;
       target = sample(progress);
@@ -3101,8 +3122,6 @@
         ticks.forEach(function (el, i) { el.setAttribute("data-on", String(i === step)); });
       }
 
-      paletteTick += dt;
-      if (paletteTick > 500) { paletteTick = 0; readPalette(); }
       draw();
     });
   }
@@ -3374,6 +3393,203 @@
   }
 
   /* ============================================================
+     36. THE WALKTHROUGH
+     A tour of the site that survives leaving the page it started on.
+     There is no router here — every page is a separate document — so
+     the position is kept in sessionStorage and the panel rebuilds
+     itself wherever it lands.
+
+     The copy lives in one place, a JSON block in the shared chrome, so
+     the stops cannot drift between pages.
+     ============================================================ */
+  function initTour() {
+    var src = $("#tour-steps");
+    if (!src) return;
+
+    var STEPS;
+    try { STEPS = JSON.parse(src.textContent); } catch (e) { return; }
+    if (!STEPS || !STEPS.length) return;
+
+    var KEY = "orion-tour";
+    var here = (location.pathname.split("/").pop() || "home.html");
+    var panel = null, lit = null;
+
+    function read() {
+      try {
+        var v = sessionStorage.getItem(KEY);
+        if (v === null) return -1;
+        var n = parseInt(v, 10);
+        return isNaN(n) ? -1 : clamp(n, 0, STEPS.length - 1);
+      } catch (e) { return -1; }
+    }
+    function write(n) {
+      try {
+        if (n < 0) sessionStorage.removeItem(KEY);
+        else sessionStorage.setItem(KEY, String(n));
+      } catch (e) {}
+    }
+
+    function unlight() {
+      if (lit) { lit.removeAttribute("data-tour-lit"); lit = null; }
+    }
+    function light(sel) {
+      unlight();
+      if (!sel) return;
+      var el = $(sel);
+      if (!el) return;
+      lit = el;
+      el.setAttribute("data-tour-lit", "true");
+    }
+
+    function leave() {
+      write(-1);
+      unlight();
+      if (panel) { panel.setAttribute("data-out", "true"); }
+      window.setTimeout(function () {
+        if (panel && panel.parentNode) panel.parentNode.removeChild(panel);
+        panel = null;
+      }, 420);
+      var start = $("[data-tour-start]");
+      if (start) start.focus();
+    }
+
+    /* Next and Back are links when they cross a page boundary, so the
+       existing page curtain carries them, and buttons when they do not. */
+    function control(cls, n, label) {
+      var step = STEPS[n];
+      var cross = step && step.page !== here;
+      var el = document.createElement(cross ? "a" : "button");
+      el.className = "tour__b " + cls;
+      el.textContent = label;
+      if (cross) {
+        el.setAttribute("href", step.page + (step.at || ""));
+        el.setAttribute("data-curtain", step.k || "Orion");
+        on(el, "click", function () { write(n); });
+      } else {
+        el.type = "button";
+        on(el, "click", function () { show(n); });
+      }
+      return el;
+    }
+
+    function show(n) {
+      var step = STEPS[n];
+      if (!step) return;
+      write(n);
+
+      if (step.page !== here) { location.href = step.page + (step.at || ""); return; }
+
+      if (!panel) {
+        panel = document.createElement("aside");
+        panel.className = "tour";
+        panel.setAttribute("aria-live", "polite");
+        panel.setAttribute("aria-label", "Walkthrough");
+        document.body.appendChild(panel);
+        /* one frame at the starting state, so the entrance can be seen */
+        window.requestAnimationFrame(function () {
+          if (panel) panel.setAttribute("data-in", "true");
+        });
+      }
+
+      panel.innerHTML = "";
+
+      var meta = document.createElement("p");
+      meta.className = "tour__meta mono";
+      meta.textContent = "Stop " + (n + 1) + " of " + STEPS.length;
+
+      var head = document.createElement("p");
+      head.className = "tour__k";
+      head.textContent = step.k;
+
+      var body = document.createElement("p");
+      body.className = "tour__t";
+      body.textContent = step.t;
+
+      var bar = document.createElement("div");
+      bar.className = "tour__bar";
+      var fill = document.createElement("i");
+      fill.style.transform = "scaleX(" + ((n + 1) / STEPS.length).toFixed(4) + ")";
+      bar.appendChild(fill);
+
+      var row = document.createElement("div");
+      row.className = "tour__row";
+
+      var quit = document.createElement("button");
+      quit.type = "button";
+      quit.className = "tour__b tour__b--quit";
+      quit.textContent = "Leave the tour";
+      on(quit, "click", leave);
+      row.appendChild(quit);
+
+      var spacer = document.createElement("span");
+      spacer.className = "tour__spacer";
+      row.appendChild(spacer);
+
+      if (n > 0) row.appendChild(control("", n - 1, "Back"));
+      if (n < STEPS.length - 1) {
+        row.appendChild(control("tour__b--go", n + 1, "Next"));
+      } else {
+        var done = document.createElement("button");
+        done.type = "button";
+        done.className = "tour__b tour__b--go";
+        done.textContent = "That is the tour";
+        on(done, "click", leave);
+        row.appendChild(done);
+      }
+
+      panel.appendChild(meta);
+      panel.appendChild(head);
+      panel.appendChild(body);
+      panel.appendChild(bar);
+      panel.appendChild(row);
+
+      light(step.lit);
+
+      var target = step.at && $(step.at);
+      if (target) {
+        /* A pinned track is several screens tall, and its top is the frame
+           where nothing has happened yet. `into` walks a fraction of the way
+           through it so the stop lands on the part being talked about. */
+        if (step.into) {
+          var top = target.getBoundingClientRect().top + window.pageYOffset;
+          var span = Math.max(0, target.offsetHeight - S.vh);
+          window.scrollTo({ top: Math.round(top + span * step.into), behavior: REDUCED ? "auto" : "smooth" });
+        } else {
+          target.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+        }
+      }
+    }
+
+    on($("[data-tour-start]"), "click", function () { show(0); });
+
+    on(document, "keydown", function (e) {
+      if (!panel) return;
+      if (e.target && e.target.closest && e.target.closest("input, textarea, select")) return;
+      var n = read();
+      if (e.key === "Escape") { e.preventDefault(); leave(); }
+      if (e.key === "ArrowRight" && n < STEPS.length - 1) { e.preventDefault(); show(n + 1); }
+      if (e.key === "ArrowLeft" && n > 0) { e.preventDefault(); show(n - 1); }
+    });
+
+    /* resume: if a tour is running, pick it up wherever this page is */
+    var at = read();
+    if (at >= 0) {
+      var step = STEPS[at];
+      /* landed somewhere the tour does not go — keep the panel, but do not
+         pretend this page is a stop */
+      if (step && step.page !== here) {
+        for (var i = 0; i < STEPS.length; i++) {
+          if (STEPS[i].page === here) { at = i; break; }
+        }
+      }
+      if (STEPS[at] && STEPS[at].page === here) {
+        window.setTimeout(function () { show(at); }, 520);
+      }
+    }
+  }
+
+
+  /* ============================================================
      27. BOOT
      ============================================================ */
   function boot() {
@@ -3411,6 +3627,7 @@
     initLab();
     initCheckout();
     initCarry();
+    initTour();
     init3D();
     initCard3D();
     initOrbit();

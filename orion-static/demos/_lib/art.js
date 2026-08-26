@@ -513,7 +513,11 @@
     if (o.flip) oc.restore();
 
     var src = oc.getImageData(0, 0, off.width, off.height).data;
-    var cell = Math.max(3.4, Math.min(w, h) / 78);
+    /* A fractional cell puts every dot on a different sub-pixel phase, and
+       the phase drifts across the picture — which beats against the pixel
+       grid and draws faint dark lines through the halftone. A whole number
+       of pixels holds one phase everywhere. */
+    var cell = Math.max(4, Math.round(Math.min(w, h) / 78));
     var rows = Math.ceil(h / cell), cols = Math.ceil(w / cell);
     /* One key light, high and in front of the face. Both terms matter: the
        falloff alone gives a flat disc, the direction alone gives a hard edge.
@@ -1049,13 +1053,27 @@
   }, true);
 
   /* ---------- 5. the driver ------------------------------------------ */
+  /* Two independent frame loops interleave as read-write-read-write, so a
+     canvas measuring itself in its own loop still measures after the other
+     loop has written. When Motion is on the page, Art rides its phases
+     instead of running a loop of its own — one read pass, then one draw
+     pass, for everything. */
   var live = [];
   var running = false;
+  var joined = false;
+  var queue = [];
+
+  function measure(entry) {
+    var c = entry.canvas;
+    entry.w = c.clientWidth || c.offsetWidth || 0;
+    entry.h = c.clientHeight || c.offsetHeight || 0;
+  }
 
   function paint(entry, t) {
     var c = entry.canvas, p = entry.painter;
     var dpr = Math.min(window.devicePixelRatio || 1, entry.opts.dpr || 2);
-    var w = c.clientWidth || c.offsetWidth, h = c.clientHeight || c.offsetHeight;
+    if (!entry.w || !entry.h) measure(entry);
+    var w = entry.w, h = entry.h;
     if (!w || !h) return;
     var nw = Math.round(w * dpr), nh = Math.round(h * dpr);
     if (c.width !== nw || c.height !== nh) { c.width = nw; c.height = nh; }
@@ -1066,12 +1084,53 @@
     c.setAttribute("data-painted", "true");
   }
 
+  function readAll() {
+    for (var i = 0; i < queue.length; i++) measure(queue[i]);
+    if (REDUCED) return;
+    for (var j = 0; j < live.length; j++) {
+      if (live[j].painter.animated && live[j].onscreen) measure(live[j]);
+    }
+  }
+  function drawAll(dt, t) {
+    var now = t || performance.now();
+    while (queue.length) paint(queue.shift(), now);
+    if (REDUCED) return;
+    for (var i = 0; i < live.length; i++) {
+      if (live[i].painter.animated && live[i].onscreen) paint(live[i], now);
+    }
+  }
+
   function frame(t) {
     if (!running) return;
-    for (var i = 0; i < live.length; i++) {
-      var e = live[i];
-      if (e.painter.animated && e.onscreen && !REDUCED) paint(e, t);
+    /* A deferred script runs while readyState is already "interactive", so
+       art.js boots before motion.js has even executed and Motion is not there
+       to join yet. Keep checking: the moment it appears, hand the phases over
+       and stop this loop, or the two loops interleave read-write-read-write
+       and every paint measures after somebody else's write. */
+    if (!joined && window.Motion && window.Motion.onRead) {
+      running = false;
+      wake();
+      return;
     }
+    readAll();
+    drawAll(16.7, t);
+    requestAnimationFrame(frame);
+  }
+
+  function wake() {
+    /* Motion's loop always runs, so joining it also covers canvases that come
+       into view while nothing is animating */
+    if (window.Motion && window.Motion.onRead) {
+      if (!joined) {
+        joined = true;
+        window.Motion.onRead(readAll);
+        window.Motion.onWrite(drawAll);
+      }
+      window.Motion.start();
+      return;
+    }
+    if (running) return;
+    running = true;
     requestAnimationFrame(frame);
   }
 
@@ -1085,7 +1144,7 @@
       if (!p) return;
       var opts = {};
       try { opts = JSON.parse(c.getAttribute("data-art-opts") || "{}"); } catch (e) {}
-      var entry = { canvas: c, painter: p, opts: opts, onscreen: false, done: false };
+      var entry = { canvas: c, painter: p, opts: opts, onscreen: false, done: false, w: 0, h: 0 };
       live.push(entry);
       c._art = entry;
     });
@@ -1095,11 +1154,11 @@
         var e = en.target._art;
         if (!e) return;
         e.onscreen = en.isIntersecting;
-        if (en.isIntersecting && !e.done) { e.done = true; paint(e, performance.now()); }
+        /* an observer callback lands after this frame's writes, so the first
+           paint is queued rather than done here */
+        if (en.isIntersecting && !e.done) { e.done = true; queue.push(e); }
       });
-      var any = live.some(function (e) { return e.onscreen && e.painter.animated; });
-      if (any && !running && !REDUCED) { running = true; requestAnimationFrame(frame); }
-      if (!any) running = false;
+      wake();
     }, { rootMargin: "220px" });
 
     live.forEach(function (e) { io.observe(e.canvas); });
@@ -1108,37 +1167,45 @@
     window.addEventListener("resize", function () {
       clearTimeout(rt);
       rt = setTimeout(function () {
-        live.forEach(function (e) { if (e.done) paint(e, performance.now()); });
+        live.forEach(function (e) { if (e.done) queue.push(e); });
+        wake();
       }, 180);
     }, { passive: true });
+
+    wake();
   }
 
   window.Art = {
-    register: register, paint: paint, noise2: noise2, fbm: fbm,
+    register: register, noise2: noise2, fbm: fbm,
     hex: hex, mix: mix, rgba: rgba, ramp: ramp, grain: grain, vignette: vignette,
+
+    /* Repaints are queued, not done on the spot: a caller is usually inside a
+       scroll writer, and painting there would measure after a write. */
     repaint: function (sel) {
       var c = typeof sel === "string" ? document.querySelector(sel) : sel;
-      if (c && c._art) paint(c._art, performance.now());
+      if (c && c._art) { queue.push(c._art); wake(); }
+    },
+    set: function (sel, opts) {
+      var c = typeof sel === "string" ? document.querySelector(sel) : sel;
+      if (!c || !c._art) return;
+      for (var k in opts) c._art.opts[k] = opts[k];
+      /* an animated painter is already being drawn every frame */
+      if (!c._art.painter.animated) { queue.push(c._art); wake(); }
     },
     /* paint a canvas that was never in the document at boot — the lightbox
        clones one, and a clone has no entry in `live` to look up */
     paintInto: function (canvas, name, opts) {
       var painter = PAINTERS[name];
       if (!painter || !canvas) return;
-      var entry = { canvas: canvas, painter: painter, opts: opts || {}, onscreen: true, done: true };
+      var entry = { canvas: canvas, painter: painter, opts: opts || {}, onscreen: true, done: true, w: 0, h: 0 };
       canvas._art = entry;
       live.push(entry);
-      paint(entry, performance.now());
-      if (painter.animated && !running && !REDUCED) { running = true; requestAnimationFrame(frame); }
+      queue.push(entry);
+      wake();
     },
     forget: function (canvas) {
       for (var i = live.length - 1; i >= 0; i--) if (live[i].canvas === canvas) live.splice(i, 1);
-    },
-    set: function (sel, opts) {
-      var c = typeof sel === "string" ? document.querySelector(sel) : sel;
-      if (!c || !c._art) return;
-      for (var k in opts) c._art.opts[k] = opts[k];
-      paint(c._art, performance.now());
+      for (var j = queue.length - 1; j >= 0; j--) if (queue[j].canvas === canvas) queue.splice(j, 1);
     }
   };
 
