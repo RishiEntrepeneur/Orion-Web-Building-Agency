@@ -2046,7 +2046,12 @@ a.work__card:hover .work__name { color: var(--accent); }
 .lad thead th:first-child, .lad tbody th { width: 40%; }
 .lad thead th + th, .lad td { width: 20%; }
 .lad td { text-align: center; color: var(--ash); font-size: .875rem; }
-.lad__y { color: var(--accent); font-size: 1rem; }
+/* Marks are inline SVG, not ✓ and ✗: the self-hosted families are latin
+   subsets, so those characters fall back to whatever the OS provides and the
+   two marks arrive from different typefaces at different weights. */
+.lad__mk { width: 15px; height: 15px; display: inline-block; vertical-align: middle; }
+.lad__y { color: var(--accent); }
 .lad__n { color: var(--rule-hi); }
+.lad tbody tr:hover .lad__n { color: var(--edge); }
 .lad tbody tr:hover th { color: var(--bone); }
 .lad tbody tr:hover td { background: rgba(255,255,255,.022); }
