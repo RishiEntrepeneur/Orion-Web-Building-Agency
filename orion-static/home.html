@@ -33,6 +33,14 @@
   .brw__ptr, .burst, .asm__burst { display: none !important; }
   /* a control that only script can honour should not be offered */
   .walk, .foot__walk, .asm__fire { display: none !important; }
+  /* the five acts are keyed to a scroll position nothing is reading, so
+     they stack and all of them show */
+  .story__track { height: auto !important; }
+  .story__stage { position: static !important; height: auto !important; padding-block: var(--gutter); }
+  .story__hud { height: auto !important; gap: 2.5rem; }
+  .story__acts { min-height: 0 !important; display: grid !important; gap: 3rem; }
+  .story__act { position: static !important; }
+  .story__art { display: none !important; }
 </style></noscript>
 
 <script type="application/ld+json">
@@ -220,6 +228,134 @@
     </div>
   </section>
 
+
+  <!-- ============ THE SHORT VERSION ============
+       The first thing under the hero, because it is the thing somebody
+       who has just arrived actually wants: what this is, why it costs
+       what it costs, and what happens if they say yes. Five acts, keyed
+       to scroll position, over one canvas that morphs between them. -->
+  <section class="section story" id="story" data-sec="STORY" data-zone-set="teal"
+           style="padding-block:0" aria-labelledby="story-h">
+    <div class="story__track" id="story-track">
+      <div class="story__stage">
+        <canvas class="story__art" id="story-art" aria-hidden="true"></canvas>
+
+        <div class="shell story__hud">
+          <div class="story__top">
+            <span class="mono" data-scramble-in>The short version</span>
+            <span class="mono mono--accent">Keep scrolling</span>
+          </div>
+
+          <h2 id="story-h" class="sr-only">What this is, what it costs, and what happens when you buy it</h2>
+
+          <div class="story__acts">
+            <article class="story__act" data-story-act data-on="true">
+              <p class="story__n mono">01 &mdash; What this is</p>
+              <p class="story__k display">A website, made by a person.</p>
+              <p class="story__d">
+                No framework, no template, no page builder. Every line of the site you
+                are reading was typed. Yours would be too.
+              </p>
+            </article>
+
+            <article class="story__act" data-story-act>
+              <p class="story__n mono">02 &mdash; Why it is worth paying for</p>
+              <p class="story__k display">Anything made in a minute looks like everything else made that minute.</p>
+              <p class="story__d">
+                What you are paying for is somebody deciding what your business should
+                look like &mdash; and the fact that nobody else will turn up wearing it.
+              </p>
+            </article>
+
+            <article class="story__act" data-story-act>
+              <p class="story__n mono">03 &mdash; What happens when you buy</p>
+              <p class="story__k display">You say what it is for. I build it. You watch it happen.</p>
+              <p class="story__d">
+                Not a feature list &mdash; who has to use it, and what they need to do.
+                A first look inside a week, in a browser, not a picture of one.
+              </p>
+            </article>
+
+            <article class="story__act" data-story-act>
+              <p class="story__n mono">04 &mdash; What it costs</p>
+              <p class="story__k display">&pound;299, &pound;599 or &pound;999 to build. &pound;39, &pound;59 or &pound;99 a month.</p>
+              <p class="story__d">
+                The price on the page is the price on the invoice. No booking fee, no
+                deposit, and nothing added at the end.
+              </p>
+            </article>
+
+            <article class="story__act" data-story-act>
+              <p class="story__n mono">05 &mdash; And then it is yours</p>
+              <p class="story__k display">The domain goes in your name, not mine.</p>
+              <p class="story__d">
+                Cancel the monthly whenever you like. That ends the hosting and the
+                updates &mdash; it does not take the site away from you.
+              </p>
+            </article>
+          </div>
+
+          <div class="story__rail" aria-hidden="true">
+            <span data-story-tick data-on="true"></span>
+            <span data-story-tick></span>
+            <span data-story-tick></span>
+            <span data-story-tick></span>
+            <span data-story-tick></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AFTER YOU SAY YES ============ -->
+  <section class="section" id="after" data-sec="AFTER" data-zone-set="blue" data-3d="5" aria-labelledby="after-h">
+    <div class="wash" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="sec-head">
+        <span class="sec-head__idx">01</span>
+        <span class="sec-head__label" data-scramble-in>After you say yes</span>
+        <span class="sec-head__spacer"></span>
+        <span class="sec-head__label">Six steps, in order</span>
+      </div>
+      <h2 id="after-h" class="display mb-lg" style="font-size:clamp(2rem,5.6vw,4rem);max-width:16ch" data-kin="word">
+        Nothing about this is a surprise
+      </h2>
+
+      <ol class="after">
+        <li class="after__i rv" style="--d:0">
+          <span class="after__n mono">01</span>
+          <h3 class="after__t">You send a brief</h3>
+          <p class="after__d">The form on the contact page. One person reads it, and that person is the one who builds it.</p>
+        </li>
+        <li class="after__i rv" style="--d:70">
+          <span class="after__n mono">02</span>
+          <h3 class="after__t">We agree what it is</h3>
+          <p class="after__d">A few messages, or a call if you would rather. Scope and price in writing before anything starts.</p>
+        </li>
+        <li class="after__i rv" style="--d:140">
+          <span class="after__n mono">03</span>
+          <h3 class="after__t">A first look, inside a week</h3>
+          <p class="after__d">A real page you can open on your own phone. Not a mock-up, not a picture of a mock-up.</p>
+        </li>
+        <li class="after__i rv" style="--d:210">
+          <span class="after__n mono">04</span>
+          <h3 class="after__t">You change your mind</h3>
+          <p class="after__d">Twice, included. That is what the build fee is for, and saying so up front is cheaper than arguing later.</p>
+        </li>
+        <li class="after__i rv" style="--d:280">
+          <span class="after__n mono">05</span>
+          <h3 class="after__t">It goes live</h3>
+          <p class="after__d">On your domain, bought in your name. You get the files and the logins on the same day.</p>
+        </li>
+        <li class="after__i rv" style="--d:350">
+          <span class="after__n mono">06</span>
+          <h3 class="after__t">Then the monthly starts</h3>
+          <p class="after__d">Hosting, the updates listed under your package, and somebody who answers. <a href="prices.html" data-curtain="Prices">What that commits me to</a>.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <!-- ============ THE ASSEMBLY ============ -->
   <section class="section asm" id="assembly-section" data-sec="ASSEMBLY" data-zone-set="violet"
            style="padding-block:0" aria-labelledby="asm-h">
@@ -305,7 +441,7 @@
 
           <div class="work__intro">
             <div class="sec-head" style="margin-bottom:2rem">
-              <span class="sec-head__idx">01</span>
+              <span class="sec-head__idx">02</span>
               <span class="sec-head__label">Inside this page</span>
             </div>
             <h2 id="work-h" class="display" style="font-size:clamp(2rem,4.6vw,3.4rem)">One site,<br />six problems</h2>
@@ -406,7 +542,7 @@
     <div class="wash wash--alt" aria-hidden="true"></div>
     <div class="shell">
       <div class="sec-head">
-        <span class="sec-head__idx">02</span>
+        <span class="sec-head__idx">03</span>
         <span class="sec-head__label" data-scramble-in>What I build</span>
         <span class="sec-head__spacer"></span>
         <span class="sec-head__label">Packages from £299</span>
@@ -453,7 +589,7 @@
     <div class="wash" aria-hidden="true"></div>
     <div class="shell q">
       <div class="sec-head">
-        <span class="sec-head__idx">03</span>
+        <span class="sec-head__idx">04</span>
         <span class="sec-head__label" data-scramble-in>Start here</span>
       </div>
       <h2 id="contact-h" class="contact__h" data-kin="word">Tell me<br />what you<br />want built</h2>
@@ -564,6 +700,10 @@
   { "page": "home.html", "at": "#index", "lit": ".hero__h1",
     "k": "Somebody wrote this",
     "t": "Every word on this page was written for Orion, by the person who built it. Nothing was poured into a layout that had already been drawn for somebody else." },
+
+  { "page": "home.html", "at": "#story-track", "into": 0.06, "lit": ".story__acts",
+    "k": "The short version, in five screens",
+    "t": "Keep scrolling from here and the whole argument goes past: what this is, why it costs what it costs, what happens if you say yes, and what you are left holding at the end of it." },
 
   { "page": "home.html", "at": "#asm-track", "into": 0.55, "lit": "[data-asm-fire]",
     "k": "Five layers, and somebody chose all five",

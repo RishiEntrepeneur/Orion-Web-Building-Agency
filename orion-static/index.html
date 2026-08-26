@@ -32,6 +32,14 @@
   .brw__ptr, .burst, .asm__burst { display: none !important; }
   /* a control that only script can honour should not be offered */
   .walk, .foot__walk, .asm__fire { display: none !important; }
+  /* the five acts are keyed to a scroll position nothing is reading, so
+     they stack and all of them show */
+  .story__track { height: auto !important; }
+  .story__stage { position: static !important; height: auto !important; padding-block: var(--gutter); }
+  .story__hud { height: auto !important; gap: 2.5rem; }
+  .story__acts { min-height: 0 !important; display: grid !important; gap: 3rem; }
+  .story__act { position: static !important; }
+  .story__art { display: none !important; }
 </style></noscript>
 
 <script type="application/ld+json">
@@ -106,7 +114,13 @@
 
             <div class="brw__tab" id="tab-search" data-on="true">
               <span class="brw__fav brw__fav--s" aria-hidden="true">
-                <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.6" stroke="#5f6368" stroke-width="1.7"/><path d="M10.4 10.4 13.6 13.6" stroke="#5f6368" stroke-width="1.9" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="16" stroke="#4285F4" stroke-width="9" stroke-dasharray="22 78" />
+                  <circle cx="24" cy="24" r="16" stroke="#34A853" stroke-width="9" stroke-dasharray="28 72" stroke-dashoffset="-22" />
+                  <circle cx="24" cy="24" r="16" stroke="#FBBC05" stroke-width="9" stroke-dasharray="20 80" stroke-dashoffset="-50" />
+                  <circle cx="24" cy="24" r="16" stroke="#EA4335" stroke-width="9" stroke-dasharray="22 78" stroke-dashoffset="-70" />
+                  <rect x="24" y="19.5" width="17" height="9" fill="#4285F4" />
+                </svg>
               </span>
               <span class="brw__ttl" id="tab-search-title">New Tab</span>
               <span class="brw__x" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
@@ -151,15 +165,24 @@
             <div class="pg pg--home" id="pg-home" data-on="true">
               <div class="pg__nav" aria-hidden="true">
                 <span>About</span><span>Store</span><span class="pg__nav-sp"></span>
-                <span>Images</span>
+                <span>Gmail</span><span>Images</span>
                 <svg viewBox="0 0 18 18" class="pg__grid"><g fill="currentColor"><circle cx="4" cy="4" r="1.5"/><circle cx="9" cy="4" r="1.5"/><circle cx="14" cy="4" r="1.5"/><circle cx="4" cy="9" r="1.5"/><circle cx="9" cy="9" r="1.5"/><circle cx="14" cy="9" r="1.5"/><circle cx="4" cy="14" r="1.5"/><circle cx="9" cy="14" r="1.5"/><circle cx="14" cy="14" r="1.5"/></g></svg>
                 <span class="pg__signin">Sign in</span>
               </div>
 
               <div class="pg__mid">
-                <p class="wm wm--big" aria-label="Search — a search engine">
-                  <span style="--c:var(--sg-b)">S</span><span style="--c:var(--sg-r)">e</span><span style="--c:var(--sg-y)">a</span><span style="--c:var(--sg-b)">r</span><span style="--c:var(--sg-g)">c</span><span style="--c:var(--sg-r)">h</span>
-                </p>
+<svg class="wm wm--big" viewBox="0 0 272 96" fill="none" role="img" aria-label="Google">
+                  <circle cx="30" cy="46" r="24" stroke="#4285F4" stroke-width="11" stroke-dasharray="118 33" stroke-dashoffset="-6" transform="rotate(-8 30 46)" />
+                  <rect x="30" y="40.5" width="26" height="11" fill="#4285F4" />
+                  <circle cx="78" cy="53" r="17" stroke="#EA4335" stroke-width="10" />
+                  <circle cx="120" cy="53" r="17" stroke="#FBBC05" stroke-width="10" />
+                  <circle cx="162" cy="53" r="17" stroke="#4285F4" stroke-width="10" />
+                  <rect x="174" y="45" width="10" height="32" fill="#4285F4" />
+                  <path d="M184 74 A 15 15 0 0 1 156 82" stroke="#4285F4" stroke-width="10" />
+                  <rect x="195" y="18" width="10" height="52" fill="#34A853" />
+                  <circle cx="232" cy="53" r="17" stroke="#EA4335" stroke-width="10" stroke-dasharray="92 14.8" stroke-dashoffset="-20.8" />
+                  <rect x="215" y="48" width="39" height="10" fill="#EA4335" />
+                </svg>
 
                 <div class="sb" id="sb">
                   <div class="sb__pill" id="sb-pill" data-state="idle">
@@ -194,24 +217,33 @@
                   </div>
 
                   <div class="sb__btns">
-                    <span class="sb__btn" id="sb-go">Search</span>
-                    <span class="sb__btn">I'm feeling lucky</span>
+                    <span class="sb__btn" id="sb-go">Google Search</span>
+                    <span class="sb__btn">I'm Feeling Lucky</span>
                   </div>
                 </div>
               </div>
 
               <div class="pg__foot" aria-hidden="true">
-                <span>England</span>
-                <span class="pg__foot-r"><span>Advertising</span><span>Business</span><span>Settings</span></span>
+                <span>United Kingdom</span>
+                <span class="pg__foot-r"><span>Advertising</span><span>Business</span><span>How Search works</span><span>Privacy</span><span>Terms</span><span>Settings</span></span>
               </div>
             </div>
 
             <!-- 2. the results -->
             <div class="pg pg--serp" id="pg-serp" data-on="false">
               <div class="serp__head">
-                <p class="wm wm--sm" aria-hidden="true">
-                  <span style="--c:var(--sg-b)">S</span><span style="--c:var(--sg-r)">e</span><span style="--c:var(--sg-y)">a</span><span style="--c:var(--sg-b)">r</span><span style="--c:var(--sg-g)">c</span><span style="--c:var(--sg-r)">h</span>
-                </p>
+<svg class="wm wm--sm" viewBox="0 0 272 96" fill="none" role="img" aria-label="Google">
+                  <circle cx="30" cy="46" r="24" stroke="#4285F4" stroke-width="11" stroke-dasharray="118 33" stroke-dashoffset="-6" transform="rotate(-8 30 46)" />
+                  <rect x="30" y="40.5" width="26" height="11" fill="#4285F4" />
+                  <circle cx="78" cy="53" r="17" stroke="#EA4335" stroke-width="10" />
+                  <circle cx="120" cy="53" r="17" stroke="#FBBC05" stroke-width="10" />
+                  <circle cx="162" cy="53" r="17" stroke="#4285F4" stroke-width="10" />
+                  <rect x="174" y="45" width="10" height="32" fill="#4285F4" />
+                  <path d="M184 74 A 15 15 0 0 1 156 82" stroke="#4285F4" stroke-width="10" />
+                  <rect x="195" y="18" width="10" height="52" fill="#34A853" />
+                  <circle cx="232" cy="53" r="17" stroke="#EA4335" stroke-width="10" stroke-dasharray="92 14.8" stroke-dashoffset="-20.8" />
+                  <rect x="215" y="48" width="39" height="10" fill="#EA4335" />
+                </svg>
                 <div class="serp__field" aria-hidden="true">
                   <span class="serp__q" id="serp-q">how to build a website</span>
                   <span class="serp__x">&times;</span>
@@ -222,12 +254,15 @@
               </div>
 
               <div class="serp__tabs" aria-hidden="true">
-                <span data-on="true">All</span><span>Images</span><span>Videos</span><span>News</span><span>Maps</span>
+                <span data-on="true">All</span><span>Images</span><span>Videos</span><span>News</span><span>Maps</span><span>More</span>
                 <span class="serp__tools">Tools</span>
               </div>
 
               <div class="serp__body">
-                <p class="serp__stat" id="serp-stat">One result, and it is not a template</p>
+                <!-- Part of the drawing of the results page, not a claim by Orion:
+                     a results count is what Google prints there. Nothing on this
+                     line describes anything Orion does or sells. -->
+                <p class="serp__stat" id="serp-stat">About 2,470,000,000 results (0.48 seconds)</p>
 
                 <a class="hit hit--top" href="home.html" data-curtain="Orion" id="serp-hit">
                   <span class="hit__line">

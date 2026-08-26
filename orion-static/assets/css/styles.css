@@ -1623,13 +1623,12 @@ a.work__card:hover .work__name { color: var(--accent); }
 }
 .pg__foot-r { display: flex; gap: 15px; }
 
-.wm {
-  display: flex; margin: 0 0 1.4rem;
-  font-weight: 500; letter-spacing: -0.035em; line-height: 1;
-}
-.wm span { color: var(--c); }
-.wm--big { font-size: clamp(2.6rem, 6.5vw, 4.1rem); }
-.wm--sm { font-size: 1.4rem; margin: 0; flex: none; }
+/* The mark is drawn rather than set: Product Sans is not a typeface anybody
+   can license, and the letterforms are geometric enough to build from a
+   handful of arcs and bars. */
+.wm { display: block; height: auto; }
+.wm--big { width: clamp(11rem, 26vw, 17rem); margin: 0 0 1.6rem; }
+.wm--sm { width: 5.75rem; flex: none; margin: 0; }
 
 .sb { width: min(100%, 34rem); position: relative; }
 .sb__pill {
@@ -1830,6 +1829,88 @@ a.work__card:hover .work__name { color: var(--accent); }
   .invert { transition: none; }
   .brw__load { animation: none !important; }
 }
+
+/* ============================================================
+   48a. THE SHORT VERSION
+   Five acts over one canvas, keyed to scroll position. The words
+   and the picture are driven by the same number, so they cannot
+   drift apart.
+   ============================================================ */
+.story { position: relative; }
+.story__track { height: 520svh; }
+.story__stage {
+  position: sticky; top: 0; height: 100svh;
+  display: grid; place-items: center; overflow: hidden;
+}
+.story__art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.story__hud {
+  position: relative; z-index: 2; width: 100%; height: 100%;
+  display: grid; align-content: space-between;
+  padding-block: clamp(5.5rem, 12vh, 8rem) clamp(2rem, 5vh, 3.5rem);
+  pointer-events: none;
+}
+.story__hud a { pointer-events: auto; }
+.story__top { display: flex; justify-content: space-between; gap: 1rem; }
+
+.story__acts { position: relative; min-height: clamp(13rem, 30vh, 19rem); align-self: end; }
+.story__act {
+  position: absolute; inset: auto 0 0 0;
+  display: grid; gap: 0.75rem; max-width: 30ch;
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.6s var(--ease-out), transform 0.85s var(--ease-out);
+}
+.story__act[data-on="true"] { opacity: 1; transform: none; }
+.story__n { color: var(--accent); letter-spacing: 0.2em; }
+.story__k {
+  font-size: clamp(1.6rem, 3.6vw, 2.9rem); line-height: 1.06;
+  letter-spacing: -0.02em; color: var(--bone); text-wrap: balance;
+}
+.story__d { color: var(--ash); font-size: clamp(0.9375rem, 1vw + 0.7rem, 1.0625rem); max-width: 42ch; }
+
+.story__rail { display: flex; gap: 0.4rem; margin-top: clamp(1.5rem, 4vh, 2.4rem); }
+.story__rail span {
+  flex: 1; height: 2px; background: var(--rule);
+  transition: background-color 0.5s var(--ease-out);
+}
+.story__rail span[data-on="true"] { background: var(--accent); }
+
+@media (max-width: 900px) {
+  /* the picture moves above the words rather than behind them */
+  .story__hud { padding-block: clamp(4.5rem, 11vh, 6rem) clamp(1.5rem, 4vh, 2.5rem); }
+  .story__acts { min-height: clamp(15rem, 40vh, 21rem); }
+  .story__k { font-size: clamp(1.5rem, 6.6vw, 2.1rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story__track { height: auto; }
+  .story__stage { position: static; height: auto; padding-block: var(--gutter); }
+  .story__hud { height: auto; gap: 2.5rem; }
+  .story__acts { min-height: 0; display: grid; gap: 3rem; }
+  .story__act { position: static; opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- after you say yes ---------- */
+.after {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: clamp(1.6rem, 3.5vw, 2.6rem);
+  grid-template-columns: 1fr;
+  counter-reset: none;
+}
+@media (min-width: 700px) { .after { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .after { grid-template-columns: repeat(3, 1fr); } }
+.after__i {
+  display: grid; gap: 0.45rem; align-content: start;
+  border-top: 1px solid var(--rule-hi); padding-top: 1.1rem;
+}
+.after__n { color: var(--accent); letter-spacing: 0.2em; }
+.after__t {
+  font-family: var(--f-display); font-optical-sizing: none;
+  font-variation-settings: "opsz" 15; font-weight: 500;
+  font-size: clamp(1.15rem, 2vw, 1.4rem); line-height: 1.15; color: var(--bone);
+}
+.after__d { color: var(--ash); font-size: 0.9375rem; line-height: 1.68; max-width: 40ch; }
+.after__d a { color: var(--accent); border-bottom: 1px solid color-mix(in srgb, var(--accent) 42%, transparent); }
+.after__d a:hover { border-color: var(--accent); }
 
 /* ============================================================
    48b. THE WALKTHROUGH

@@ -2595,12 +2595,10 @@
     if (!stage) return;
 
     var QUERY = "how to build a website";
-    /* The search engine is nobody in particular, so its address uses the TLD
-       IANA reserves for exactly this — it can never be anyone's real site. And
-       Orion's own address is the site's name, not an invented domain: this is
-       a dramatisation, and a domain nobody owns is a claim, not a drawing. */
-    var URL_SEARCH = "search.example";
-    var URL_RESULTS = "search.example/search?q=how+to+build+a+website";
+    /* Orion's own address is the site's name rather than an invented domain:
+       a domain nobody owns, printed in an address bar, is a claim. */
+    var URL_SEARCH = "google.com";
+    var URL_RESULTS = "google.com/search?q=how+to+build+a+website";
     var URL_ORION = "orion/home";
 
     var root = document.documentElement;
@@ -2733,7 +2731,7 @@
       }],
       [520, function () {
         if (url) url.innerHTML = URL_SEARCH;
-        if (tabSTitle) tabSTitle.textContent = "Search";
+        if (tabSTitle) tabSTitle.textContent = "Google";
         pointAt(pill, { fx: 0.34 });
       }],
       [880, function () {
@@ -2758,7 +2756,7 @@
         if (window.OrionAudio) window.OrionAudio.click();
       }],
       [3560, function () {
-        navigate(URL_RESULTS, QUERY + " - Search");
+        navigate(URL_RESULTS, QUERY + " - Google Search");
         page("serp");
         sb.removeAttribute("data-open");
         if (status) status.textContent = "One result";
@@ -3393,6 +3391,201 @@
   }
 
   /* ============================================================
+     35. THE SHORT VERSION
+     Five acts under the hero: what this is, why it costs what it
+     costs, what happens if you say yes, what it costs, and what you
+     are left holding. One cloud of points morphs between five
+     arrangements as you scroll, and the same scroll position picks
+     the words — so the picture and the sentence cannot drift apart.
+
+     A page, then a lattice of identical pages, then a process, then
+     three prices, then the belt. The argument is in the shapes.
+     ============================================================ */
+  function initStory() {
+    var canvas = $("#story-art");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    var track = $("#story-track");
+    var acts = $$("[data-story-act]");
+    var ticks = $$("[data-story-tick]");
+    if (!track || !acts.length) return;
+
+    var W = 0, H = 0, dpr = 1;
+    var progress = 0, live = false, act = 0;
+    var accent = [63, 217, 192];
+
+    var N = Math.round(460 * Math.max(0.5, Q.tier));
+    var pts = [];
+
+    function rnd(i, k) { return hash2(i * 1.37 + k * 5.11, i * 0.73 + k * 2.9); }
+
+    /* ---- the five arrangements, in a square [-1,1] space ---- */
+    function page(i) {
+      /* a page: a border, and lines of text inside it */
+      var L = -0.66, R = 0.66, T = -0.8, B = 0.8;
+      if (i % 3 === 0) {
+        /* the border */
+        var t = rnd(i, 1), per = t * 4;
+        if (per < 1) return [L + (R - L) * per, T];
+        if (per < 2) return [R, T + (B - T) * (per - 1)];
+        if (per < 3) return [R - (R - L) * (per - 2), B];
+        return [L, B - (B - T) * (per - 3)];
+      }
+      var row = Math.floor(rnd(i, 2) * 7);
+      var len = [0.94, 0.62, 0.86, 0.5, 0.9, 0.7, 0.34][row];
+      return [L + 0.08 + rnd(i, 3) * (R - L - 0.16) * len, T + 0.3 + row * 0.19];
+    }
+    function lattice(i) {
+      /* every one the same size, the same distance apart */
+      var cols = 10, rows = 6;
+      var c = i % cols, r = Math.floor(i / cols) % rows;
+      return [-0.8 + (c / (cols - 1)) * 1.6, -0.55 + (r / (rows - 1)) * 1.1];
+    }
+    function process(i) {
+      var nodes = 6;
+      if (i % 3 === 0) {
+        /* the line itself */
+        return [-0.86 + rnd(i, 4) * 1.72, 0];
+      }
+      var n = i % nodes;
+      var nx = -0.86 + (n / (nodes - 1)) * 1.72;
+      var a = rnd(i, 5) * 6.2832, rr = Math.pow(rnd(i, 6), 0.6) * 0.16;
+      return [nx + Math.cos(a) * rr, Math.sin(a) * rr];
+    }
+    function bars(i) {
+      var b = i % 3;
+      var bx = [-0.5, 0, 0.5][b];
+      var bh = [0.5, 0.78, 1.06][b];
+      var w = 0.16;
+      return [bx - w + rnd(i, 7) * w * 2, 0.72 - rnd(i, 8) * bh];
+    }
+    function belt(i) {
+      /* Orion's Belt, in the same proportions as the logo, and a sky */
+      var STARS = [[-0.62, 0.34, 0.1], [0.02, -0.04, 0.115], [0.66, -0.42, 0.085]];
+      if (i % 4 === 0) {
+        var st = STARS[i % 3];
+        var a = rnd(i, 9) * 6.2832, rr = Math.pow(rnd(i, 10), 0.5) * st[2];
+        return [st[0] + Math.cos(a) * rr, st[1] + Math.sin(a) * rr];
+      }
+      if (i % 4 === 1) {
+        /* the line between them */
+        var t = rnd(i, 11);
+        return [-0.62 + t * 1.28, 0.34 - t * 0.76];
+      }
+      return [-1.05 + rnd(i, 12) * 2.1, -0.95 + rnd(i, 13) * 1.9];
+    }
+    var SHAPES = [page, lattice, process, bars, belt];
+
+    for (var i = 0; i < N; i++) {
+      var p0 = page(i);
+      pts.push({ x: p0[0], y: p0[1], tx: p0[0], ty: p0[1], s: 0.6 + rnd(i, 14) * 0.9 });
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var r = canvas.getBoundingClientRect();
+      W = Math.round(r.width); H = Math.round(r.height);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function readAccent() {
+      var v = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+      var m = v.match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return;
+      var n = parseInt(m[1], 16);
+      accent = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    function draw(t) {
+      if (!W) { resize(); if (!W) return; }
+      ctx.clearRect(0, 0, W, H);
+      /* the shorter side sets the scale, so the arrangement keeps its
+         proportions instead of stretching with the window */
+      /* On a wide screen the words are on the left and the picture takes the
+         right third. On a narrow one there is no right third, so it goes above
+         the words instead of behind them. */
+      var wide = W > 900;
+      var k = Math.min(W, H) * (wide ? 0.4 : 0.32);
+      var cx = wide ? W * 0.66 : W * 0.5;
+      var cy = H * (wide ? 0.46 : 0.27);
+      var dot = Math.max(1.1, k * 0.0075);
+      var fade = wide ? 1 : 0.72;
+      var a = accent;
+
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(" + a[0] + "," + a[1] + "," + a[2] + "," + (0.2 * fade).toFixed(2) + ")";
+      /* threads between near neighbours: it reads as one object rather than
+         three hundred unrelated specks */
+      for (var i = 0; i < N; i += 2) {
+        var p = pts[i], q = pts[(i + 7) % N];
+        var dx = p.x - q.x, dy = p.y - q.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 > 0.045) continue;
+        ctx.beginPath();
+        ctx.moveTo(cx + p.x * k, cy + p.y * k);
+        ctx.lineTo(cx + q.x * k, cy + q.y * k);
+        ctx.stroke();
+      }
+
+      for (var j = 0; j < N; j++) {
+        var pt = pts[j];
+        var bob = REDUCED ? 0 : Math.sin(t * 0.0009 + j) * 0.9;
+        ctx.fillStyle = "rgba(" + a[0] + "," + a[1] + "," + a[2] + "," + ((0.55 + pt.s * 0.35) * fade).toFixed(2) + ")";
+        ctx.beginPath();
+        ctx.arc(cx + pt.x * k, cy + pt.y * k + bob, dot * pt.s, 0, 6.2832);
+        ctx.fill();
+      }
+    }
+
+    resize();
+    readAccent();
+    window.addEventListener("resize", resize, { passive: true });
+
+    if (REDUCED) {
+      acts.forEach(function (el) { el.setAttribute("data-on", "true"); });
+      ticks.forEach(function (el) { el.setAttribute("data-on", "true"); });
+      pts.forEach(function (p, i) { var q = belt(i); p.x = q[0]; p.y = q[1]; });
+      draw(0);
+      return;
+    }
+
+    var accentAge = 0;
+    addReader(function (dt) {
+      accentAge += dt;
+      if (accentAge > 500) { accentAge = 0; readAccent(); }
+      var r = track.getBoundingClientRect();
+      live = !(r.bottom < -100 || r.top > S.vh + 100);
+      if (!live) return;
+      progress = clamp(-r.top / Math.max(1, r.height - S.vh), 0, 1);
+    });
+
+    addWriter(function (dt, t) {
+      if (!live) return;
+      var want = clamp(Math.floor(progress * SHAPES.length * 0.999), 0, SHAPES.length - 1);
+      if (want !== act) {
+        act = want;
+        acts.forEach(function (el, i) { el.setAttribute("data-on", String(i === act)); });
+        ticks.forEach(function (el, i) { el.setAttribute("data-on", String(i <= act)); });
+        var shape = SHAPES[act];
+        for (var i = 0; i < N; i++) {
+          var q = shape(i);
+          pts[i].tx = q[0]; pts[i].ty = q[1];
+        }
+      }
+      for (var j = 0; j < N; j++) {
+        var p = pts[j];
+        p.x = damp(p.x, p.tx, 170, dt);
+        p.y = damp(p.y, p.ty, 170, dt);
+      }
+      draw(t);
+    });
+  }
+
+
+  /* ============================================================
      36. THE WALKTHROUGH
      A tour of the site that survives leaving the page it started on.
      There is no router here — every page is a separate document — so
@@ -3633,6 +3826,7 @@
     initLab();
     initCheckout();
     initCarry();
+    initStory();
     initTour();
     init3D();
     initCard3D();

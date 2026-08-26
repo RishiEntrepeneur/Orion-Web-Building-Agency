@@ -33,6 +33,14 @@
   .brw__ptr, .burst, .asm__burst { display: none !important; }
   /* a control that only script can honour should not be offered */
   .walk, .foot__walk, .asm__fire { display: none !important; }
+  /* the five acts are keyed to a scroll position nothing is reading, so
+     they stack and all of them show */
+  .story__track { height: auto !important; }
+  .story__stage { position: static !important; height: auto !important; padding-block: var(--gutter); }
+  .story__hud { height: auto !important; gap: 2.5rem; }
+  .story__acts { min-height: 0 !important; display: grid !important; gap: 3rem; }
+  .story__act { position: static !important; }
+  .story__art { display: none !important; }
 </style></noscript>
 
 <script type="application/ld+json">
@@ -368,6 +376,10 @@
   { "page": "home.html", "at": "#index", "lit": ".hero__h1",
     "k": "Somebody wrote this",
     "t": "Every word on this page was written for Orion, by the person who built it. Nothing was poured into a layout that had already been drawn for somebody else." },
+
+  { "page": "home.html", "at": "#story-track", "into": 0.06, "lit": ".story__acts",
+    "k": "The short version, in five screens",
+    "t": "Keep scrolling from here and the whole argument goes past: what this is, why it costs what it costs, what happens if you say yes, and what you are left holding at the end of it." },
 
   { "page": "home.html", "at": "#asm-track", "into": 0.55, "lit": "[data-asm-fire]",
     "k": "Five layers, and somebody chose all five",

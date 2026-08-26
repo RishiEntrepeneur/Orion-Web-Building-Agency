@@ -105,16 +105,13 @@ The results page swaps in, the address bar and the tab title follow it, the
 pointer clicks the one result, and **Orion opens in a second tab** — which then
 zooms until the tab is the screen.
 
-Two things it deliberately does not do:
-
-- **It claims no domain.** The search engine's address uses `.example`, the TLD
-  IANA reserves for documentation, so it can never be anybody's real site. Orion's
-  own address is its name rather than a domain nobody owns. An earlier version
-  used `orion.build` and an invented result count, and the truth sweep caught
-  both — a domain you do not own printed in an address bar is a claim, not a
-  drawing.
-- **It is not a real browser's chrome.** The layout follows the conventions
-  everybody knows; the wordmark and the name are nobody's.
+The search engine is Google, at the client's instruction, and the mark is
+**drawn rather than set**: Product Sans is not a typeface anybody can license,
+and the letterforms are geometric enough to build from a handful of arcs and
+bars. Orion's own address in that bar is its name rather than a domain nobody
+owns — an earlier version printed `orion.build`, and the truth sweep caught it,
+because a domain you do not own printed in an address bar is a claim rather
+than a drawing.
 
 It runs off a **cue list evaluated against elapsed time**, not chained timeouts.
 That is what makes it skippable: Escape fires every cue that has not run yet and
@@ -132,9 +129,26 @@ despite being an animation.
 
 ---
 
+## The short version
+
+The first thing under the hero, because it is what somebody who has just
+arrived actually wants: what this is, why it costs what it costs, what happens
+if they say yes, what it costs, and what they are left holding.
+
+Five acts over one canvas. A cloud of points morphs between five arrangements
+as you scroll — a page, then a lattice of identical pages, then a process, then
+three bars, then Orion's Belt — and the **same scroll position** picks the
+words, so the picture and the sentence cannot drift apart. The argument is in
+the shapes.
+
+**After you say yes** follows it with the six steps in order, because the
+question after "why" is always "and then what happens".
+
+---
+
 ## The walkthrough
 
-**Walk me through it** under the hero runs a ten-stop tour across six pages:
+**Walk me through it** under the hero runs an eleven-stop tour across six pages:
 the home page, the demos, the prices, the terms, the teardown, and the brief.
 Each stop scrolls to the thing it is describing and puts a ring round it.
 
@@ -146,7 +160,7 @@ inside a pinned track can walk a fraction of the way into it (`into`),
 because the top of a three-screen track is the frame where nothing has
 happened yet.
 
-The copy for all ten stops lives in one JSON block in the shared chrome, so
+The copy for all eleven stops lives in one JSON block in the shared chrome, so
 the stops cannot drift between pages.
 
 Every stop argues by pointing at something the reader can check rather than
