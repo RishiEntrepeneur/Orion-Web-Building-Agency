@@ -134,8 +134,8 @@ despite being an animation.
 
 ## The walkthrough
 
-**Walk me through it** under the hero runs a nine-stop tour across five
-pages: the home page, the demos, the prices, the teardown, and the brief.
+**Walk me through it** under the hero runs a ten-stop tour across six pages:
+the home page, the demos, the prices, the terms, the teardown, and the brief.
 Each stop scrolls to the thing it is describing and puts a ring round it.
 
 There is no router here — every page is a separate document — so the
@@ -146,7 +146,7 @@ inside a pinned track can walk a fraction of the way into it (`into`),
 because the top of a three-screen track is the frame where nothing has
 happened yet.
 
-The copy for all nine stops lives in one JSON block in the shared chrome, so
+The copy for all ten stops lives in one JSON block in the shared chrome, so
 the stops cannot drift between pages.
 
 Every stop argues by pointing at something the reader can check rather than
