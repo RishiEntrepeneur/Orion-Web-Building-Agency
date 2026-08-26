@@ -132,7 +132,7 @@ despite being an animation.
 ## The short version
 
 The first thing under the hero, because it is what somebody who has just
-arrived actually wants: what this is, why it costs what it costs, what happens
+arrived actually wants: what this is, why it is worth paying for, what happens
 if they say yes, what it costs, and what they are left holding.
 
 Five acts over one canvas. A cloud of points morphs between five arrangements
