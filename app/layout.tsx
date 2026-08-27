@@ -31,8 +31,40 @@ const mono = DM_Mono({
   variable: "--font-mono",
 });
 
+/**
+ * The absolute base for canonical and Open Graph URLs.
+ *
+ * `??` was wrong here. An environment variable that is set but empty is a
+ * string, not nullish, so an empty NEXT_PUBLIC_SITE_URL went straight past the
+ * fallback into `new URL("")` and threw ERR_INVALID_URL -- which fails the
+ * whole build, not just the metadata. Blank, whitespace-only and malformed
+ * values all have to fall back, and a value without a scheme is a typo worth
+ * absorbing rather than dying on.
+ *
+ * When nothing is configured this picks up the deployment's own domain, so
+ * link previews are correct before anyone owns a domain name.
+ */
+function siteUrl(): URL {
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    vercel ? `https://${vercel}` : undefined,
+    "https://orion.studio",
+  ];
+  for (const raw of candidates) {
+    const v = raw?.trim();
+    if (!v) continue;
+    try {
+      return new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`);
+    } catch {
+      // Next candidate. A mistyped variable must not take the build down.
+    }
+  }
+  return new URL("https://orion.studio");
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://orion.studio"),
+  metadataBase: siteUrl(),
   title: {
     default: "Orion Dream Studio",
     template: "%s",
