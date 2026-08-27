@@ -1,367 +1,24 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ArrowRight, ArrowUpRight, Boxes, Cpu, Feather, Gauge, Layers, LineChart, Menu, Radar, Sparkles, Waves, X,
+  ArrowRight, ArrowUpRight, Boxes, Cpu, Feather, Gauge, Layers, LineChart, Radar, Sparkles, Waves,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
-import Birds from "../../components/galaxy/Birds";
-import CommandPalette, { type Command } from "../../components/galaxy/CommandPalette";
-import Cursor from "../../components/galaxy/Cursor";
-import PromptToSite from "../../components/galaxy/PromptToSite";
-import CloudCanvas from "../../components/galaxy/CloudCanvas";
-import Journey from "../../components/galaxy/Journey";
-import { PageOpen, Rise } from "../../components/galaxy/page-parts";
-import { SPRING } from "../../components/galaxy/motion";
+import Journey from "./Journey";
+import PromptToSite from "./PromptToSite";
+import { PageOpen, Rise } from "./page-parts";
+import { SPRING } from "./motion";
+import { Btn, Card, CONTACT, Mono } from "./ui-kit";
 
-/**
- * The one place the studio's contact details live.
- *
- * One constant, referenced by the form's mailto and by the contact card, so a
- * change of address is a change in one line rather than a search across the
- * site for the three places it got typed out.
- */
-const CONTACT = {
-  email: "rishiorion2912@gmail.com",
-  location: "United Kingdom",
-  reply: "Within one working day",
-};
 
-const ROUTES = [
-  { path: "/", label: "Dream", index: "01" },
-  { path: "/capabilities", label: "Craft", index: "02" },
-  { path: "/work", label: "Work", index: "03" },
-  { path: "/studio", label: "Studio", index: "04" },
-  { path: "/contact", label: "Begin", index: "05" },
-];
-
-/* ========================================================================== */
-
-function Mono({ children, className = "", live = false }: { children: React.ReactNode; className?: string; live?: boolean }) {
-  return (
-    <span className={`inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-ink-mute ${className}`}>
-      {live && (
-        <span className="relative flex size-1.5">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-70" />
-          <span className="relative inline-flex size-1.5 rounded-full bg-gold" />
-        </span>
-      )}
-      {children}
-    </span>
-  );
-}
-
-/** Every button in the system. The fill wipes up from the base on hover. */
-function Btn({
-  children, onClick, primary = false, icon,
-}: { children: React.ReactNode; onClick?: () => void; primary?: boolean; icon?: React.ReactNode }) {
-  return (
-    <motion.button
-      onClick={onClick}
-      whileHover={{ y: -3 }}
-      whileTap={{ y: -1, scale: 0.99 }}
-      transition={SPRING}
-      className={`group relative isolate inline-flex items-center gap-3 overflow-hidden rounded-full px-7 py-3.5 text-[14px] font-medium tracking-tight ${
-        primary
-          ? "bg-ink text-cream shadow-[0_14px_34px_-14px_rgba(27,33,64,0.75)]"
-          : "border border-ink/15 bg-cream/60 text-ink backdrop-blur-md"
-      }`}
-    >
-      {!primary && (
-        <span
-          aria-hidden
-          className="absolute inset-0 -z-10 origin-bottom scale-y-0 bg-ink transition-transform duration-500 ease-[cubic-bezier(0.2,0.65,0.3,0.9)] group-hover:scale-y-100"
-        />
-      )}
-      <span className={primary ? "" : "transition-colors duration-500 group-hover:text-cream"}>{children}</span>
-      {icon && (
-        <span className={`transition-all duration-500 group-hover:translate-x-1 ${primary ? "" : "group-hover:text-cream"}`}>
-          {icon}
-        </span>
-      )}
-    </motion.button>
-  );
-}
-
-/** A word that lifts letter by letter when you hover it. */
-function LiftWord({ word, className = "", delay = 0 }: { word: string; className?: string; delay?: number }) {
-  return (
-    <span className={`group/word inline-block ${className}`}>
-      {word.split("").map((ch, i) => (
-        <motion.span
-          key={i}
-          className="inline-block will-change-transform"
-          initial={{ opacity: 0, y: "0.5em", rotate: 4 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ ...SPRING, delay: delay + i * 0.035 }}
-          whileHover={{ y: -10, transition: { type: "spring", mass: 0.4, stiffness: 240, damping: 12 } }}
-        >
-          {ch}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
-
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  return (
-    <motion.div
-      ref={ref}
-      onPointerMove={(e) => {
-        const r = ref.current?.getBoundingClientRect();
-        if (!r) return;
-        ref.current!.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        ref.current!.style.setProperty("--my", `${e.clientY - r.top}px`);
-      }}
-      whileHover={{ y: -8 }}
-      transition={SPRING}
-      className={`card group relative isolate overflow-hidden rounded-[26px] ${className}`}
-    >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ background: "radial-gradient(340px circle at var(--mx,50%) var(--my,50%), rgba(91,99,232,0.13), transparent 70%)" }}
-      />
-      {children}
-    </motion.div>
-  );
-}
-
-/* ========================================================================== */
-
-export default function App() {
-  const [path, setPath] = useState<string>(() => read());
-  const [open, setOpen] = useState(false);
-  const [tel, setTel] = useState({ fps: 60, steps: 44, scale: 0.54 });
-
-  useEffect(() => {
-    const on = () => setPath(read());
-    window.addEventListener("hashchange", on);
-    return () => window.removeEventListener("hashchange", on);
-  }, []);
-
-  /* A client-side route change is silent: nothing reloads, so nothing is
-     announced and focus stays wherever it was. Moving focus to the new
-     heading is what makes the navigation exist for anyone not looking at the
-     screen. Keyed on the route and skipped on first paint, so a fresh load
-     does not yank focus off the top of the document. */
-  /**
-   * Move focus to the new page's heading on a client-side route change.
-   *
-   * The outgoing page holds the tree for the length of its exit under
-   * `AnimatePresence mode="wait"`, so for a moment there are two pages mounted
-   * and the incoming heading does not exist yet. A fixed delay long enough to
-   * cover that is a race that loses whenever the exit runs a few frames long,
-   * and losing it silently drops a keyboard user back at the top of the
-   * document. So: poll for the heading belonging to the route being entered,
-   * identified by `data-route` rather than by position, and give up rather
-   * than steal focus from someone who has already moved on.
-   *
-   * On a timer rather than on animation frames: the sky behind this is a
-   * volumetric raymarch, and on a weak GPU it can hold frames for tens of
-   * milliseconds at a time. A frame-driven poll then gets only a handful of
-   * attempts inside its window and loses the race precisely on the machines
-   * least able to afford it. Timers are not throttled by the renderer.
-   *
-   * The window is deliberately long. On a machine with a real GPU the heading
-   * is focused in a few hundred milliseconds; on a software rasteriser the
-   * same swap has been measured taking several seconds. Nothing is stolen by
-   * waiting \u2014 the guard above stops as soon as the visitor puts focus
-   * anywhere in the page themselves \u2014 so the cost of a generous deadline is
-   * nil and the cost of a tight one is a keyboard user left stranded.
-   */
-  const firstPaint = useRef(true);
-  useEffect(() => {
-    if (firstPaint.current) { firstPaint.current = false; return; }
-    const deadline = performance.now() + 5000;
-    let timer = 0;
-    const attempt = () => {
-      const heading = document.querySelector<HTMLElement>(
-        `main [data-route="${path}"] h1`,
-      );
-      // Take focus unless the visitor has already tabbed into the new page's
-      // content. Focus sitting on a nav link, or on the palette trigger that
-      // restored it, is exactly the case this is here to move.
-      const here = document.activeElement as HTMLElement | null;
-      if (heading && !here?.closest("main")) {
-        heading.setAttribute("tabindex", "-1");
-        heading.focus({ preventScroll: true });
-        // Stop only once the browser agrees. Calling focus() during the swap
-        // does not always take, and a write that silently did nothing looks
-        // identical to one that worked from here.
-        if (document.activeElement === heading) return;
-      }
-      if (performance.now() > deadline) return;
-      timer = window.setTimeout(attempt, 32);
-    };
-    timer = window.setTimeout(attempt, 32);
-    return () => window.clearTimeout(timer);
-  }, [path]);
-
-  const go = (next: string) => {
-    window.location.hash = next;
-    setPath(next);
-    setOpen(false);
-    window.scrollTo({ top: 0, behavior: "auto" });
-  };
-
-  const commands: Command[] = [
-    ...ROUTES.map((r) => ({
-      id: "route" + r.path,
-      label: r.label,
-      hint: "Page " + r.index,
-      run: () => go(r.path),
-    })),
-    { id: "top", label: "Back to top", hint: "Scroll", run: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
-    { id: "demo", label: "Try the live builder", hint: "Demo", run: () => {
-        go("/");
-        requestAnimationFrame(() => document.getElementById("builder")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-      } },
-  ];
-
-  return (
-    <>
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-[13px] focus:text-cream"
-      >
-        Skip to content
-      </a>
-
-      <CloudCanvas onTelemetry={setTel} />
-      <Birds count={6} />
-      <Cursor />
-      <CommandPalette commands={commands} />
-
-      {/* Route changes are posted here so assistive technology hears them. */}
-      <p aria-live="polite" className="sr-only">
-        {ROUTES.find((r) => r.path === path)?.label} page
-      </p>
-      {/* A light haze that thickens toward the foot, so panels lower down have
-          a calmer ground than the bright cloud tops up here. */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10"
-        style={{ background: "linear-gradient(180deg, rgba(253,251,246,0) 0%, rgba(238,241,251,0.18) 46%, rgba(238,241,251,0.55) 100%)" }}
-      />
-
-      <header className="film-hide fixed inset-x-0 top-0 z-50">
-        <div className="mx-auto mt-4 flex h-14 w-[calc(100%-2rem)] max-w-[1500px] items-center justify-between gap-5 rounded-full border border-white/70 bg-cream/70 px-5 backdrop-blur-xl sm:px-6">
-          <button onClick={() => go("/")} className="flex items-center gap-2.5" aria-label="Orion, home">
-            <Feather className="size-4 text-iris" strokeWidth={1.6} />
-            <span className="font-display text-[19px] leading-none tracking-tight text-ink">Orion</span>
-          </button>
-
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
-            {ROUTES.map((r) => (
-              <button key={r.path} onClick={() => go(r.path)} aria-current={r.path === path ? "page" : undefined} className="group relative py-1">
-                <span className={`text-[14px] tracking-tight transition-colors duration-300 ${r.path === path ? "text-ink" : "text-ink-mute group-hover:text-ink"}`}>
-                  {r.label}
-                </span>
-                <span className={`absolute -bottom-0.5 left-0 h-px w-full origin-left bg-iris transition-transform duration-500 ${r.path === path ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`} />
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <button onClick={() => go("/contact")} className="hidden rounded-full bg-ink px-5 py-2 text-[13px] font-medium text-cream transition-transform duration-300 hover:-translate-y-0.5 sm:block">
-              Start dreaming
-            </button>
-            <button onClick={() => setOpen(true)} aria-label="Open menu" className="text-ink lg:hidden">
-              <Menu className="size-5" strokeWidth={1.6} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[60] bg-cream/95 backdrop-blur-2xl lg:hidden">
-            <div className="flex h-20 items-center justify-end px-8">
-              <button onClick={() => setOpen(false)} aria-label="Close menu" className="text-ink"><X className="size-5" strokeWidth={1.6} /></button>
-            </div>
-            <nav className="px-8" aria-label="Mobile">
-              {ROUTES.map((r, i) => (
-                <motion.button key={r.path}
-                  initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...SPRING, delay: 0.04 + i * 0.05 }}
-                  onClick={() => go(r.path)}
-                  className="flex w-full items-baseline gap-5 border-b border-ink/10 py-6 text-left">
-                  <Mono>{r.index}</Mono>
-                  <span className="font-display text-4xl tracking-tight text-ink">{r.label}</span>
-                </motion.button>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <main id="main" className="relative [overflow-x:clip]">
-        <AnimatePresence mode="wait">
-          {/* `data-route` is what the focus effect keys off. Under `mode="wait"`
-              the outgoing page is still in the tree through its exit, so
-              "the first h1 in main" is the page being left, not the one being
-              entered. Stamping the path makes the two distinguishable. */}
-          <motion.div key={path} data-route={path}
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, transition: { duration: 0.18 } }} transition={{ duration: 0.55 }}>
-            {path === "/" && <Dream go={go} tel={tel} />}
-            {path === "/capabilities" && <Craft />}
-            {path === "/work" && <Work />}
-            {path === "/studio" && <Studio />}
-            {path === "/contact" && <Begin />}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {/* Extra bottom room on large screens: the search affordance is pinned to
-          the bottom-right of the viewport, and at the end of the document it
-          landed on top of the footer's own links. */}
-      <footer className="relative mx-auto w-full max-w-[1500px] px-6 pb-12 sm:px-10 lg:px-24 lg:pb-24">
-        <div className="card rounded-[30px] p-8 sm:p-12">
-          <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
-            <p className="font-display text-[clamp(2rem,4.6vw,3.6rem)] leading-[0.98] tracking-[-0.02em] text-ink">
-              Let&rsquo;s build the one<br />you keep imagining.
-            </p>
-            <div className="flex flex-wrap gap-x-8 gap-y-3">
-              {ROUTES.map((r) => (
-                <button key={r.path} onClick={() => go(r.path)} className="text-[14px] text-ink-mute transition-colors duration-300 hover:text-ink">
-                  {r.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="mt-10 flex flex-col gap-2 border-t border-ink/10 pt-6 sm:flex-row sm:justify-between">
-            {/* Off the one contact constant, not typed out again: a studio
-                that moves should not have to hunt for the three places its
-                location got hardcoded. */}
-            <Mono>Orion Dream Studio &mdash; {CONTACT.location}</Mono>
-            <a href={`mailto:${CONTACT.email}`} className="transition-colors hover:text-ink">
-              <Mono>{CONTACT.email}</Mono>
-            </a>
-          </div>
-        </div>
-      </footer>
-    </>
-  );
-}
-
-function read() {
-  const raw = window.location.hash.replace(/^#/, "");
-  return ROUTES.some((r) => r.path === raw) ? raw : "/";
-}
-
-/* ============================== DREAM ==================================== */
-
-function Dream({ go, tel }: { go: (p: string) => void; tel: { fps: number; steps: number; scale: number } }) {
+export function Dream() {
   return (
     <>
       {/* The opening is a film, not a hero: one camera move through one space,
           scrubbed by scroll. See Journey. */}
-      <Journey go={go} tel={tel} />
+      <Journey />
 
       {/* The claim, demonstrated. A studio that says "prompt to site" and
           never shows one is asking to be taken on faith. */}
@@ -482,7 +139,7 @@ const CRAFT = [
   },
 ];
 
-function Craft() {
+export function Craft() {
   return (
     <>
       <PageOpen
@@ -565,7 +222,7 @@ const BUILT = [
   },
 ];
 
-function Work() {
+export function Work() {
   return (
     <>
       <PageOpen
@@ -612,7 +269,7 @@ function Work() {
 
 /* -------------------------------------------------------------------------- */
 
-function Studio() {
+export function Studio() {
   const P = [
     { icon: Gauge, t: "Fast is a feature, not a phase", b: "A performance budget is agreed before the first commit and measured before launch. If a scene cannot meet it, the scene changes, not the budget." },
     { icon: Radar, t: "Fixed scope so quality is not the variable", b: "Open-ended projects negotiate quality away under deadline. Fix the scope and the only remaining variable is how well it is built." },
@@ -672,20 +329,13 @@ function Studio() {
 
 /* -------------------------------------------------------------------------- */
 
-function Begin() {
+export function Begin() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [brief, setBrief] = useState("");
-
-  /* There is no server behind this page, so the form composes a message and
-     hands it to the visitor's own mail client. A form that silently swallows a
-     brief and shows a tick is worse than no form at all. */
-  const mailto =
-    `mailto:${CONTACT.email}` +
-    `?subject=${encodeURIComponent(`Website brief${name ? ` from ${name}` : ""}`)}` +
-    `&body=${encodeURIComponent(
-      `${brief}\n\n--\n${name}${email ? `\n${email}` : ""}`,
-    )}`;
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const [hp, setHp] = useState("");
 
   return (
     <>
@@ -701,11 +351,42 @@ function Begin() {
             <Card className="p-8 sm:p-10 lg:p-12">
               <form
                 className="flex flex-col gap-7"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  window.location.href = mailto;
+                  if (sending) return;
+                  setSending(true);
+                  setResult(null);
+                  try {
+                    const res = await fetch("/api/contact", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name, email, brief, company: hp }),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data.ok) {
+                      setResult({ ok: false, text: data.error ?? "Something went wrong. Email me directly." });
+                    } else if (data.delivered === false) {
+                      /* Delivery is not wired up on this deployment. Saying
+                         "sent" here would be the one lie the whole site is
+                         built to avoid. */
+                      setResult({ ok: true, text: `Received \u2014 but delivery is not configured yet, so please also email ${CONTACT.email} directly.` });
+                    } else {
+                      setResult({ ok: true, text: "Sent. You will get a real answer within one working day." });
+                      setName(""); setEmail(""); setBrief("");
+                    }
+                  } catch {
+                    setResult({ ok: false, text: "Network trouble. Email me directly and it will land." });
+                  } finally {
+                    setSending(false);
+                  }
                 }}
               >
+                {/* A field no person can see and no person fills in. */}
+                <input
+                  value={hp} onChange={(e) => setHp(e.target.value)}
+                  type="text" tabIndex={-1} autoComplete="off" aria-hidden
+                  className="absolute -left-[9999px] size-px opacity-0"
+                />
                 <label className="flex flex-col gap-3">
                   <Mono>Your name</Mono>
                   <input
@@ -732,11 +413,13 @@ function Begin() {
                 </label>
                 <div className="mt-2 flex flex-wrap items-center gap-5">
                   <Btn primary icon={<ArrowRight className="size-4" strokeWidth={2} />}>
-                    Send the brief
+                    {sending ? "Sending\u2026" : "Send the brief"}
                   </Btn>
-                  <span className="max-w-xs text-[13px] leading-relaxed text-ink-soft">
-                    Opens your own mail app with the brief written out, so you
-                    keep a copy of what you sent.
+                  <span
+                    role="status" aria-live="polite"
+                    className={`max-w-xs text-[13px] leading-relaxed ${result && !result.ok ? "text-[#8c2f3c]" : "text-ink-soft"}`}
+                  >
+                    {result ? result.text : "Goes straight to the studio inbox. No autoresponder, no sequence."}
                   </span>
                 </div>
               </form>

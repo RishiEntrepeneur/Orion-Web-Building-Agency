@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { createAutoplay, type PlayState } from "./autoplay";
+import { useTelemetry } from "./telemetry";
 import { scrollState, setJourneyElement } from "./scroll-state";
 
 /**
@@ -66,13 +69,10 @@ const LENGTH_VH = 760;
 
 /* -------------------------------------------------------------------------- */
 
-export default function Journey({
-  go,
-  tel,
-}: {
-  go: (path: string) => void;
-  tel: { fps: number; steps: number; scale: number };
-}) {
+export default function Journey() {
+  const router = useRouter();
+  const go = (path: string) => router.push(path);
+  const tel = useTelemetry();
   const wrap = useRef<HTMLElement>(null);
   const [chapter, setChapter] = useState(0);
   const [reduced, setReduced] = useState(false);

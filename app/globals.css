@@ -1,497 +1,190 @@
 @import "tailwindcss";
 
-/* ==================================================================
-   ORION — MONOCHROME SPATIAL SYSTEM
-   ------------------------------------------------------------------
-   No chromatic accent. The accent is luminance and specular metal.
+@source "../../components/galaxy";
+@source "./App.tsx";
 
-   The neutrals are split by temperature rather than tinted uniformly.
-   Substrate and secondary type run cool (~218deg); chrome, ink and the
-   specular highlights run warm (~40deg). That is how metal actually
-   behaves — it reflects a cool sky in its shade and a warm bounce in
-   its highlight. Tinting both ends the same direction is exactly what
-   makes a monochrome palette read as flat grey UI instead of as metal.
-   Chroma stays low enough throughout that nothing is nameable as a hue.
-
-   Every text token clears WCAG 2.2 AA on every surface it can sit on.
-   ================================================================== */
 @theme {
-  /* Grounds, darkest to lightest */
-  --color-void: #0b0d12; /* substrate — deep obsidian charcoal */
-  --color-abyss: #10131a;
-  --color-surface: #171b23;
-  --color-raised: #1e232d;
-  --color-edge: #2b3140;
+  /* A dream sky is light, so the interface inverts: dark ink on bright cloud
+     rather than white on black. */
+  --color-ink: #1b2140;
+  --color-ink-soft: #4a5378;
+  /* Measured, not picked: #7b84a6 was 3.57:1 on cream, which fails AA for the
+     10-12px mono labels it is used on, and 3.30:1 where it sits on a
+     translucent pill over the sky. This clears 4.5 in both. */
+  --color-ink-mute: #5e698d;
+  --color-cream: #fdfbf6;
+  --color-haze: #eef1fb;
+  --color-iris: #383ebc;
+  --color-gold: #e0913f;
 
-  /* Metal + ink */
-  --color-steel: #6f7889; /* cool: strokes and icon fills — never body text */
-  --color-chrome: #f4f2ec; /* warm: specular highlight, brightest surface */
-  --color-ink: #f0eeea; /* warm bone, not blue-white */
-  --color-ink-muted: #a9b2c1;
-  --color-ink-dim: #828b9a;
-
-  /* ----------------------------------------------------------------
-     THE ORION PALETTE
-     The accents are not chosen for decoration — they are the real
-     colours of the object the studio is named after. M42's emission
-     spectrum and its two brightest neighbours:
-       rigel   B8 supergiant, blue-white — the cold arrival
-       oxygen  doubly ionised oxygen, O-III teal — the nebula's green
-       nebula  ionised hydrogen, H-alpha rose — M42's dominant colour
-       ember   Betelgeuse, red supergiant amber — the warm human note
-     Each clears WCAG AA for text on every surface in this system
-     (worst case 5.23:1), and dark ink clears AA on top of each, so any
-     of them can carry type or fill a control.
-     ---------------------------------------------------------------- */
-  --color-rigel: #9fc4ff;
-  --color-oxygen: #4fd8c4;
-  --color-nebula: #e0678f;
-  --color-ember: #ff9d5c;
-
-  /* Live status reads as the nebula's oxygen line rather than a generic
-     interface green, so nothing on the page is off-palette. */
-  --color-live: #4fd8c4;
-
-  /* Typefaces.
-     Syne for display: geometric, unusual proportions, built for art-
-     direction at poster size — memorable where a neutral grotesque is not.
-     Archivo for text: a workhorse with a width axis, so the editorial scale
-     can vary width as well as size. Martian Mono for technical labels: wide
-     and mechanical, it reads as instrumentation rather than as code. */
-  --font-display: var(--font-syne), "Syne", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-archivo), "Archivo", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", sans-serif;
-  --font-mono: var(--font-martian), "Martian Mono", ui-monospace,
-    "SFMono-Regular", Menlo, monospace;
-
-  /* ----------------------------------------------------------------
-     ASYMMETRIC EDITORIAL SCALE
-     Near-linear through the reading sizes (ratios 1.09 → 1.19) so body
-     copy has fine gradations, then accelerating hard into display
-     (1.42 → 1.53 → 2.6). A uniform modular scale gives either too few
-     text steps or a timid headline; this gives both.
-     ---------------------------------------------------------------- */
-  --text-micro: 0.6875rem;
-  --text-micro--line-height: 1.45;
-  --text-micro--letter-spacing: 0.22em;
-
-  --text-label: 0.75rem;
-  --text-label--line-height: 1.4;
-  --text-label--letter-spacing: 0.18em;
-
-  --text-sm: 0.875rem;
-  --text-sm--line-height: 1.6;
-
-  --text-base: 1rem;
-  --text-base--line-height: 1.68;
-
-  --text-lead: 1.1875rem;
-  --text-lead--line-height: 1.6;
-
-  --text-h4: 1.5rem;
-  --text-h4--line-height: 1.25;
-  --text-h4--letter-spacing: -0.015em;
-
-  --text-h3: clamp(1.75rem, 2.6vw, 2.125rem);
-  --text-h3--line-height: 1.15;
-  --text-h3--letter-spacing: -0.022em;
-
-  --text-h2: clamp(2.25rem, 5.2vw, 3.25rem);
-  --text-h2--line-height: 1.04;
-  --text-h2--letter-spacing: -0.032em;
-
-  --text-h1: clamp(2.75rem, 9.5vw, 8.5rem);
-  --text-h1--line-height: 0.92;
-  --text-h1--letter-spacing: -0.045em;
-
-  /* Motion */
-  --animate-drift: drift 18s ease-in-out infinite;
-  --animate-sheen: sheen 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  --animate-breathe: breathe 4.5s ease-in-out infinite;
-  --animate-rise: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-
-  @keyframes drift {
-    0%,
-    100% {
-      transform: translate3d(0, 0, 0);
-    }
-    50% {
-      transform: translate3d(0, -10px, 0);
-    }
-  }
-
-  @keyframes sheen {
-    0% {
-      background-position: -180% 0;
-    }
-    55%,
-    100% {
-      background-position: 180% 0;
-    }
-  }
-
-  @keyframes breathe {
-    0%,
-    100% {
-      opacity: 0.45;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 24px, 0);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
+  /* Instrument Serif for display: high-contrast, slightly literary, and
+     nothing like the grotesque every generated page reaches for. Manrope for
+     text, DM Mono for the technical lines. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
-/* ==================================================================
-   BASE
-   ================================================================== */
 @layer base {
-  * {
-    border-color: var(--color-edge);
-  }
-
-  html {
-    /* Lenis owns smooth scrolling. Native smooth behaviour fights it and
-       produces a double-easing stutter, so it is only restored in the
-       reduced-motion block below, where Lenis is disabled. */
-    scroll-behavior: auto;
-    scroll-padding-top: 6rem;
-    -webkit-text-size-adjust: 100%;
-    overflow-x: clip;
-  }
-
+  html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
   body {
-    background-color: var(--color-void);
-    color: var(--color-ink);
+    margin: 0;
+    background: #cfd9f2;
+    color: #1b2140;
     font-family: var(--font-sans);
-    font-synthesis-weight: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    overflow-x: hidden;
   }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: var(--font-display);
-    text-wrap: balance;
-  }
-
-  ::selection {
-    background-color: var(--color-chrome);
-    color: var(--color-void);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--color-chrome);
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-
-  ::-webkit-scrollbar {
-    width: 9px;
-  }
-  ::-webkit-scrollbar-track {
-    background: var(--color-void);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-      180deg,
-      var(--color-edge),
-      var(--color-steel) 50%,
-      var(--color-edge)
-    );
-    border-radius: 0;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-steel);
-  }
-  html {
-    scrollbar-color: #2a3040 var(--color-void);
-    scrollbar-width: thin;
+  ::selection { background: rgba(91, 99, 232, 0.22); }
+  :focus-visible { outline: 2px solid #5b63e8; outline-offset: 3px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }
 
-/* ==================================================================
-   METAL RECIPES
-   Four things separate metal from grey, and every recipe below uses
-   all four: an OFF-CENTRE specular; a TERMINATOR, the hard one-percent
-   flip from light into shadow where the surface turns away from the
-   light; TWO LOBES of unequal strength (a strong key and a weak rim);
-   and ANISOTROPIC grain running on a single axis. A symmetric gradient
-   without a terminator always reads as plastic.
-   ================================================================== */
-
-/** Brushed anodised panel: fine directional grain over a raking gradient. */
-@utility metal-brushed {
-  background-image:
-    repeating-linear-gradient(
-      98deg,
-      rgba(255, 255, 255, 0.028) 0px,
-      rgba(255, 255, 255, 0.028) 1px,
-      transparent 1px,
-      transparent 3px
-    ),
-    linear-gradient(
-      168deg,
-      rgba(255, 255, 255, 0.085) 0%,
-      rgba(255, 255, 255, 0.125) 9%,
-      rgba(255, 255, 255, 0.034) 24%,
-      rgba(255, 255, 255, 0.008) 46%,
-      /* terminator: the surface turns away from the light here */
-      rgba(0, 0, 0, 0.14) 47%,
-      rgba(0, 0, 0, 0.17) 74%,
-      /* second, weaker lobe — the rim bounce */
-      rgba(255, 255, 255, 0.03) 96%,
-      rgba(255, 255, 255, 0.06) 100%
-    ),
-    radial-gradient(78% 62% at 26% 4%, rgba(255, 255, 255, 0.08), transparent 68%),
-    linear-gradient(180deg, var(--color-surface), var(--color-abyss));
-}
-
-/** Hairline that catches light on the top-left and dies at the bottom-right. */
-@utility metal-edge {
-  position: relative;
-}
-@utility metal-edge-ring {
-  border: 1px solid transparent;
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  background-image:
-    linear-gradient(var(--color-surface), var(--color-surface)),
-    linear-gradient(
-      142deg,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0.12) 18%,
-      rgba(255, 255, 255, 0.02) 42%,
-      rgba(255, 255, 255, 0.16) 78%,
-      rgba(255, 255, 255, 0.4) 100%
-    );
-}
-
-/** Specular sweep across display type. */
-@utility metal-text {
-  background-image: linear-gradient(
-    104deg,
-    #7f8798 0%,
-    #c9d0dc 22%,
-    #ffffff 38%,
-    #eef1f6 46%,
-    #99a1b1 62%,
-    #d7dde7 82%,
-    #838b9b 100%
-  );
-  background-size: 240% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/** Machined raised control: bright top bevel, dark underside, cast shadow. */
-@utility metal-control {
-  background-image: linear-gradient(
-    176deg,
-    rgba(255, 255, 255, 0.13) 0%,
-    rgba(255, 255, 255, 0.04) 44%,
-    /* terminator */
-    rgba(0, 0, 0, 0.1) 45%,
-    rgba(0, 0, 0, 0.24) 100%
-  );
-  background-color: var(--color-raised);
+/* Panels float on the sky. A real drop shadow plus a bright top edge is what
+   makes a light card sit *above* a bright ground instead of dissolving into
+   it -- on a dark page a border is enough, here it is not. */
+@utility card {
+  background: rgba(253, 251, 246, 0.82);
+  backdrop-filter: blur(22px) saturate(118%);
+  -webkit-backdrop-filter: blur(22px) saturate(118%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.55),
-    0 1px 2px rgba(0, 0, 0, 0.6),
-    0 12px 32px -14px rgba(0, 0, 0, 0.9);
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 18px 50px -22px rgba(27, 33, 64, 0.42),
+    0 3px 10px -4px rgba(27, 33, 64, 0.16);
 }
 
-/** Polished chrome — the primary call to action. Dark ink sits on this. */
-@utility metal-chrome {
-  background-image: linear-gradient(
-    172deg,
-    #ffffff 0%,
-    #f3f1ea 26%,
-    #dedad0 44%,
-    /* terminator: polished chrome flips hard, it does not fade */
-    #a9a69d 45%,
-    #cdc9bf 62%,
-    #f6f4ee 82%,
-    #ffffff 100%
+/* Border beam, kept from the previous system: a conic gradient masked to the
+   border ring by compositing padding-box against border-box. */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.galaxy-beam {
+  padding: 1px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0%,
+    var(--beam-from, #5b63e8) 10%,
+    var(--beam-via, #e0913f) 18%,
+    transparent 30%
   );
-  color: var(--color-void);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.18),
-    0 18px 44px -18px rgba(226, 233, 244, 0.5);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: galaxy-beam-spin var(--beam-duration, 6s) linear infinite;
+  animation-delay: var(--beam-delay, 0s);
 }
+@keyframes galaxy-beam-spin { to { --beam-angle: 360deg; } }
 
-/* Structural overlays */
-@utility grid-mesh-fine {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
+/* Ink laid over moving cloud needs a little help at its own edges; a wash
+   behind the whole block would grey the sky out. */
+.ink-lift { text-shadow: 0 1px 22px rgba(255, 255, 255, 0.75), 0 0 6px rgba(255, 255, 255, 0.6); }
 
-@utility mask-fade-edges {
-  -webkit-mask-image: radial-gradient(ellipse 76% 62% at 50% 42%, #000 36%, transparent 100%);
-  mask-image: radial-gradient(ellipse 76% 62% at 50% 42%, #000 36%, transparent 100%);
-}
+/* A veil behind running copy.
 
-/** Glass over the live WebGL layer. Kept dark and low-alpha so the scene
-    reads through it without washing the type out. */
-@utility glass-panel {
-  background:
-    linear-gradient(
-      158deg,
-      rgba(255, 255, 255, 0.05) 0%,
-      rgba(255, 255, 255, 0.012) 44%,
-      rgba(255, 255, 255, 0) 100%
-    ),
-    rgba(11, 13, 18, 0.66);
-  backdrop-filter: blur(20px) saturate(118%);
-  -webkit-backdrop-filter: blur(20px) saturate(118%);
-}
+   Dark ink over a bright cloudscape is fine until a shadowed cloud drifts
+   under it -- the darkest ground measured rgb(88,94,120), which puts the
+   headline at 2.46:1. A soft cream wash under the text column fixes that
+   without flattening the sky, which a full-page overlay would. */
+.copy-veil { position: relative; }
+.copy-veil::before {
+  content: "";
+  position: absolute;
+  /* Generous inset so the falloff happens in padding rather than under the
+     words: the text sits in the strong middle of the ellipse and the fade
+     runs out past it. */
+  inset: -34% -14%;
+  z-index: -1;
+  pointer-events: none;
+  /* `closest-side` centred is the only geometry here that reaches zero before
+     every edge of its own box. An off-centre ellipse cannot: it runs out of
+     room on the far side and gets cut mid-gradient, which drew a hard vertical
+     seam down the middle of the page at roughly 0.58 alpha.
 
-/* ==================================================================
-   ZONE ACCENTS
-   Each section owns one Orion colour. Setting a single custom property
-   on the section lets every child pick it up by inheritance, so a
-   section can be re-tuned by changing one class rather than hunting
-   through its descendants. The camera and the WebGL scene read the
-   same zone index, so the light in the 3D layer and the accent in the
-   DOM always agree.
-   ================================================================== */
-@theme {
-  /* Exposed as a Tailwind colour so every opacity modifier works:
-     text-accent, bg-accent/12, border-accent/45.
-     NOTE: this must resolve to a LITERAL, not to var(--accent).
-     A custom property's value is substituted where it is DECLARED, not where
-     it is used — so `--color-accent: var(--accent)` declared on :root would
-     bake in the root accent and never see a zone override further down the
-     tree. Each zone utility therefore redeclares both properties with its own
-     literal. */
-  --color-accent: #f4f2ec;
-}
-
-@layer base {
-  :root {
-    /* Outside any zone the accent falls back to the metal highlight,
-       so a component used standalone is never unstyled. */
-    --accent: #f4f2ec;
-    --accent-ink: var(--color-void);
-  }
-}
-
-@utility zone-rigel {
-  --accent: #9fc4ff;
-  --color-accent: #9fc4ff;
-  --accent-ink: var(--color-void);
-}
-@utility zone-oxygen {
-  --accent: #4fd8c4;
-  --color-accent: #4fd8c4;
-  --accent-ink: var(--color-void);
-}
-@utility zone-nebula {
-  --accent: #e0678f;
-  --color-accent: #e0678f;
-  --accent-ink: var(--color-void);
-}
-@utility zone-ember {
-  --accent: #ff9d5c;
-  --color-accent: #ff9d5c;
-  --accent-ink: var(--color-void);
-}
-
-/** Accent-tinted glass: the panel picks up a breath of the zone colour. */
-@utility glass-accent {
-  background:
-    linear-gradient(
-      158deg,
-      color-mix(in oklab, var(--accent) 9%, transparent) 0%,
-      rgba(255, 255, 255, 0.012) 46%,
-      rgba(255, 255, 255, 0) 100%
-    ),
-    rgba(11, 13, 18, 0.66);
-  backdrop-filter: blur(20px) saturate(122%);
-  -webkit-backdrop-filter: blur(20px) saturate(122%);
-}
-
-/** Display type lit by the zone colour instead of neutral chrome. */
-@utility accent-text {
-  background-image: linear-gradient(
-    104deg,
-    color-mix(in oklab, var(--accent) 55%, #6f7889) 0%,
-    #ffffff 34%,
-    color-mix(in oklab, var(--accent) 85%, #ffffff) 52%,
-    #e9edf4 68%,
-    color-mix(in oklab, var(--accent) 50%, #6f7889) 100%
+     The stops are sized against a measurement. A lede two paragraphs down sat
+     out in the falloff at roughly 0.2 alpha, which put ink-soft at 3.33:1 over
+     a passing cloud shadow. Deliberately not stronger than it needs to be: an
+     earlier pass washed the copy column to 18:1 against a 4.5 requirement and
+     flattened the sky it sits on for nothing. */
+  background: radial-gradient(
+    closest-side at 50% 50%,
+    rgba(253, 251, 246, 0.96) 0%,
+    rgba(253, 251, 246, 0.92) 38%,
+    rgba(253, 251, 246, 0.78) 58%,
+    rgba(253, 251, 246, 0.46) 78%,
+    rgba(253, 251, 246, 0.14) 92%,
+    rgba(253, 251, 246, 0) 100%
   );
-  background-size: 240% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
-/* ==================================================================
-   SCROLL REVEAL
-   ================================================================== */
-@layer components {
-  .reveal {
-    opacity: 0;
-    transform: translate3d(0, 26px, 0);
-    transition:
-      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: opacity, transform;
-  }
+/* Page chrome during the film.
 
-  .reveal[data-visible="true"] {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+   The journey's middle chapters play inside a near-black interior. A bright
+   floating nav pill and a cream search chip sitting on top of that read as the
+   website the film is embedded in, not as part of the space -- which is exactly
+   the illusion the chapter is spending its whole length building. They step
+   out while the camera is through the glass and come back when it leaves.
 
-  /* Already in view at mount: paint it, do not animate it. */
-  .reveal-instant {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+   A data attribute rather than an interpolated custom property: this has to
+   take the chrome out of the hit-testing too, and pointer-events does not
+   interpolate. */
+.film-hide { transition: opacity 520ms ease; }
+[data-interior="on"] .film-hide { opacity: 0; pointer-events: none; }
+
+/* The chapter rail crosses the film's tonal arc.
+
+   It is dark ink for the bright sky chapters and has to invert for the
+   near-black interior, otherwise it is dark-on-dark for a third of the film --
+   present in the DOM, invisible on screen, which is the worst of both. Driven
+   off the same interior flag as the chrome so the two can never disagree. */
+.film-rail-label,
+.film-rail-note,
+.film-rail-dot { transition: background-color 520ms ease, color 520ms ease; }
+.film-rail-label { color: var(--rail-fg, #1b2140); }
+.film-rail-note { color: var(--rail-fg-mute, #5e698d); }
+.film-rail-dot { background-color: var(--rail-dot, rgba(27, 33, 64, 0.16)); }
+.film-rail-dot[data-state="done"] { background-color: var(--rail-dot-done, rgba(27, 33, 64, 0.42)); }
+.film-rail-dot[data-state="now"] { background-color: var(--rail-dot-now, #383ebc); }
+[data-interior="on"] {
+  --rail-fg: #eef1ff;
+  --rail-fg-mute: rgba(238, 241, 255, 0.55);
+  --rail-dot: rgba(238, 241, 255, 0.18);
+  --rail-dot-done: rgba(238, 241, 255, 0.46);
+  --rail-dot-now: #8ea2ff;
 }
 
-/* ==================================================================
-   REDUCED MOTION
-   Lenis is disabled by the provider, so native smooth scrolling comes
-   back here and every animation is stopped.
-   ================================================================== */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: smooth;
-  }
+/* Headings that route focus lands on.
 
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
+   The route-change handler gives the incoming h1 tabindex="-1" and focuses it
+   so screen readers and keyboard users land on the new page rather than back
+   at the top of the document. Chrome treats that programmatic focus as
+   focus-visible and paints a ring around the headline, which is a control
+   affordance on something that is not a control and nobody tabbed to. The
+   focus itself is what matters here, not a ring drawn around it. */
+h1[tabindex="-1"]:focus { outline: none; }
 
-  .reveal {
-    opacity: 1 !important;
-    transform: none !important;
-  }
+/* The film's pause control.
+
+   This one does not step aside for the interior chapters the way the rest of
+   the chrome does. It is the mechanism for stopping a minute of motion the
+   visitor did not start, and a pause button that is unavailable for the middle
+   third of the film is not a pause button. So it inverts instead, off the same
+   flag as the chapter rail. */
+.film-control {
+  color: var(--rail-fg-mute, #4a5378);
+  border-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(253, 251, 246, 0.75);
+}
+.film-control:hover { color: var(--rail-fg, #1b2140); }
+[data-interior="on"] .film-control {
+  border-color: rgba(238, 241, 255, 0.22);
+  background-color: rgba(18, 24, 54, 0.62);
 }

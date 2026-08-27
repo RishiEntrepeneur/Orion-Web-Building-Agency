@@ -1,165 +1,66 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Martian_Mono, Syne } from "next/font/google";
-import { site } from "@/lib/site";
-import LenisProvider from "@/components/motion/LenisProvider";
-import RouteAccentShell from "@/components/motion/RouteAccentShell";
-import RouteTransition from "@/components/motion/RouteTransition";
-import SceneScrim from "@/components/webgl/SceneScrim";
-import SpatialCanvas from "@/components/webgl/SpatialCanvas";
-import SpatialScene from "@/components/webgl/SpatialScene";
-import SpatialCrosshair from "@/components/ui/SpatialCrosshair";
-import CookieConsent from "@/components/CookieConsent";
-import Footer from "@/components/sections/Footer";
-import Navbar from "@/components/Navbar";
+import { DM_Mono, Instrument_Serif, Manrope } from "next/font/google";
+
+import Shell from "@/components/galaxy/Shell";
 import "./globals.css";
 
-/* Display: geometric, unusually proportioned, built for art-direction at
-   poster size — memorable where a neutral grotesque is anonymous. */
-const syne = Syne({
+/* Display: a high-contrast serif with a true italic. The site's whole voice
+   rests on it, so it is loaded rather than approximated. */
+const display = Instrument_Serif({
   subsets: ["latin"],
   display: "swap",
-  weight: ["600", "700", "800"],
-  variable: "--font-syne",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
 });
 
-/* Text: a workhorse grotesque with a width axis, so the editorial scale can
-   vary width as well as size. */
-const archivo = Archivo({
+/* Text: a humanist sans that stays readable at fifteen pixels over a moving
+   sky, which is most of the running copy on this site. */
+const sans = Manrope({
   subsets: ["latin"],
   display: "swap",
-  axes: ["wdth"],
-  variable: "--font-archivo",
+  variable: "--font-sans",
 });
 
-/* Technical labels: wide and mechanical, reads as instrumentation. */
-const martianMono = Martian_Mono({
+/* Labels and telemetry: mechanical, so a printed frame rate reads as an
+   instrument rather than as decoration. */
+const mono = DM_Mono({
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "600"],
-  variable: "--font-martian",
+  weight: ["300", "400", "500"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://orion.studio"),
   title: {
-    default: `${site.name} — 3D & AI Websites, Launched in 48 Hours`,
-    template: `%s | ${site.name}`,
+    default: "Orion Dream Studio",
+    template: "%s",
   },
-  description: site.description,
-  keywords: [
-    "3D website design",
-    "AI website agency",
-    "Spline developer",
-    "immersive web design",
-    "WebGL agency UK",
-    "prompt to 3D",
-    "scroll driven animation",
-  ],
-  authors: [{ name: site.legal.entity, url: site.url }],
-  creator: site.legal.entity,
+  description:
+    "One brief, one fixed price, live in forty-eight hours. Real-time WebGL built by the person who answers your email.",
   openGraph: {
     type: "website",
-    locale: "en_GB",
-    url: site.url,
-    siteName: site.name,
-    title: `${site.name} — 3D & AI Websites That Captivate`,
-    description: site.description,
+    siteName: "Orion Dream Studio",
+    title: "Orion Dream Studio — Build the website of your dreams",
+    description:
+      "One brief, one fixed price, live in forty-eight hours. Real-time WebGL built by the person who answers your email.",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} — 3D & AI Websites That Captivate`,
-    description: site.description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
-  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07080b",
-  colorScheme: "dark",
+  // Matches the cream ground, so a phone's chrome does not band against it.
+  themeColor: "#fdfbf6",
   width: "device-width",
   initialScale: 1,
 };
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: site.name,
-  legalName: site.legal.entity,
-  url: site.url,
-  email: site.email,
-  telephone: site.phone,
-  description: site.description,
-  areaServed: "GB",
-  priceRange: "££",
-  address: {
-    "@type": "PostalAddress",
-    addressCountry: "GB",
-    addressLocality: "London",
-  },
-  makesOffer: [
-    {
-      "@type": "Offer",
-      name: "Starter Concept",
-      price: "299",
-      priceCurrency: "GBP",
-    },
-    {
-      "@type": "Offer",
-      name: "Cinematic Experience",
-      price: "699",
-      priceCurrency: "GBP",
-    },
-    {
-      "@type": "Offer",
-      name: "Infinite Horizon Retainer",
-      price: "49",
-      priceCurrency: "GBP",
-    },
-  ],
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en-GB"
-      className={`${archivo.variable} ${syne.variable} ${martianMono.variable} dark`}
-      suppressHydrationWarning
-    >
-      <body className="bg-void font-sans text-ink antialiased">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:border focus:border-chrome/60 focus:bg-abyss focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-chrome"
-        >
-          Skip to main content
-        </a>
-        {/* The canvas lives here, above the route boundary, so it survives every
-            navigation — a route change moves the camera, it does not rebuild
-            the scene. */}
-        <LenisProvider />
-        <RouteTransition />
-        <SpatialCanvas>
-          <SpatialScene />
-        </SpatialCanvas>
-        <SceneScrim />
-        <SpatialCrosshair />
-        <RouteAccentShell>
-          <Navbar />
-          {children}
-          <Footer />
-        </RouteAccentShell>
-        <CookieConsent />
-        <script
-          type="application/ld+json"
-          // Static, developer-authored JSON-LD — no user input is interpolated.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+    <html lang="en-GB" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+      <body>
+        <Shell>{children}</Shell>
       </body>
     </html>
   );
