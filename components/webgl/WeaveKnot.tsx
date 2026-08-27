@@ -13,17 +13,20 @@ import { accentAt } from "@/lib/zone-accents";
  * The weave — the home page's hero object.
  *
  * A torus knot resampled as a cloud of points that the cursor pushes through
- * and that springs back into shape. It lives inside the persistent canvas
- * rather than in a second one of its own, so it shares the site's camera path,
- * its smoothed pointer, its quality tiering and its accent light: the weave is
- * an object in the same space as everything else, not an effect layered on top.
+ * and that springs back into shape. It is scaled to overflow the frame, so the
+ * opening screen reads as standing inside the object rather than looking at it.
+ *
+ * It lives inside the persistent canvas rather than in a second one of its own,
+ * so it shares the site's camera path, its smoothed pointer, its quality
+ * tiering and its accent light: the weave is an object in the same space as
+ * everything else, not an effect layered on top.
  *
  * It is the home route's object, so it is built only there and dissolves as the
  * camera leaves the hero, the same way the liquid metal lens does.
  */
 export default function WeaveKnot({
-  radius = 3.1,
-  tube = 1.02,
+  radius = 4.3,
+  tube = 1.4,
 }: {
   radius?: number;
   tube?: number;
@@ -35,7 +38,7 @@ export default function WeaveKnot({
      GPU, and the count is the one knob that actually decides whether a weak
      device holds its frame rate. */
   const count = useMemo(
-    () => Math.max(4200, Math.round(32000 * qualityState.density)),
+    () => Math.max(4800, Math.round(40000 * qualityState.density)),
     [],
   );
 
