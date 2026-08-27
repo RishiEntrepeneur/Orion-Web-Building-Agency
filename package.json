@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "artifact": "esbuild tools/artifact/entry.tsx --bundle --minify --format=iife --jsx=automatic --alias:next/link=./tools/artifact/link.tsx --alias:next/navigation=./tools/artifact/navigation.ts --alias:@=. --loader:.css=empty --outfile=.artifact/app.js && tailwindcss -i app/globals.css -o .artifact/app.css --minify"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
