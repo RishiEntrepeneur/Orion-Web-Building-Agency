@@ -98,14 +98,29 @@
 .copy-veil::before {
   content: "";
   position: absolute;
-  inset: -12% -2% -14% -3%;
+  /* Generous inset so the falloff happens in padding rather than under the
+     words: the text sits in the strong middle of the ellipse and the fade
+     runs out past it. */
+  inset: -34% -14%;
   z-index: -1;
   pointer-events: none;
+  /* `closest-side` centred is the only geometry here that reaches zero before
+     every edge of its own box. An off-centre ellipse cannot: it runs out of
+     room on the far side and gets cut mid-gradient, which drew a hard vertical
+     seam down the middle of the page at roughly 0.58 alpha.
+
+     The stops are sized against a measurement. A lede two paragraphs down sat
+     out in the falloff at roughly 0.2 alpha, which put ink-soft at 3.33:1 over
+     a passing cloud shadow. Deliberately not stronger than it needs to be: an
+     earlier pass washed the copy column to 18:1 against a 4.5 requirement and
+     flattened the sky it sits on for nothing. */
   background: radial-gradient(
-    86% 62% at 30% 50%,
-    rgba(253, 251, 246, 0.94) 0%,
-    rgba(253, 251, 246, 0.80) 42%,
-    rgba(253, 251, 246, 0.34) 70%,
-    rgba(253, 251, 246, 0) 88%
+    closest-side at 50% 50%,
+    rgba(253, 251, 246, 0.96) 0%,
+    rgba(253, 251, 246, 0.92) 38%,
+    rgba(253, 251, 246, 0.78) 58%,
+    rgba(253, 251, 246, 0.46) 78%,
+    rgba(253, 251, 246, 0.14) 92%,
+    rgba(253, 251, 246, 0) 100%
   );
 }
