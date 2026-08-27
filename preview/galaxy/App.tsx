@@ -7,6 +7,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import Birds from "../../components/galaxy/Birds";
+import CommandPalette, { type Command } from "../../components/galaxy/CommandPalette";
+import Cursor from "../../components/galaxy/Cursor";
+import PromptToSite from "../../components/galaxy/PromptToSite";
 import CloudCanvas from "../../components/galaxy/CloudCanvas";
 import MacBook from "../../components/galaxy/MacBook";
 import ScrambleText from "../../components/galaxy/ScrambleText";
@@ -146,6 +149,64 @@ export default function App() {
     return () => window.removeEventListener("hashchange", on);
   }, []);
 
+  /* A client-side route change is silent: nothing reloads, so nothing is
+     announced and focus stays wherever it was. Moving focus to the new
+     heading is what makes the navigation exist for anyone not looking at the
+     screen. Keyed on the route and skipped on first paint, so a fresh load
+     does not yank focus off the top of the document. */
+  /**
+   * Move focus to the new page's heading on a client-side route change.
+   *
+   * The outgoing page holds the tree for the length of its exit under
+   * `AnimatePresence mode="wait"`, so for a moment there are two pages mounted
+   * and the incoming heading does not exist yet. A fixed delay long enough to
+   * cover that is a race that loses whenever the exit runs a few frames long,
+   * and losing it silently drops a keyboard user back at the top of the
+   * document. So: poll for the heading belonging to the route being entered,
+   * identified by `data-route` rather than by position, and give up rather
+   * than steal focus from someone who has already moved on.
+   *
+   * On a timer rather than on animation frames: the sky behind this is a
+   * volumetric raymarch, and on a weak GPU it can hold frames for tens of
+   * milliseconds at a time. A frame-driven poll then gets only a handful of
+   * attempts inside its window and loses the race precisely on the machines
+   * least able to afford it. Timers are not throttled by the renderer.
+   *
+   * The window is deliberately long. On a machine with a real GPU the heading
+   * is focused in a few hundred milliseconds; on a software rasteriser the
+   * same swap has been measured taking several seconds. Nothing is stolen by
+   * waiting \u2014 the guard above stops as soon as the visitor puts focus
+   * anywhere in the page themselves \u2014 so the cost of a generous deadline is
+   * nil and the cost of a tight one is a keyboard user left stranded.
+   */
+  const firstPaint = useRef(true);
+  useEffect(() => {
+    if (firstPaint.current) { firstPaint.current = false; return; }
+    const deadline = performance.now() + 5000;
+    let timer = 0;
+    const attempt = () => {
+      const heading = document.querySelector<HTMLElement>(
+        `main [data-route="${path}"] h1`,
+      );
+      // Take focus unless the visitor has already tabbed into the new page's
+      // content. Focus sitting on a nav link, or on the palette trigger that
+      // restored it, is exactly the case this is here to move.
+      const here = document.activeElement as HTMLElement | null;
+      if (heading && !here?.closest("main")) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus({ preventScroll: true });
+        // Stop only once the browser agrees. Calling focus() during the swap
+        // does not always take, and a write that silently did nothing looks
+        // identical to one that worked from here.
+        if (document.activeElement === heading) return;
+      }
+      if (performance.now() > deadline) return;
+      timer = window.setTimeout(attempt, 32);
+    };
+    timer = window.setTimeout(attempt, 32);
+    return () => window.clearTimeout(timer);
+  }, [path]);
+
   const go = (next: string) => {
     window.location.hash = next;
     setPath(next);
@@ -153,10 +214,38 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "auto" });
   };
 
+  const commands: Command[] = [
+    ...ROUTES.map((r) => ({
+      id: "route" + r.path,
+      label: r.label,
+      hint: "Page " + r.index,
+      run: () => go(r.path),
+    })),
+    { id: "top", label: "Back to top", hint: "Scroll", run: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+    { id: "demo", label: "Try the live builder", hint: "Demo", run: () => {
+        go("/");
+        requestAnimationFrame(() => document.getElementById("builder")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } },
+  ];
+
   return (
     <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-[13px] focus:text-cream"
+      >
+        Skip to content
+      </a>
+
       <CloudCanvas onTelemetry={setTel} />
       <Birds count={9} />
+      <Cursor />
+      <CommandPalette commands={commands} />
+
+      {/* Route changes are posted here so assistive technology hears them. */}
+      <p aria-live="polite" className="sr-only">
+        {ROUTES.find((r) => r.path === path)?.label} page
+      </p>
       {/* A light haze that thickens toward the foot, so panels lower down have
           a calmer ground than the bright cloud tops up here. */}
       <div
@@ -219,7 +308,11 @@ export default function App() {
 
       <main id="main" className="relative [overflow-x:clip]">
         <AnimatePresence mode="wait">
-          <motion.div key={path}
+          {/* `data-route` is what the focus effect keys off. Under `mode="wait"`
+              the outgoing page is still in the tree through its exit, so
+              "the first h1 in main" is the page being left, not the one being
+              entered. Stamping the path makes the two distinguishable. */}
+          <motion.div key={path} data-route={path}
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, transition: { duration: 0.18 } }} transition={{ duration: 0.55 }}>
             {path === "/" && <Dream go={go} tel={tel} />}
@@ -270,6 +363,13 @@ function Dream({ go, tel }: { go: (p: string) => void; tel: { fps: number; steps
   // than simply scrolling off the top.
   const macY = useTransform(scrollYProgress, [0, 1], [0, 140]);
   const macOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  // The telemetry strip sits on the bottom edge of the stage, so it is the
+  // first thing to travel the length of the viewport on scroll. Out early.
+  // The trailing 0 at progress 1 is load-bearing. A two-point range here reads
+  // as a line rather than a clamp and keeps going past its end, which fades the
+  // strip out by 0.16 and then brings it back up the rest of the way \u2014
+  // measurably, and straight through the nav on its way.
+  const telFade = useTransform(scrollYProgress, [0, 0.1, 0.16, 1], [1, 0.4, 0, 0]);
 
   return (
     <>
@@ -322,13 +422,54 @@ function Dream({ go, tel }: { go: (p: string) => void; tel: { fps: number; steps
           </motion.div>
         </div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.1, duration: 0.8 }}
-          className="absolute inset-x-0 bottom-6 mx-auto flex w-fit items-center gap-6">
-          <Mono>{tel.fps ? `${tel.fps.toFixed(0)} fps` : "static"}</Mono>
-          <span className="h-3 w-px bg-ink/20" />
-          <Mono>{tel.steps} samples / px</Mono>
-          <span className="h-3 w-px bg-ink/20" />
-          <Mono live>Sky rendering live</Mono>
+        {/* Live telemetry. It belongs to the hero, so it leaves with the hero:
+            pinned to the bottom of the stage it rides up on scroll, and without
+            this it would pass straight through the floating nav on the way out.
+            A motion value rather than state \u2014 this must not re-render the
+            hero on every scroll frame. */}
+        {/* Two nested layers, not one. The outer carries the scroll fade as a
+            motion value \u2014 the strip is pinned to the bottom of the stage, so on
+            scroll it rides up and would otherwise pass straight through the
+            floating nav on its way out. The inner carries the entrance fade;
+            both write `opacity`, and one element cannot hold both. */}
+        <motion.div
+          style={{ opacity: telFade }}
+          className="absolute inset-x-0 bottom-6 mx-auto w-fit"
+        >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.1, duration: 0.8 }}
+            className="flex items-center gap-6">
+            <Mono>{tel.fps ? `${tel.fps.toFixed(0)} fps` : "static"}</Mono>
+            <span className="h-3 w-px bg-ink/20" />
+            <Mono>{tel.steps} samples / px</Mono>
+            <span className="h-3 w-px bg-ink/20" />
+            <Mono live>Sky rendering live</Mono>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* The claim, demonstrated. A studio that says "prompt to site" and
+          never shows one is asking to be taken on faith. */}
+      <section id="builder" className="mx-auto w-full max-w-[1500px] px-6 pb-24 sm:px-10 lg:px-14">
+        <motion.div
+          initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-12%" }} transition={SPRING}
+          className="copy-veil mb-10 max-w-2xl"
+        >
+          <Mono live>The engine</Mono>
+          <h2 className="mt-5 font-display text-[clamp(2rem,5vw,3.6rem)] leading-[0.98] tracking-[-0.02em] text-ink">
+            Watch one get built.
+          </h2>
+          <p className="mt-5 text-[16px] leading-relaxed text-ink-soft">
+            Give it a brief and it composes a layout, resolves a palette and ships.
+            The same words always produce the same site &mdash; change one and the
+            whole structure changes with it.
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-8%" }} transition={{ ...SPRING, delay: 0.08 }}
+        >
+          <PromptToSite />
         </motion.div>
       </section>
 

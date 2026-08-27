@@ -8,7 +8,10 @@
      rather than white on black. */
   --color-ink: #1b2140;
   --color-ink-soft: #4a5378;
-  --color-ink-mute: #7b84a6;
+  /* Measured, not picked: #7b84a6 was 3.57:1 on cream, which fails AA for the
+     10-12px mono labels it is used on, and 3.30:1 where it sits on a
+     translucent pill over the sky. This clears 4.5 in both. */
+  --color-ink-mute: #5e698d;
   --color-cream: #fdfbf6;
   --color-haze: #eef1fb;
   --color-iris: #383ebc;

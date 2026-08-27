@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { scrollState, trackScroll } from "./scroll-state";
 
 /**
  * The dream sky.
@@ -47,6 +48,7 @@ export default function CloudCanvas({
     uniform float uTime;
     uniform vec2  uMouse;
     uniform float uSteps;
+    uniform float uDescent;
 
     float hash(vec3 p){
       p = fract(p * 0.3183099 + 0.1); p *= 17.0;
@@ -107,9 +109,9 @@ export default function CloudCanvas({
 
     vec3 skyColour(vec3 rd){
       float h = clamp(rd.y * 0.5 + 0.5, 0.0, 1.0);
-      vec3 zenith  = vec3(0.27, 0.42, 0.86);
-      vec3 mid     = vec3(0.62, 0.74, 0.97);
-      vec3 horizon = vec3(1.00, 0.87, 0.74);
+      vec3 zenith  = mix(vec3(0.27, 0.42, 0.86), vec3(0.42, 0.44, 0.62), uDescent);
+      vec3 mid     = mix(vec3(0.62, 0.74, 0.97), vec3(0.74, 0.72, 0.80), uDescent);
+      vec3 horizon = mix(vec3(1.00, 0.87, 0.74), vec3(1.00, 0.82, 0.66), uDescent);
       vec3 c = mix(horizon, mid, smoothstep(0.34, 0.56, h));
       c = mix(c, zenith, smoothstep(0.54, 0.95, h));
 
@@ -123,10 +125,20 @@ export default function CloudCanvas({
     void main(){
       vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / uRes.y;
 
-      // Above the deck, looking slightly down across the tops.
-      vec3 ro = vec3(0.0, 5.6, uTime * 0.55);
+      /* The descent.
+
+         Scroll flies the camera from above the deck, down through it and out
+         underneath. The pitch levels off as it falls, so you finish looking
+         along the underside rather than straight at the floor -- a camera that
+         keeps its entry angle all the way down reads as falling, not flying.
+
+         Eased rather than linear: the interesting part of the shot is the
+         moment inside the cloud, so the middle of the range is stretched. */
+      float dsc = uDescent;
+      float eased = dsc * dsc * (3.0 - 2.0 * dsc);
+      vec3 ro = vec3(0.0, mix(5.6, 0.35, eased), uTime * 0.55);
       float yaw   = uMouse.x * 0.10;
-      float pitch = -0.115 + uMouse.y * 0.06;
+      float pitch = mix(-0.115, 0.075, eased) + uMouse.y * 0.06;
 
       vec3 fw = normalize(vec3(sin(yaw), pitch, cos(yaw)));
       vec3 rt = normalize(cross(vec3(0.0, 1.0, 0.0), fw));
@@ -228,6 +240,7 @@ export default function CloudCanvas({
     const uTime = gl.getUniformLocation(prog, "uTime");
     const uMouse = gl.getUniformLocation(prog, "uMouse");
     const uSteps = gl.getUniformLocation(prog, "uSteps");
+    const uDescent = gl.getUniformLocation(prog, "uDescent");
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -250,6 +263,12 @@ export default function CloudCanvas({
       m.ty = -((e.clientY / window.innerHeight) * 2 - 1);
     };
     window.addEventListener("pointermove", onMove, { passive: true });
+
+    const untrack = trackScroll();
+    // Smoothed separately from the raw scroll value: wheel input arrives in
+    // coarse jumps, and feeding those straight to a camera looks like a stutter
+    // rather than a descent.
+    let descent = scrollState.descent;
 
     let raf = 0, last = performance.now(), acc = 0, frames = 0, fps = 60;
     const t0 = performance.now();
@@ -274,6 +293,8 @@ export default function CloudCanvas({
       gl.uniform1f(uTime, reduced ? 20 : (now - t0) / 1000);
       gl.uniform2f(uMouse, m.x, m.y);
       gl.uniform1f(uSteps, steps);
+      descent += (scrollState.descent - descent) * Math.min(1, dt * 3.4);
+      gl.uniform1f(uDescent, descent);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -282,6 +303,7 @@ export default function CloudCanvas({
       gl.uniform1f(uTime, 20);
       gl.uniform2f(uMouse, 0, 0);
       gl.uniform1f(uSteps, steps);
+      gl.uniform1f(uDescent, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       tel.current?.({ fps: 0, steps, scale });
     } else {
@@ -292,6 +314,7 @@ export default function CloudCanvas({
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
+      untrack();
       gl.deleteProgram(prog); gl.deleteShader(vs); gl.deleteShader(fs); gl.deleteBuffer(buf);
     };
   }, []);
