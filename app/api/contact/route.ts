@@ -70,8 +70,13 @@ export async function POST(req: Request) {
     );
   }
 
-  const to = process.env.CONTACT_TO ?? "rishiorion2912@gmail.com";
-  const key = process.env.RESEND_API_KEY;
+  /* `||` and a trim, not `??`. An environment variable that exists but is blank
+     is a string, so `??` hands the empty value straight through -- which for a
+     recipient address means mail addressed to nobody, and for the key means a
+     request sent with an empty bearer token. Leaving a variable empty is the
+     most ordinary thing a person does in a deployment dashboard. */
+  const to = process.env.CONTACT_TO?.trim() || "rishiorion2912@gmail.com";
+  const key = process.env.RESEND_API_KEY?.trim();
 
   if (!key) {
     console.info("[contact] no RESEND_API_KEY set; brief recorded but not sent", { name, email });
@@ -87,7 +92,7 @@ export async function POST(req: Request) {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        from: process.env.CONTACT_FROM ?? "Orion <onboarding@resend.dev>",
+        from: process.env.CONTACT_FROM?.trim() || "Orion <onboarding@resend.dev>",
         to: [to],
         reply_to: email,
         subject: `Website brief from ${name}`,
