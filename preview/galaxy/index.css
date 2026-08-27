@@ -4,36 +4,60 @@
 @source "./App.tsx";
 
 @theme {
-  --color-void: #030303;
-  --color-paper: #fafafa;
-  --color-slate-mute: #888888;
-  --color-violet-neon: #6366f1;
-  --color-cyan-neon: #06b6d4;
+  /* A dream sky is light, so the interface inverts: dark ink on bright cloud
+     rather than white on black. */
+  --color-ink: #1b2140;
+  --color-ink-soft: #4a5378;
+  --color-ink-mute: #7b84a6;
+  --color-cream: #fdfbf6;
+  --color-haze: #eef1fb;
+  --color-iris: #383ebc;
+  --color-gold: #e0913f;
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Instrument Serif for display: high-contrast, slightly literary, and
+     nothing like the grotesque every generated page reaches for. Manrope for
+     text, DM Mono for the technical lines. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 @layer base {
   html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
   body {
     margin: 0;
-    background: #030303;
-    color: #fafafa;
+    background: #cfd9f2;
+    color: #1b2140;
     font-family: var(--font-sans);
   }
-  ::selection { background: rgba(99, 102, 241, 0.35); color: #fafafa; }
-  :focus-visible { outline: 2px solid #06b6d4; outline-offset: 3px; border-radius: 6px; }
+  ::selection { background: rgba(91, 99, 232, 0.22); }
+  :focus-visible { outline: 2px solid #5b63e8; outline-offset: 3px; border-radius: 4px; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 }
 
-/* Border beam. Two boxes composited with xor leave exactly the border ring,
-   so the light travels around the edge instead of glowing behind the element.
-   The angle is a registered custom property, which is what makes a conic
-   gradient animatable at all. */
+/* Panels float on the sky. A real drop shadow plus a bright top edge is what
+   makes a light card sit *above* a bright ground instead of dissolving into
+   it -- on a dark page a border is enough, here it is not. */
+@utility card {
+  background: rgba(253, 251, 246, 0.82);
+  backdrop-filter: blur(22px) saturate(118%);
+  -webkit-backdrop-filter: blur(22px) saturate(118%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 18px 50px -22px rgba(27, 33, 64, 0.42),
+    0 3px 10px -4px rgba(27, 33, 64, 0.16);
+}
+
+/* Border beam, kept from the previous system: a conic gradient masked to the
+   border ring by compositing padding-box against border-box. */
 @property --beam-angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -44,8 +68,8 @@
   background: conic-gradient(
     from var(--beam-angle),
     transparent 0%,
-    var(--beam-from, #6366f1) 10%,
-    var(--beam-via, #06b6d4) 18%,
+    var(--beam-from, #5b63e8) 10%,
+    var(--beam-via, #e0913f) 18%,
     transparent 30%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -54,13 +78,31 @@
   mask-composite: exclude;
   animation: galaxy-beam-spin var(--beam-duration, 6s) linear infinite;
   animation-delay: var(--beam-delay, 0s);
-  opacity: 0.9;
 }
-@keyframes galaxy-beam-spin {
-  to { --beam-angle: 360deg; }
-}
+@keyframes galaxy-beam-spin { to { --beam-angle: 360deg; } }
 
-/* Hairline rule used to separate stat cells without a heavy border. */
-.galaxy-rule {
-  background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.14), transparent);
+/* Ink laid over moving cloud needs a little help at its own edges; a wash
+   behind the whole block would grey the sky out. */
+.ink-lift { text-shadow: 0 1px 22px rgba(255, 255, 255, 0.75), 0 0 6px rgba(255, 255, 255, 0.6); }
+
+/* A veil behind running copy.
+
+   Dark ink over a bright cloudscape is fine until a shadowed cloud drifts
+   under it -- the darkest ground measured rgb(88,94,120), which puts the
+   headline at 2.46:1. A soft cream wash under the text column fixes that
+   without flattening the sky, which a full-page overlay would. */
+.copy-veil { position: relative; }
+.copy-veil::before {
+  content: "";
+  position: absolute;
+  inset: -12% -2% -14% -3%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    86% 62% at 30% 50%,
+    rgba(253, 251, 246, 0.94) 0%,
+    rgba(253, 251, 246, 0.80) 42%,
+    rgba(253, 251, 246, 0.34) 70%,
+    rgba(253, 251, 246, 0) 88%
+  );
 }
