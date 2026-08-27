@@ -30,23 +30,6 @@
   }
 }
 
-/* Display type lit by the accent system rather than filled with a flat colour.
-   The gradient runs violet to cyan through white so the brightest part of a
-   headline is neutral and the colour lives in the shoulders -- an all-colour
-   headline reads as a gradient, not as light. */
-.galaxy-accent-text {
-  background-image: linear-gradient(104deg, #6366f1 0%, #a5b4fc 26%, #ffffff 48%, #67e8f9 72%, #06b6d4 100%);
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: galaxy-sheen 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-@keyframes galaxy-sheen {
-  0%, 100% { background-position: 0% center; }
-  50% { background-position: 100% center; }
-}
-
 /* Border beam. Two boxes composited with xor leave exactly the border ring,
    so the light travels around the edge instead of glowing behind the element.
    The angle is a registered custom property, which is what makes a conic
