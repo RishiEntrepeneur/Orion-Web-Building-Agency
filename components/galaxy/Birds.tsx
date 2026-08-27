@@ -71,7 +71,9 @@ export default function Birds({ count = 9 }: { count?: number }) {
     function drawBird(b: Bird, t: number, w: number, h: number) {
       const px = b.x * w;
       const py = b.y * h;
-      const size = 5 + b.depth * 15;
+      // Wider spread than before, and smaller at the far end, so the flock has
+      // depth instead of nine birds all at the same apparent distance.
+      const size = 3.5 + b.depth * b.depth * 15;
       const dir = Math.sign(b.vx) || 1;
 
       // Wing angle. Fast on the downstroke, slower recovering, which is how a
@@ -83,28 +85,44 @@ export default function Birds({ count = 9 }: { count?: number }) {
       ctx!.save();
       ctx!.translate(px, py + Math.sin(t * 0.8 + b.phase) * 3);
       ctx!.scale(dir, 1);
-      ctx!.globalAlpha = 0.22 + b.depth * 0.62;
-      ctx!.strokeStyle = "#2c3350";
-      ctx!.lineWidth = Math.max(1, size * 0.13);
-      ctx!.lineCap = "round";
+      ctx!.globalAlpha = 0.18 + b.depth * 0.5;
+      ctx!.fillStyle = "#2c3350";
 
+      /* Filled, not stroked. A constant-width stroke gives every bird the same
+         thin wire outline at every distance, which at this size reads as a
+         pen mark rather than a bird; a silhouette that tapers from body to
+         wingtip reads as one even a few pixels across. Each wing is drawn out
+         along the top edge and back along a slightly lower one, so the shape
+         has thickness at the shoulder and comes to a point. */
+      const tipY = lift * size * 0.62;
+      const bendY = -lift * size * 0.46;
       ctx!.beginPath();
-      ctx!.moveTo(-size, lift * size * 0.55);
-      ctx!.quadraticCurveTo(-size * 0.45, -lift * size * 0.5, 0, 0);
-      ctx!.quadraticCurveTo(size * 0.45, -lift * size * 0.5, size, lift * size * 0.55);
-      ctx!.stroke();
+      ctx!.moveTo(-size, tipY);
+      ctx!.quadraticCurveTo(-size * 0.45, bendY, 0, 0);
+      ctx!.quadraticCurveTo(size * 0.45, bendY, size, tipY);
+      ctx!.quadraticCurveTo(
+        size * 0.5,
+        bendY + size * 0.2,
+        0,
+        size * 0.14,
+      );
+      ctx!.quadraticCurveTo(-size * 0.5, bendY + size * 0.2, -size, tipY);
+      ctx!.closePath();
+      ctx!.fill();
 
-      // Chirp: two arcs opening out from the beak, fading as they travel.
-      if (b.tweet > 0) {
+      /* Chirp. One faint arc, and only on the nearest birds.
+         Two hard arcs on every bird in the flock at once did not read as sound
+         travelling -- it read as tally marks scribbled beside each one, which
+         with nine birds on screen was the loudest thing in the sky. */
+      if (b.tweet > 0 && b.depth > 0.62) {
         const e = 1 - b.tweet;
-        ctx!.globalAlpha = b.tweet * 0.55;
-        ctx!.lineWidth = Math.max(1, size * 0.08);
-        for (let i = 0; i < 2; i++) {
-          const r = size * (0.9 + i * 0.55 + e * 1.9);
-          ctx!.beginPath();
-          ctx!.arc(size * 0.85, -size * 0.25, r, -0.85, 0.3);
-          ctx!.stroke();
-        }
+        ctx!.globalAlpha = b.tweet * 0.2;
+        ctx!.strokeStyle = "#2c3350";
+        ctx!.lineWidth = Math.max(0.6, size * 0.05);
+        ctx!.lineCap = "round";
+        ctx!.beginPath();
+        ctx!.arc(size * 0.9, -size * 0.3, size * (1.1 + e * 2.2), -0.7, 0.2);
+        ctx!.stroke();
       }
       ctx!.restore();
     }

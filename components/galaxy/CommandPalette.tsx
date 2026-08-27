@@ -126,7 +126,7 @@ export default function CommandPalette({ commands }: { commands: Command[] }) {
           point is how a viewport ends up with one drawn through the other. */}
       <button
         onClick={() => { restoreTo.current = document.activeElement as HTMLElement; setOpen(true); }}
-        className="fixed bottom-5 right-5 z-40 hidden items-center gap-2 rounded-full border border-white/70 bg-cream/75 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute backdrop-blur-xl transition-colors duration-300 hover:text-ink lg:flex"
+        className="film-hide fixed bottom-5 right-5 z-40 hidden items-center gap-2 rounded-full border border-white/70 bg-cream/75 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute backdrop-blur-xl transition-colors duration-300 hover:text-ink lg:flex"
       >
         <Search className="size-3" strokeWidth={2} />
         Search

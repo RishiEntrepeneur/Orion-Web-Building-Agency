@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight, ArrowUpRight, Boxes, Cpu, Feather, Gauge, Layers, LineChart, Menu, Radar, Sparkles, Waves, X,
 } from "lucide-react";
@@ -11,8 +11,7 @@ import CommandPalette, { type Command } from "../../components/galaxy/CommandPal
 import Cursor from "../../components/galaxy/Cursor";
 import PromptToSite from "../../components/galaxy/PromptToSite";
 import CloudCanvas from "../../components/galaxy/CloudCanvas";
-import MacBook from "../../components/galaxy/MacBook";
-import ScrambleText from "../../components/galaxy/ScrambleText";
+import Journey from "../../components/galaxy/Journey";
 import { SPRING } from "../../components/galaxy/motion";
 
 const ROUTES = [
@@ -238,7 +237,7 @@ export default function App() {
       </a>
 
       <CloudCanvas onTelemetry={setTel} />
-      <Birds count={9} />
+      <Birds count={6} />
       <Cursor />
       <CommandPalette commands={commands} />
 
@@ -254,7 +253,7 @@ export default function App() {
         style={{ background: "linear-gradient(180deg, rgba(253,251,246,0) 0%, rgba(238,241,251,0.18) 46%, rgba(238,241,251,0.55) 100%)" }}
       />
 
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header className="film-hide fixed inset-x-0 top-0 z-50">
         <div className="mx-auto mt-4 flex h-14 w-[calc(100%-2rem)] max-w-[1500px] items-center justify-between gap-5 rounded-full border border-white/70 bg-cream/70 px-5 backdrop-blur-xl sm:px-6">
           <button onClick={() => go("/")} className="flex items-center gap-2.5" aria-label="Orion, home">
             <Feather className="size-4 text-iris" strokeWidth={1.6} />
@@ -356,96 +355,11 @@ function read() {
 /* ============================== DREAM ==================================== */
 
 function Dream({ go, tel }: { go: (p: string) => void; tel: { fps: number; steps: number; scale: number } }) {
-  const [resolved, setResolved] = useState(false);
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  // The laptop sinks and fades as you leave, so the hero hands over rather
-  // than simply scrolling off the top.
-  const macY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const macOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  // The telemetry strip sits on the bottom edge of the stage, so it is the
-  // first thing to travel the length of the viewport on scroll. Out early.
-  // The trailing 0 at progress 1 is load-bearing. A two-point range here reads
-  // as a line rather than a clamp and keeps going past its end, which fades the
-  // strip out by 0.16 and then brings it back up the rest of the way \u2014
-  // measurably, and straight through the nav on its way.
-  const telFade = useTransform(scrollYProgress, [0, 0.1, 0.16, 1], [1, 0.4, 0, 0]);
-
   return (
     <>
-      <section ref={heroRef} className="relative mx-auto flex min-h-svh w-full max-w-[1500px] flex-col justify-center px-6 pb-24 pt-28 sm:px-10 lg:px-14">
-        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
-          <div className="copy-veil">
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING, delay: 0.15 }}>
-              <ScrambleText text="ORION DREAM STUDIO" className="font-mono text-[10px] uppercase tracking-[0.32em] text-iris" delay={220} />
-            </motion.div>
-
-            <h1 className="ink-lift mt-7 font-display text-[clamp(3rem,8.2vw,7.2rem)] font-normal leading-[0.9] tracking-[-0.025em] text-ink">
-              <LiftWord word="Build" delay={0.45} />{" "}
-              <LiftWord word="the" delay={0.55} />{" "}
-              <LiftWord word="website" delay={0.62} />
-              <br />
-              <LiftWord word="of" delay={0.78} />{" "}
-              <span className="italic text-iris"><LiftWord word="your" delay={0.84} /></span>{" "}
-              <span className="italic text-iris"><LiftWord word="dreams." delay={0.92} /></span>
-            </h1>
-
-            <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING, delay: 1.2 }}
-              className="ink-lift mt-7 max-w-md text-[17px] leading-relaxed text-ink-soft">
-              Describe it once. We render it in real time and ship it inside 48 hours
-              &mdash; the whole sky you are standing in is running live in your browser.
-            </motion.p>
-
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ...SPRING, delay: 1.35 }}
-              className="mt-9 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-              <Btn primary onClick={() => go("/contact")} icon={<ArrowRight className="size-4" strokeWidth={2} />}>
-                Start dreaming
-              </Btn>
-              <Btn onClick={() => go("/work")}>See what we&rsquo;ve built</Btn>
-            </motion.div>
-          </div>
-
-          <motion.div style={{ y: macY, opacity: macOpacity }} className="relative">
-            <MacBook onResolved={() => setResolved(true)} />
-            <AnimatePresence>
-              {resolved && (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  transition={{ ...SPRING, delay: 0.4 }}
-                  className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full border border-white/70 bg-cream/75 px-4 py-2 backdrop-blur-xl"
-                >
-                  <Sparkles className="size-3.5 text-gold" strokeWidth={1.8} />
-                  <Mono>One prompt &mdash; one site &mdash; 48 hours</Mono>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-
-        {/* Live telemetry. It belongs to the hero, so it leaves with the hero:
-            pinned to the bottom of the stage it rides up on scroll, and without
-            this it would pass straight through the floating nav on the way out.
-            A motion value rather than state \u2014 this must not re-render the
-            hero on every scroll frame. */}
-        {/* Two nested layers, not one. The outer carries the scroll fade as a
-            motion value \u2014 the strip is pinned to the bottom of the stage, so on
-            scroll it rides up and would otherwise pass straight through the
-            floating nav on its way out. The inner carries the entrance fade;
-            both write `opacity`, and one element cannot hold both. */}
-        <motion.div
-          style={{ opacity: telFade }}
-          className="absolute inset-x-0 bottom-6 mx-auto w-fit"
-        >
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.1, duration: 0.8 }}
-            className="flex items-center gap-6">
-            <Mono>{tel.fps ? `${tel.fps.toFixed(0)} fps` : "static"}</Mono>
-            <span className="h-3 w-px bg-ink/20" />
-            <Mono>{tel.steps} samples / px</Mono>
-            <span className="h-3 w-px bg-ink/20" />
-            <Mono live>Sky rendering live</Mono>
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* The opening is a film, not a hero: one camera move through one space,
+          scrubbed by scroll. See Journey. */}
+      <Journey go={go} tel={tel} />
 
       {/* The claim, demonstrated. A studio that says "prompt to site" and
           never shows one is asking to be taken on faith. */}

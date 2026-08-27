@@ -109,9 +109,15 @@ export default function CloudCanvas({
 
     vec3 skyColour(vec3 rd){
       float h = clamp(rd.y * 0.5 + 0.5, 0.0, 1.0);
-      vec3 zenith  = mix(vec3(0.27, 0.42, 0.86), vec3(0.42, 0.44, 0.62), uDescent);
-      vec3 mid     = mix(vec3(0.62, 0.74, 0.97), vec3(0.74, 0.72, 0.80), uDescent);
-      vec3 horizon = mix(vec3(1.00, 0.87, 0.74), vec3(1.00, 0.82, 0.66), uDescent);
+      /* Descending used to drain the sky to a grey-lavender mud, and since the
+         camera spends most of the film below the deck that mud was most of
+         what anyone saw. Inside the cloud layer the light is not grey -- it is
+         a bright warm fog with the sun still burning through it -- so the
+         descended set keeps its saturation and only shifts warmer and lower in
+         contrast. */
+      vec3 zenith  = mix(vec3(0.15, 0.33, 0.88), vec3(0.31, 0.41, 0.78), uDescent);
+      vec3 mid     = mix(vec3(0.54, 0.72, 0.99), vec3(0.69, 0.75, 0.95), uDescent);
+      vec3 horizon = mix(vec3(1.00, 0.85, 0.67), vec3(1.00, 0.79, 0.58), uDescent);
       vec3 c = mix(horizon, mid, smoothstep(0.34, 0.56, h));
       c = mix(c, zenith, smoothstep(0.54, 0.95, h));
 
