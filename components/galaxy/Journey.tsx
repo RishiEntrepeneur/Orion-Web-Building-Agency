@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createAutoplay, type PlayState } from "./autoplay";
 import { scrollState, setJourneyElement } from "./scroll-state";
 
 /**
@@ -56,7 +57,7 @@ const CHAPTERS: Chapter[] = [
   { at: 0.29, label: "The machine", note: "One brief, typed" },
   { at: 0.45, label: "Inside", note: "Past the glass" },
   { at: 0.61, label: "Assembly", note: "Structure, then colour" },
-  { at: 0.77, label: "The work", note: "Four that shipped" },
+  { at: 0.77, label: "The work", note: "What is actually built" },
   { at: 0.91, label: "Begin", note: "Back above the cloud" },
 ];
 
@@ -75,6 +76,8 @@ export default function Journey({
   const wrap = useRef<HTMLElement>(null);
   const [chapter, setChapter] = useState(0);
   const [reduced, setReduced] = useState(false);
+  const [play, setPlay] = useState<PlayState>("paused");
+  const player = useRef<ReturnType<typeof createAutoplay> | null>(null);
 
   /* Every animated node, collected once. Querying the DOM inside the frame
      loop would be the single most expensive thing in it. */
@@ -312,9 +315,24 @@ export default function Journey({
       }
     };
 
+    /* The film runs itself. It stops at the end of the journey rather than
+       carrying on down the rest of the document -- past the last chapter this
+       is an ordinary page again and should behave like one. */
+    const auto = createAutoplay({
+      until: () => Math.max(0, el.offsetTop + el.offsetHeight - window.innerHeight),
+      onState: setPlay,
+    });
+    player.current = auto;
+    // A beat before it starts, so the opening title is composed and readable
+    // for a moment before the camera begins to move.
+    const kickoff = window.setTimeout(() => auto.play(), 2600);
+
     raf = requestAnimationFrame(frame);
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(kickoff);
+      auto.dispose();
+      player.current = null;
       release();
       // Leaving the film must not leave the rest of the site hidden.
       delete document.documentElement.dataset.interior;
@@ -332,11 +350,15 @@ export default function Journey({
     { span: 4, h: 44, fill: "#e0913f" },
     { span: 12, h: 52, fill: "" },
   ];
+  /* The chapter formerly showed four invented clients with invented metrics.
+     This studio is new and has none, and a fabricated case study is the fastest
+     way to lose the sort of client worth having. What flies past instead is
+     what actually exists -- every one of these is running in this page. */
   const WORK = [
-    { c: "Halcyon Row", s: "Property", m: "+38% enquiries" },
-    { c: "Vessel & Vine", s: "Hospitality", m: "2.1s to interactive" },
-    { c: "Meridian Craft", s: "Manufacturing", m: "+64% qualified leads" },
-    { c: "Aster Clinic", s: "Healthcare", m: "AA on every route" },
+    { c: "The sky", s: "Volumetric raymarch", m: "Lit per sample, live" },
+    { c: "The engine", s: "Brief to layout", m: "Same words, same site" },
+    { c: "This film", s: "Seven chapters", m: "One scroll value" },
+    { c: "The interface", s: "Keyboard-first", m: "Focus measured 8/8" },
   ];
 
   return (
@@ -392,7 +414,7 @@ export default function Journey({
               where the sky is still coming through, and measured 3.96:1 there
               against a 4.5 requirement. */}
           <span className="mt-12 font-mono text-[10px] uppercase tracking-[0.3em] text-ink-soft">
-            Scroll to fall
+            {play === "playing" ? "Falling" : "Scroll, or press play"}
           </span>
           </div>
         </div>
@@ -522,8 +544,8 @@ export default function Journey({
             Now build <span className="italic text-iris">yours.</span>
           </h2>
           <p className="mt-7 max-w-md text-[15px] leading-relaxed text-ink-soft">
-            One brief, one fixed price, live in forty-eight hours. We take two
-            builds a month so that stays true.
+            One brief, one fixed price, live in forty-eight hours. A small
+            number of builds at a time, so that stays true.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <button
@@ -558,6 +580,37 @@ export default function Journey({
             Sky rendering live
           </span>
         </div>
+
+        {/* Playback control.
+
+            Not optional. The film is a minute of motion the visitor did not
+            ask to start, and motion lasting more than five seconds has to be
+            stoppable -- so this is a real button with a real label, not a
+            decorative glyph. It reappears as "replay" once the film is over. */}
+        {play !== "off" && (
+          <button
+            data-film-control
+            onClick={() => {
+              const a = player.current;
+              if (!a) return;
+              if (play === "done") { window.scrollTo({ top: 0, behavior: "instant" }); a.play(); }
+              else a.toggle();
+            }}
+            className="film-control fixed bottom-5 left-5 z-40 flex items-center gap-2.5 rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] backdrop-blur-xl transition-colors duration-500"
+          >
+            <span aria-hidden className="flex size-3 items-center justify-center">
+              {play === "playing" ? (
+                <span className="flex gap-[2px]">
+                  <span className="block h-3 w-[3px] rounded-[1px] bg-current" />
+                  <span className="block h-3 w-[3px] rounded-[1px] bg-current" />
+                </span>
+              ) : (
+                <span className="block size-0 border-y-[6px] border-l-[9px] border-y-transparent border-l-current" />
+              )}
+            </span>
+            {play === "playing" ? "Pause" : play === "done" ? "Replay" : "Play"}
+          </button>
+        )}
 
         {/* ---- Chapter rail ----------------------------------------------- */}
         <div

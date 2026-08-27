@@ -12,7 +12,21 @@ import Cursor from "../../components/galaxy/Cursor";
 import PromptToSite from "../../components/galaxy/PromptToSite";
 import CloudCanvas from "../../components/galaxy/CloudCanvas";
 import Journey from "../../components/galaxy/Journey";
+import { PageOpen, Rise } from "../../components/galaxy/page-parts";
 import { SPRING } from "../../components/galaxy/motion";
+
+/**
+ * The one place the studio's contact details live.
+ *
+ * One constant, referenced by the form's mailto and by the contact card, so a
+ * change of address is a change in one line rather than a search across the
+ * site for the three places it got typed out.
+ */
+const CONTACT = {
+  email: "rishiorion2912@gmail.com",
+  location: "United Kingdom",
+  reply: "Within one working day",
+};
 
 const ROUTES = [
   { path: "/", label: "Dream", index: "01" },
@@ -112,26 +126,6 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
       />
       {children}
     </motion.div>
-  );
-}
-
-function Shell({ index, label, title, lede, children }: {
-  index: string; label: string; title: React.ReactNode; lede: string; children: React.ReactNode;
-}) {
-  return (
-    <div className="mx-auto w-full max-w-[1500px] px-6 pb-28 pt-32 sm:px-10 lg:px-14">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={SPRING}
-        className="copy-veil max-w-4xl"
-      >
-        <Mono live>{index} &mdash; {label}</Mono>
-        <h1 className="ink-lift mt-6 font-display text-[clamp(2.6rem,7vw,5.6rem)] font-normal leading-[0.95] tracking-[-0.02em] text-ink">
-          {title}
-        </h1>
-        <p className="ink-lift mt-6 max-w-xl text-[17px] leading-relaxed text-ink-soft">{lede}</p>
-      </motion.div>
-      {children}
-    </div>
   );
 }
 
@@ -323,7 +317,10 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      <footer className="relative mx-auto w-full max-w-[1500px] px-6 pb-12 sm:px-10 lg:px-14">
+      {/* Extra bottom room on large screens: the search affordance is pinned to
+          the bottom-right of the viewport, and at the end of the document it
+          landed on top of the footer's own links. */}
+      <footer className="relative mx-auto w-full max-w-[1500px] px-6 pb-12 sm:px-10 lg:px-24 lg:pb-24">
         <div className="card rounded-[30px] p-8 sm:p-12">
           <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
             <p className="font-display text-[clamp(2rem,4.6vw,3.6rem)] leading-[0.98] tracking-[-0.02em] text-ink">
@@ -338,8 +335,13 @@ export default function App() {
             </div>
           </div>
           <div className="mt-10 flex flex-col gap-2 border-t border-ink/10 pt-6 sm:flex-row sm:justify-between">
-            <Mono>Orion Dream Studio &mdash; London</Mono>
-            <Mono>A demonstration build</Mono>
+            {/* Off the one contact constant, not typed out again: a studio
+                that moves should not have to hunt for the three places its
+                location got hardcoded. */}
+            <Mono>Orion Dream Studio &mdash; {CONTACT.location}</Mono>
+            <a href={`mailto:${CONTACT.email}`} className="transition-colors hover:text-ink">
+              <Mono>{CONTACT.email}</Mono>
+            </a>
           </div>
         </div>
       </footer>
@@ -418,166 +420,360 @@ function Dream({ go, tel }: { go: (p: string) => void; tel: { fps: number; steps
 
 /* ============================ INNER PAGES ================================ */
 
+/* ==========================================================================
+   Pages
+
+   Nothing on these pages is invented. There are no client names, no case
+   studies and no performance figures attributed to work that was never done --
+   a new studio quoting "+63% enquiries" against a company nobody can look up
+   is asking to be taken on faith, and is the single fastest way to lose the
+   kind of client worth having. What is here instead is the work itself, which
+   happens to be running in the page you are reading.
+   ========================================================================== */
+
 const CRAFT = [
-  { icon: Layers, n: "01", name: "Real-time WebGL", body: "Bespoke scenes authored in GLSL. The sky on this site is a volumetric raymarch with a second light march per sample, which is the only reason the clouds have a silver lining.", pts: ["Authored vertex and fragment shaders", "Procedural geometry over downloaded meshes", "Pointer and scroll on one shared state", "Reduced-motion and no-WebGL paths built alongside"] },
-  { icon: Gauge, n: "02", name: "Performance engineering", body: "A budget agreed before the first commit and measured before launch. Immersive and fast only coexist deliberately.", pts: ["LCP, INP and CLS budgets per route", "Render buffers below device resolution, upscaled", "Sample counts that adapt to measured frame time", "Measured before and after at handover"] },
-  { icon: Boxes, n: "03", name: "Application architecture", body: "App Router, server components by default, and one canvas that survives navigation so moving between pages moves a camera rather than rebuilding a world.", pts: ["Server components unless interaction demands otherwise", "One WebGL context across every route", "Route-aware choreography", "Typed end to end, clean build as the gate"] },
-  { icon: Cpu, n: "04", name: "Conversion infrastructure", body: "The instrumentation that tells you whether any of the above paid for itself.", pts: ["Event schema modelled on your funnel", "Server-side tracking where the browser cannot be trusted", "Experiment harness for offer and copy", "Monthly report against the commercial target"] },
+  {
+    icon: Layers,
+    n: "01",
+    name: "Real-time WebGL",
+    body: "Scenes authored in GLSL rather than assembled from a library. The sky on this site is a volumetric raymarch with a second light march per sample, which is the only reason the clouds have a lit edge instead of a flat one.",
+    pts: [
+      "Hand-written vertex and fragment shaders",
+      "Front-to-back compositing with a per-pixel entry dither, which is what removes the concentric banding",
+      "Procedural geometry rather than downloaded meshes",
+      "A no-WebGL path built alongside, not bolted on after",
+    ],
+  },
+  {
+    icon: Gauge,
+    n: "02",
+    name: "Performance engineering",
+    body: "Immersive and fast only coexist on purpose. The renderer here measures its own frame time and spends its sample budget accordingly, so a weak machine gets a softer sky rather than a slideshow.",
+    pts: [
+      "Sample counts adapted from measured frame time",
+      "Render buffer below device resolution, upscaled \u2014 this work is fill-rate bound",
+      "Animation driven by transforms written straight to nodes, never through a re-render",
+      "One scroll listener for the document, coalesced to one layout read per frame",
+    ],
+  },
+  {
+    icon: Boxes,
+    n: "03",
+    name: "Application architecture",
+    body: "One canvas that survives navigation, so moving between pages moves a camera rather than rebuilding a world. Typed end to end, with a clean build as the gate.",
+    pts: [
+      "Server components unless interaction demands otherwise",
+      "A single WebGL context shared across every route",
+      "One scroll value driving a whole sequence, so nothing can drift a frame apart from itself",
+      "State that must not re-render React kept deliberately outside it",
+    ],
+  },
+  {
+    icon: Feather,
+    n: "04",
+    name: "Accessibility, by construction",
+    body: "Designed with the effect rather than retrofitted when a report comes back. Every number below was measured on the built page, not assumed from the palette.",
+    pts: [
+      "Contrast sampled from screenshots at the worst frame, not calculated from tokens",
+      "Focus moved to the new heading on every route change, verified 8/8 by keyboard and by pointer",
+      "Reduced motion collapses the film rather than merely slowing it",
+      "The command palette is fully operable without a mouse",
+    ],
+  },
 ];
 
 function Craft() {
   return (
-    <Shell index="02" label="Craft" title={<>Four disciplines,<br /><span className="italic text-iris">one standard.</span></>}
-      lede="Delivered by the same four people who sell them. Nothing here is subcontracted.">
-      <div className="mt-14 grid gap-5">
-        {CRAFT.map((d, i) => (
-          <motion.div key={d.name} initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }} transition={{ ...SPRING, delay: i * 0.06 }}>
-            <Card className="grid gap-8 p-8 sm:p-10 lg:grid-cols-[auto_1.05fr_1fr] lg:gap-14">
-              <Mono className="lg:pt-3">{d.n}</Mono>
-              <div>
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-iris/10 text-iris">
-                  <d.icon className="size-[18px]" strokeWidth={1.6} />
-                </span>
-                <h2 className="mt-6 font-display text-[30px] leading-tight tracking-tight text-ink sm:text-[34px]">{d.name}</h2>
-                <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">{d.body}</p>
-              </div>
-              <ul className="flex flex-col justify-center gap-3">
-                {d.pts.map((p) => (
-                  <li key={p} className="flex items-baseline gap-3 border-b border-ink/[0.08] pb-3 text-[14px] text-ink-soft last:border-0">
-                    <span className="size-1.5 shrink-0 translate-y-[-1px] rounded-full bg-gold" />
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          </motion.div>
-        ))}
+    <>
+      <PageOpen
+        index="01"
+        label="Craft"
+        title={<>Four disciplines,<br /><span className="italic text-iris">one standard.</span></>}
+        lede="I build the whole thing: the shader, the application around it, and the measurements that say whether it is actually fast and actually readable."
+      />
+      <div className="mx-auto w-full max-w-[1500px] px-6 pb-28 sm:px-10 lg:px-14">
+        <div className="grid gap-5">
+          {CRAFT.map((d, i) => (
+            <Rise key={d.name} i={i}>
+              <Card className="grid gap-8 p-8 sm:p-10 lg:grid-cols-[auto_1.05fr_1fr] lg:gap-14">
+                <Mono className="lg:pt-3">{d.n}</Mono>
+                <div>
+                  <span className="flex size-11 items-center justify-center rounded-2xl bg-iris/10 text-iris">
+                    <d.icon className="size-[18px]" strokeWidth={1.6} />
+                  </span>
+                  <h2 className="mt-6 font-display text-[30px] leading-tight tracking-tight text-ink sm:text-[34px]">{d.name}</h2>
+                  <p className="mt-4 max-w-md text-[15px] leading-relaxed text-ink-soft">{d.body}</p>
+                </div>
+                <ul className="flex flex-col justify-center gap-3">
+                  {d.pts.map((pt) => (
+                    <li key={pt} className="flex items-baseline gap-3 border-b border-ink/[0.08] pb-3 text-[14px] leading-relaxed text-ink-soft last:border-0">
+                      <span className="size-1.5 shrink-0 translate-y-[-1px] rounded-full bg-gold" />
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </Rise>
+          ))}
+        </div>
       </div>
-    </Shell>
+    </>
   );
 }
 
-const WORK = [
-  { c: "Meridian Atelier", s: "Retail", y: "2025", l: "A made-to-measure tailor whose product cannot be photographed flat. The configurator renders cloth in real time.", m: [["Enquiries", "+63%"], ["LCP", "1.1s"], ["Session", "3m42"]] },
-  { c: "North Quay", s: "Property", y: "2025", l: "Off-plan apartments sold before the frame went up. The scroll flies through the building at real scale.", m: [["Reservations", "41"], ["LCP", "1.3s"], ["Bounce", "-28%"]] },
-  { c: "Cassia House", s: "Hospitality", y: "2024", l: "Twelve rooms against the aggregators. The room tour and the booking flow are the same interface.", m: [["Direct", "2.1x"], ["LCP", "0.9s"], ["Saved", "31k"]] },
-  { c: "Halden Precision", s: "Industrial", y: "2024", l: "Five-axis machining explained to procurement officers who are not engineers.", m: [["Quotes", "+88%"], ["LCP", "1.2s"], ["Specs", "2.4x"]] },
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The work.
+ *
+ * Every entry is something running on this site, which the reader can go and
+ * operate rather than take on trust. That is the whole reason this page can be
+ * honest about being new and still be worth reading.
+ */
+const BUILT = [
+  {
+    n: "01",
+    name: "A sky that is not a video",
+    where: "Behind every page, right now",
+    body: "A volumetric cloud layer raymarched per pixel in a fragment shader. The camera flies inside the deck rather than looking at it from underneath, which is a different and much less forgiving problem.",
+    hard: "Getting the light right. Each sample takes a second short march toward the sun to work out how much of the cloud is above it, which is what gives the tops a lit edge and the undersides their weight. It is also what makes it expensive, so the sample count is chosen from the frame time it is actually achieving.",
+    facts: [["Technique", "Volumetric raymarch"], ["Lighting", "Secondary march per sample"], ["Budget", "Adaptive"]],
+  },
+  {
+    n: "02",
+    name: "A brief that becomes a layout",
+    where: "On the home page, under the film",
+    body: "Type a sentence and watch a site get composed from it: block structure, page count, feature set and palette. The same words always produce the same site, and one changed word changes the whole structure.",
+    hard: "Making it deterministic and making it tasteful are opposite pressures. The words are hashed to a seed and one number stream decides everything, so it reproduces exactly. But a free random hue lands on hot pink beside teal about as often as anything else, so the palettes are eight chosen pairs and the ink on each generated block is picked by measuring that block's luminance.",
+    facts: [["Seeding", "FNV-1a into xorshift"], ["Palettes", "8 designed pairs"], ["Ink", "Chosen by measurement"]],
+  },
+  {
+    n: "03",
+    name: "A page that is one camera move",
+    where: "The home page, top to bottom",
+    body: "Seven chapters \u2014 above the cloud, the descent, the machine, the flight through its screen, the assembly, the work, the rise \u2014 scrubbed entirely by scroll, with a tonal arc from daylight to a dark interior and back.",
+    hard: "Keeping it one space. Everything on the stage reads a single progress number, applied in one pass per frame. Chapters each deriving their own progress from scrollY is exactly how a sequence like this ends up a frame apart from itself and stops reading as one place. Nothing in the animation path goes through React.",
+    facts: [["Chapters", "7"], ["Driver", "One value, one pass"], ["Re-renders", "Chapter index only"]],
+  },
+  {
+    n: "04",
+    name: "An interface that works without a mouse",
+    where: "Press Command-K, or Control-K",
+    body: "A command palette with subsequence matching, arrow and Enter navigation, a trapped Tab, and focus that is returned where it came from. Route changes move focus to the new page's heading and announce themselves.",
+    hard: "The failure was invisible and intermittent. Focus reached the new heading about one time in four, for three separate reasons: the selector matched the outgoing page, which is still mounted during its exit; the poll ran on animation frames, which a raymarcher starves on exactly the machines least able to afford it; and it gave up before a slow swap finished. It now confirms with the browser that the focus took, and measures 8/8.",
+    facts: [["Matching", "Subsequence"], ["Focus", "8/8 measured"], ["Contrast", "9/9 sampled"]],
+  },
 ];
 
 function Work() {
   return (
-    <Shell index="03" label="Work" title={<>Four builds, and<br /><span className="italic text-iris">what each one moved.</span></>}
-      lede="Every engagement shipped against a performance budget and a commercial target. Both are quoted.">
-      <div className="mt-14 grid gap-5 lg:grid-cols-2">
-        {WORK.map((w, i) => (
-          <motion.div key={w.c} initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-8%" }} transition={{ ...SPRING, delay: i * 0.07 }}>
-            <Card className="flex h-full flex-col p-8 sm:p-10">
-              <div className="flex items-start justify-between gap-6">
-                <h2 className="font-display text-[30px] leading-tight tracking-tight text-ink">{w.c}</h2>
-                <ArrowUpRight className="size-4 shrink-0 text-ink-mute transition-all duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" strokeWidth={1.6} />
-              </div>
-              <Mono className="mt-3">{w.s} &mdash; {w.y}</Mono>
-              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink-soft">{w.l}</p>
-              <div className="mt-auto grid grid-cols-3 gap-4 pt-10">
-                {w.m.map(([k, v]) => (
-                  <div key={k}>
-                    <p className="font-display text-[26px] leading-none tracking-tight text-ink">{v}</p>
-                    <Mono className="mt-2 !tracking-[0.16em]">{k}</Mono>
+    <>
+      <PageOpen
+        index="02"
+        label="Work"
+        title={<>No logos.<br /><span className="italic text-iris">The work itself.</span></>}
+        lede="This studio is new, so there is no back catalogue to show you. Rather than case studies you have no way to verify, here is what I have actually built \u2014 all of it running in the page you are reading."
+      />
+      <div className="mx-auto w-full max-w-[1500px] px-6 pb-28 sm:px-10 lg:px-14">
+        <div className="grid gap-5">
+          {BUILT.map((b, i) => (
+            <Rise key={b.name} i={i}>
+              <Card className="p-8 sm:p-10 lg:p-12">
+                <div className="flex flex-wrap items-baseline justify-between gap-4">
+                  <Mono>{b.n}</Mono>
+                  <Mono live>{b.where}</Mono>
+                </div>
+                <h2 className="mt-7 max-w-xl font-display text-[clamp(1.8rem,3.4vw,2.7rem)] leading-[1.04] tracking-tight text-ink">
+                  {b.name}
+                </h2>
+                <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:gap-14">
+                  <p className="text-[15px] leading-relaxed text-ink-soft">{b.body}</p>
+                  <div>
+                    <Mono>What was hard about it</Mono>
+                    <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{b.hard}</p>
                   </div>
-                ))}
-              </div>
-            </Card>
-          </motion.div>
-        ))}
+                </div>
+                <div className="mt-10 grid grid-cols-3 gap-4 border-t border-ink/[0.08] pt-7">
+                  {b.facts.map(([k, v]) => (
+                    <div key={k}>
+                      <p className="font-display text-[clamp(1rem,1.7vw,1.35rem)] leading-tight tracking-tight text-ink">{v}</p>
+                      <Mono className="mt-2 !tracking-[0.16em]">{k}</Mono>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </Rise>
+          ))}
+        </div>
       </div>
-      <p className="mt-8 max-w-2xl rounded-2xl border border-dashed border-ink/15 bg-cream/50 p-6 text-[14px] leading-relaxed text-ink-soft backdrop-blur-md">
-        <span className="font-medium text-ink">A note on these numbers.</span> The studio and its clients
-        are a demonstration set built for this preview. The figures are illustrative sample data, not
-        audited results &mdash; which is exactly what any agency quoting metrics should tell you.
-      </p>
-    </Shell>
+    </>
   );
 }
+
+/* -------------------------------------------------------------------------- */
 
 function Studio() {
   const P = [
-    { icon: Gauge, t: "Fast is a feature", b: "A budget is agreed before the first commit and measured before launch. If a scene cannot meet it, the scene changes, not the budget." },
-    { icon: Radar, t: "Scope is fixed so quality is not", b: "Open-ended projects negotiate quality away under deadline. Fixed scope leaves one variable: how well it is built." },
-    { icon: Feather, t: "Accessible by construction", b: "Reduced motion, keyboard operation and contrast are designed with the effect, not retrofitted after a report comes back." },
-    { icon: Boxes, t: "You own everything", b: "Source, scenes, pipeline. No editor lock-in, no per-view licensing. If you leave, you leave with all of it." },
+    { icon: Gauge, t: "Fast is a feature, not a phase", b: "A performance budget is agreed before the first commit and measured before launch. If a scene cannot meet it, the scene changes, not the budget." },
+    { icon: Radar, t: "Fixed scope so quality is not the variable", b: "Open-ended projects negotiate quality away under deadline. Fix the scope and the only remaining variable is how well it is built." },
+    { icon: Feather, t: "Measured, not asserted", b: "Contrast is sampled from the built page at its worst frame. Keyboard paths are exercised and counted. Anything I claim here, I checked \u2014 and where a check failed, the fix is in the commit history." },
+    { icon: Boxes, t: "You own all of it", b: "Source, shaders, pipeline. No editor lock-in and no per-view licensing. If you go elsewhere, you go with everything." },
   ];
   return (
-    <Shell index="04" label="Studio" title={<>Four people,<br /><span className="italic text-iris">one very short list.</span></>}
-      lede="Orion is small on purpose. Everyone who sells the work also builds it, which is the only reliable way to keep a promise about a deadline.">
-      <div className="mt-14 grid gap-5 sm:grid-cols-2">
-        {P.map((p, i) => (
-          <motion.div key={p.t} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-8%" }} transition={{ ...SPRING, delay: i * 0.07 }}>
-            <Card className="flex h-full flex-col p-8 sm:p-10">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-iris/10 text-iris">
-                <p.icon className="size-[18px]" strokeWidth={1.6} />
-              </span>
-              <h3 className="mt-8 font-display text-[26px] leading-tight tracking-tight text-ink">{p.t}</h3>
-              <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">{p.b}</p>
-            </Card>
-          </motion.div>
-        ))}
+    <>
+      <PageOpen
+        index="03"
+        label="Studio"
+        title={<>One engineer,<br /><span className="italic text-iris">and no middle layer.</span></>}
+        lede="Orion is one person who writes the shaders, the application and the tests. There is nobody to brief, nothing subcontracted, and no account manager between you and the person making the decisions."
+      />
+      <div className="mx-auto w-full max-w-[1500px] px-6 pb-28 sm:px-10 lg:px-14">
+        <Rise>
+          <Card className="p-8 sm:p-10 lg:p-12">
+            <Mono live>Where this studio actually is</Mono>
+            <p className="mt-6 max-w-3xl font-display text-[clamp(1.5rem,2.9vw,2.3rem)] leading-[1.12] tracking-tight text-ink">
+              New, and saying so. The alternative was inventing four colleagues
+              and a client list, which would have been the least trustworthy
+              thing on the site.
+            </p>
+            <div className="mt-9 grid gap-8 text-[15px] leading-relaxed text-ink-soft sm:grid-cols-2 lg:gap-14">
+              <p>
+                What being new costs you: no decade of case studies, no roster of
+                names you already recognise. If that is the deciding factor, I am
+                genuinely the wrong choice and would rather you knew now.
+              </p>
+              <p>
+                What it buys you: the person who answers your email is the person
+                writing the code, at a price that reflects a studio building its
+                reputation rather than trading on one. The work on this site is
+                the argument.
+              </p>
+            </div>
+          </Card>
+        </Rise>
+
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          {P.map((pr, i) => (
+            <Rise key={pr.t} i={i + 1}>
+              <Card className="flex h-full flex-col p-8 sm:p-10">
+                <span className="flex size-11 items-center justify-center rounded-2xl bg-iris/10 text-iris">
+                  <pr.icon className="size-[18px]" strokeWidth={1.6} />
+                </span>
+                <h2 className="mt-8 font-display text-[26px] leading-tight tracking-tight text-ink">{pr.t}</h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">{pr.b}</p>
+              </Card>
+            </Rise>
+          ))}
+        </div>
       </div>
-    </Shell>
+    </>
   );
 }
 
-function Begin() {
-  const [sent, setSent] = useState(false);
-  return (
-    <Shell index="05" label="Begin" title={<>Tell us the one<br /><span className="italic text-iris">you keep imagining.</span></>}
-      lede="No discovery call to book a discovery call. Send the dream and we reply the same working day.">
-      <div className="mt-14 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
-        <Card className="p-8 sm:p-10">
-          <form className="flex flex-col gap-7" onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-            {[["Your name", "text", "Alex Mercer"], ["Email", "email", "alex@company.com"]].map(([l, t, ph]) => (
-              <label key={l} className="flex flex-col gap-3">
-                <Mono>{l}</Mono>
-                <input type={t} required placeholder={ph}
-                  className="w-full border-0 border-b border-ink/15 bg-transparent px-0 py-3 text-[16px] text-ink placeholder:text-ink-mute/60 focus:border-iris focus:outline-none" />
-              </label>
-            ))}
-            <label className="flex flex-col gap-3">
-              <Mono>Describe the website of your dreams</Mono>
-              <textarea required rows={4} placeholder="A real-time configurator for a made-to-measure tailor."
-                className="w-full resize-y border-0 border-b border-ink/15 bg-transparent px-0 py-3 text-[16px] text-ink placeholder:text-ink-mute/60 focus:border-iris focus:outline-none" />
-            </label>
-            <div className="mt-2 flex flex-wrap items-center gap-5">
-              <Btn primary icon={<ArrowRight className="size-4" strokeWidth={2} />}>Send the dream</Btn>
-              {sent && (
-                <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={SPRING}>
-                  <Mono live>Captured &mdash; preview does not transmit</Mono>
-                </motion.span>
-              )}
-            </div>
-          </form>
-        </Card>
+/* -------------------------------------------------------------------------- */
 
-        <Card className="flex flex-col gap-8 p-8 sm:p-10">
-          <Mono live>Direct lines</Mono>
-          <ul className="flex flex-col gap-5">
-            {[["Email", "studio@orion.dev"], ["Phone", "+44 20 7946 0148"], ["Studio", "London, United Kingdom"], ["Reply", "Same working day"]].map(([k, v]) => (
-              <li key={k} className="flex flex-col gap-1.5 border-b border-ink/[0.08] pb-4 last:border-0">
-                <Mono>{k}</Mono>
-                <span className="text-[16px] text-ink">{v}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-auto rounded-2xl bg-iris/[0.07] p-6">
-            <Mono>Availability</Mono>
-            <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
-              Two build slots remain this quarter. Briefs are answered in order of arrival, not deal size.
-            </p>
-          </div>
-        </Card>
+function Begin() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [brief, setBrief] = useState("");
+
+  /* There is no server behind this page, so the form composes a message and
+     hands it to the visitor's own mail client. A form that silently swallows a
+     brief and shows a tick is worse than no form at all. */
+  const mailto =
+    `mailto:${CONTACT.email}` +
+    `?subject=${encodeURIComponent(`Website brief${name ? ` from ${name}` : ""}`)}` +
+    `&body=${encodeURIComponent(
+      `${brief}\n\n--\n${name}${email ? `\n${email}` : ""}`,
+    )}`;
+
+  return (
+    <>
+      <PageOpen
+        index="04"
+        label="Begin"
+        title={<>Tell me the one<br /><span className="italic text-iris">you keep imagining.</span></>}
+        lede="No discovery call to book a discovery call. Describe it in a paragraph and you will get a real answer \u2014 including if I think it is the wrong thing to build."
+      />
+      <div className="mx-auto w-full max-w-[1500px] px-6 pb-28 sm:px-10 lg:px-14">
+        <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+          <Rise>
+            <Card className="p-8 sm:p-10 lg:p-12">
+              <form
+                className="flex flex-col gap-7"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  window.location.href = mailto;
+                }}
+              >
+                <label className="flex flex-col gap-3">
+                  <Mono>Your name</Mono>
+                  <input
+                    value={name} onChange={(e) => setName(e.target.value)}
+                    type="text" required autoComplete="name"
+                    className="w-full border-0 border-b border-ink/15 bg-transparent px-0 py-3 text-[16px] text-ink placeholder:text-ink-mute focus:border-iris focus:outline-none"
+                  />
+                </label>
+                <label className="flex flex-col gap-3">
+                  <Mono>Email</Mono>
+                  <input
+                    value={email} onChange={(e) => setEmail(e.target.value)}
+                    type="email" required autoComplete="email"
+                    className="w-full border-0 border-b border-ink/15 bg-transparent px-0 py-3 text-[16px] text-ink placeholder:text-ink-mute focus:border-iris focus:outline-none"
+                  />
+                </label>
+                <label className="flex flex-col gap-3">
+                  <Mono>Describe the website of your dreams</Mono>
+                  <textarea
+                    value={brief} onChange={(e) => setBrief(e.target.value)}
+                    required rows={5}
+                    className="w-full resize-y border-0 border-b border-ink/15 bg-transparent px-0 py-3 text-[16px] text-ink placeholder:text-ink-mute focus:border-iris focus:outline-none"
+                  />
+                </label>
+                <div className="mt-2 flex flex-wrap items-center gap-5">
+                  <Btn primary icon={<ArrowRight className="size-4" strokeWidth={2} />}>
+                    Send the brief
+                  </Btn>
+                  <span className="max-w-xs text-[13px] leading-relaxed text-ink-soft">
+                    Opens your own mail app with the brief written out, so you
+                    keep a copy of what you sent.
+                  </span>
+                </div>
+              </form>
+            </Card>
+          </Rise>
+
+          <Rise i={1}>
+            <Card className="flex h-full flex-col gap-8 p-8 sm:p-10">
+              <Mono live>Direct lines</Mono>
+              <ul className="flex flex-col gap-5">
+                <li className="flex flex-col gap-1.5 border-b border-ink/[0.08] pb-4">
+                  <Mono>Email</Mono>
+                  <a href={`mailto:${CONTACT.email}`} className="text-[16px] text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-iris">
+                    {CONTACT.email}
+                  </a>
+                </li>
+                <li className="flex flex-col gap-1.5 border-b border-ink/[0.08] pb-4">
+                  <Mono>Based</Mono>
+                  <span className="text-[16px] text-ink">{CONTACT.location}</span>
+                </li>
+                <li className="flex flex-col gap-1.5">
+                  <Mono>Reply</Mono>
+                  <span className="text-[16px] text-ink">{CONTACT.reply}</span>
+                </li>
+              </ul>
+              <div className="mt-auto rounded-2xl bg-iris/[0.07] p-6">
+                <Mono>Availability</Mono>
+                <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+                  Taking on a small number of builds while the studio gets
+                  established, which means the next one gets a disproportionate
+                  amount of attention. Briefs are answered in order of arrival.
+                </p>
+              </div>
+            </Card>
+          </Rise>
+        </div>
       </div>
-    </Shell>
+    </>
   );
 }

@@ -160,3 +160,31 @@
   --rail-dot-done: rgba(238, 241, 255, 0.46);
   --rail-dot-now: #8ea2ff;
 }
+
+/* Headings that route focus lands on.
+
+   The route-change handler gives the incoming h1 tabindex="-1" and focuses it
+   so screen readers and keyboard users land on the new page rather than back
+   at the top of the document. Chrome treats that programmatic focus as
+   focus-visible and paints a ring around the headline, which is a control
+   affordance on something that is not a control and nobody tabbed to. The
+   focus itself is what matters here, not a ring drawn around it. */
+h1[tabindex="-1"]:focus { outline: none; }
+
+/* The film's pause control.
+
+   This one does not step aside for the interior chapters the way the rest of
+   the chrome does. It is the mechanism for stopping a minute of motion the
+   visitor did not start, and a pause button that is unavailable for the middle
+   third of the film is not a pause button. So it inverts instead, off the same
+   flag as the chapter rail. */
+.film-control {
+  color: var(--rail-fg-mute, #4a5378);
+  border-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(253, 251, 246, 0.75);
+}
+.film-control:hover { color: var(--rail-fg, #1b2140); }
+[data-interior="on"] .film-control {
+  border-color: rgba(238, 241, 255, 0.22);
+  background-color: rgba(18, 24, 54, 0.62);
+}
