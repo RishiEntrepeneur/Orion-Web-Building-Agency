@@ -2,6 +2,9 @@
   "name": "orion-3d-agency",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "description": "Immersive dark-themed landing page for a 3D & AI website agency.",
   "scripts": {
     "dev": "next dev",
