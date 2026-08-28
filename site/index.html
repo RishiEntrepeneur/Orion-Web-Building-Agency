@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orion — Websites built properly, in a week</title>
+<meta name="description" content="A small studio building fast, accessible, hand-written websites for people who are tired of templates. Fixed price, one week, no retainer.">
+<meta name="theme-color" content="#0b0b0e">
+
+<!-- Open Graph. Set the URL once the domain is live. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Orion — Websites built properly, in a week">
+<meta property="og:description" content="Fast, accessible, hand-written websites. Fixed price, one week, no retainer.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap">
+
+<style>
+/* ---------------------------------------------------------------------------
+   One file, no build step.
+
+   Everything this page needs is in this document: no framework, no bundler, no
+   dependencies beyond one stylesheet of fonts. That is a deliberate choice
+   rather than a limitation -- a site that cannot fail to build cannot fail to
+   deploy, and this one loads in well under a second on a phone on mobile data.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --ink: #0b0b0e;
+  --ink-2: #15151a;
+  --paper: #faf8f5;
+  --paper-dim: #b9b5ae;
+  --paper-mute: #86827b;
+  --amber: #ff7a35;
+  --amber-soft: #ffb185;
+  --line: rgba(250, 248, 245, 0.12);
+  --max: 1180px;
+  --pad: clamp(1.25rem, 5vw, 4rem);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 clamp(1rem, .96rem + .18vw, 1.0625rem)/1.65 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 400; line-height: 1.04; letter-spacing: -.02em; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+
+.wrap { width: 100%; max-width: var(--max); margin-inline: auto; padding-inline: var(--pad); }
+.eyebrow { font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--amber); font-weight: 500; }
+.dim { color: var(--paper-dim); }
+.mute { color: var(--paper-mute); }
+
+/* --- Background ----------------------------------------------------------
+   Two slow-drifting radial washes plus a static grain, all in CSS. It gives
+   the page depth without a canvas, a shader or a single kilobyte of
+   JavaScript, and it costs nothing on a weak device. */
+.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
+.bg::before, .bg::after {
+  content: ""; position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5;
+}
+.bg::before {
+  width: 60vw; height: 60vw; left: -12vw; top: -18vw;
+  background: radial-gradient(circle, rgba(255,122,53,.5), transparent 68%);
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+.bg::after {
+  width: 52vw; height: 52vw; right: -10vw; top: 22vw;
+  background: radial-gradient(circle, rgba(88,101,242,.42), transparent 68%);
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+@keyframes drift-a { to { transform: translate3d(8vw, 6vw, 0) scale(1.14); } }
+@keyframes drift-b { to { transform: translate3d(-7vw, -5vw, 0) scale(1.1); } }
+
+.grain {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+}
+
+/* --- Header --------------------------------------------------------------- */
+header {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(14px);
+  background: rgba(11, 11, 14, .72);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s ease;
+}
+header.stuck { border-bottom-color: var(--line); }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 68px; }
+.brand { display: flex; align-items: center; gap: .6rem; font-family: Fraunces, serif; font-size: 1.32rem; text-decoration: none; letter-spacing: -.01em; }
+.brand span { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 16px var(--amber); }
+.nav-links { display: none; gap: 2rem; }
+.nav-links a { text-decoration: none; color: var(--paper-dim); font-size: .94rem; transition: color .2s; }
+.nav-links a:hover, .nav-links a:focus-visible { color: var(--paper); }
+@media (min-width: 820px) { .nav-links { display: flex; } }
+
+.btn {
+  display: inline-flex; align-items: center; gap: .55rem;
+  padding: .72rem 1.35rem; border-radius: 100px; text-decoration: none;
+  font-size: .94rem; font-weight: 500; border: 1px solid transparent;
+  transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
+  will-change: transform;
+}
+.btn:hover, .btn:focus-visible { transform: translateY(-2px); }
+.btn-primary { background: var(--amber); color: #1a0a02; }
+.btn-primary:hover { background: var(--amber-soft); }
+.btn-ghost { border-color: var(--line); color: var(--paper); }
+.btn-ghost:hover { border-color: var(--paper-mute); }
+
+/* --- Sections ------------------------------------------------------------- */
+section { padding-block: clamp(4.5rem, 11vw, 9rem); }
+.hero { padding-top: clamp(3.5rem, 9vw, 7rem); padding-bottom: clamp(3.5rem, 9vw, 7rem); }
+.hero h1 { font-size: clamp(2.6rem, 8.4vw, 5.6rem); max-width: 15ch; margin-top: 1.6rem; }
+.hero h1 em { font-style: italic; color: var(--amber); }
+.hero p.lede { font-size: clamp(1.05rem, .98rem + .5vw, 1.3rem); max-width: 46ch; margin-top: 1.8rem; color: var(--paper-dim); }
+.hero .cta { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.6rem; }
+
+.facts { display: grid; gap: 1px; margin-top: clamp(3.5rem, 8vw, 6rem); background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+@media (min-width: 700px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+.fact { background: var(--ink); padding: 1.7rem 1.5rem; }
+.fact b { display: block; font-family: Fraunces, serif; font-size: 1.9rem; font-weight: 400; }
+.fact span { display: block; font-size: .86rem; color: var(--paper-mute); margin-top: .4rem; }
+
+.head { max-width: 34ch; }
+.head h2 { font-size: clamp(2rem, 5vw, 3.2rem); margin-top: 1.1rem; }
+.head p { margin-top: 1.2rem; color: var(--paper-dim); }
+
+.grid { display: grid; gap: 1.1rem; margin-top: clamp(2.5rem, 6vw, 4rem); }
+@media (min-width: 760px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+
+.card {
+  border: 1px solid var(--line); border-radius: 18px; padding: clamp(1.5rem, 3vw, 2.2rem);
+  background: linear-gradient(160deg, rgba(250,248,245,.045), rgba(250,248,245,.012));
+  transition: border-color .3s ease, transform .3s ease;
+}
+.card:hover { border-color: rgba(255,122,53,.42); transform: translateY(-3px); }
+.card h3 { font-size: 1.35rem; margin-bottom: .7rem; }
+.card p { color: var(--paper-dim); font-size: .97rem; }
+.card .n { font-size: .74rem; letter-spacing: .16em; color: var(--amber); font-weight: 500; }
+
+/* Steps */
+ol.steps { list-style: none; padding: 0; margin: clamp(2.5rem,6vw,4rem) 0 0; display: grid; gap: 1px; background: var(--line); border-block: 1px solid var(--line); }
+ol.steps li { background: var(--ink); padding: 1.6rem 0; display: grid; gap: .5rem 2rem; }
+@media (min-width: 760px) { ol.steps li { grid-template-columns: 5rem 15rem 1fr; align-items: baseline; } }
+ol.steps b { font-family: Fraunces, serif; font-weight: 400; font-size: 1.2rem; }
+ol.steps .k { font-size: .74rem; letter-spacing: .16em; text-transform: uppercase; color: var(--amber); }
+ol.steps p { color: var(--paper-dim); font-size: .97rem; }
+
+/* Price */
+.price { border: 1px solid var(--line); border-radius: 22px; padding: clamp(1.7rem, 4vw, 2.8rem); background: linear-gradient(165deg, rgba(255,122,53,.09), rgba(250,248,245,.02)); }
+.price .amt { font-family: Fraunces, serif; font-size: clamp(2.6rem, 7vw, 4rem); line-height: 1; }
+.price ul { list-style: none; padding: 0; margin: 1.6rem 0 0; display: grid; gap: .7rem; }
+.price li { display: flex; gap: .7rem; align-items: flex-start; color: var(--paper-dim); font-size: .97rem; }
+.price li::before { content: "→"; color: var(--amber); flex: none; }
+
+/* Contact */
+form { display: grid; gap: 1.3rem; margin-top: 2rem; }
+label { display: grid; gap: .5rem; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase; color: var(--paper-mute); }
+input, textarea {
+  font: inherit; color: var(--paper); background: transparent;
+  border: 0; border-bottom: 1px solid var(--line); padding: .7rem 0; border-radius: 0;
+  transition: border-color .2s ease;
+}
+input:focus, textarea:focus { outline: none; border-bottom-color: var(--amber); }
+textarea { resize: vertical; min-height: 7rem; }
+
+footer { border-top: 1px solid var(--line); padding-block: 3rem; }
+.foot { display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; align-items: center; font-size: .88rem; color: var(--paper-mute); }
+.foot a { color: var(--paper-dim); text-decoration: none; }
+.foot a:hover { color: var(--paper); }
+
+/* Reveal on scroll. Six lines of JS below; no library. */
+.rise { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1); }
+.rise.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .rise { opacity: 1; transform: none; } }
+
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 1rem; top: 1rem; position: fixed; z-index: 99; background: var(--amber); color: #1a0a02; padding: .7rem 1.2rem; border-radius: 100px; }
+</style>
+</head>
+
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header id="hdr">
+  <div class="wrap nav">
+    <a class="brand" href="#top"><span aria-hidden="true"></span>Orion</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work">What I build</a>
+      <a href="#how">How it works</a>
+      <a href="#price">Price</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn-primary" href="#contact">Start a project</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <p class="eyebrow rise">Orion &middot; Web studio &middot; United Kingdom</p>
+      <h1 class="rise">Websites built properly, in <em>one week.</em></h1>
+      <p class="lede rise">
+        Hand-written, genuinely fast, and accessible because it was built that
+        way rather than patched afterwards. Fixed price agreed up front. No
+        retainer, no page builder, no template with your logo dropped in.
+      </p>
+      <div class="cta rise">
+        <a class="btn btn-primary" href="#contact">Start a project &rarr;</a>
+        <a class="btn btn-ghost" href="#how">How it works</a>
+      </div>
+
+      <div class="facts rise">
+        <div class="fact"><b>7 days</b><span>Brief to live, typical build</span></div>
+        <div class="fact"><b>Under 1s</b><span>Target load on 4G</span></div>
+        <div class="fact"><b>Fixed</b><span>Price agreed before I start</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT ================= -->
+  <section id="work">
+    <div class="wrap">
+      <div class="head rise">
+        <p class="eyebrow">What I build</p>
+        <h2>Four things, done properly.</h2>
+        <p>Not a menu of everything. These are the things I do well, and I would rather tell you when something is outside them than take the work and learn on your money.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="card rise">
+          <p class="n">01</p>
+          <h3>Business sites that convert</h3>
+          <p>Five to ten pages that load instantly, read clearly on a phone, and put the thing you want people to do in front of them. Built to be found: proper headings, real metadata, structured data where it earns its place.</p>
+        </div>
+        <div class="card rise">
+          <p class="n">02</p>
+          <h3>Landing pages that earn their spend</h3>
+          <p>One page, one job. If you are paying for traffic, the page it lands on should be the fastest and clearest thing in the funnel — not the slowest.</p>
+        </div>
+        <div class="card rise">
+          <p class="n">03</p>
+          <h3>Rescue work</h3>
+          <p>An existing site that is slow, broken on mobile, or unusable with a keyboard. I measure it first, tell you what is actually wrong, and quote to fix the things that matter rather than everything at once.</p>
+        </div>
+        <div class="card rise">
+          <p class="n">04</p>
+          <h3>Motion, where it helps</h3>
+          <p>Scroll-driven sequences and real-time graphics when the product needs showing rather than describing. Used sparingly, and never at the cost of the page being fast.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW ================= -->
+  <section id="how">
+    <div class="wrap">
+      <div class="head rise">
+        <p class="eyebrow">How it works</p>
+        <h2>Four steps, and you always know where you are.</h2>
+      </div>
+
+      <ol class="steps">
+        <li class="rise"><span class="k">Day 0</span><b>You send a brief</b><p>A paragraph is enough. What the business does, who it is for, and what you want a visitor to do. I reply the same working day with a fixed price and a date.</p></li>
+        <li class="rise"><span class="k">Day 1&ndash;2</span><b>Structure and copy</b><p>Pages, sections and the words, agreed before a pixel is designed. This is the step most people skip and most regret skipping.</p></li>
+        <li class="rise"><span class="k">Day 3&ndash;6</span><b>Build</b><p>Written by hand. You get a live link on day three and it updates as I work, so nothing is a surprise at the end.</p></li>
+        <li class="rise"><span class="k">Day 7</span><b>Launch and handover</b><p>Your domain, your hosting account, your code. I show you how to edit the things you will want to change, and you own all of it.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= PRICE ================= -->
+  <section id="price">
+    <div class="wrap">
+      <div class="head rise">
+        <p class="eyebrow">Price</p>
+        <h2>One number, agreed before I start.</h2>
+        <p>I am early in building this studio, and the price reflects that rather than pretending otherwise. It buys you the person writing the code, not an account manager.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="price rise">
+          <p class="eyebrow">Most projects</p>
+          <p class="amt">&pound;600<span style="font-size:1rem;color:var(--paper-mute)"> &ndash; &pound;1,500</span></p>
+          <p class="mute" style="margin-top:.7rem;font-size:.92rem">Depending on how many pages and whether it needs custom motion.</p>
+          <ul>
+            <li>Fixed price, agreed in writing before work starts</li>
+            <li>Live link from day three, updated as I build</li>
+            <li>Fast and accessible, measured and shown to you</li>
+            <li>You own the code, the domain and the hosting account</li>
+            <li>Two weeks of fixes after launch, free</li>
+          </ul>
+        </div>
+
+        <div class="card rise" style="display:flex;flex-direction:column;justify-content:center">
+          <h3>What I will tell you honestly</h3>
+          <p style="margin-bottom:1rem">If a template would genuinely serve you better, I will say so — a five-page site for a plumber does not need me.</p>
+          <p style="margin-bottom:1rem">If your brief is really two projects, I will split it rather than quote a number I cannot hit.</p>
+          <p>If I have not built the specific thing you need before, I will tell you that too, and price it accordingly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="grid two" style="align-items:start">
+        <div class="rise">
+          <p class="eyebrow">Contact</p>
+          <h2 style="font-size:clamp(2rem,5vw,3.2rem);margin-top:1.1rem">Tell me what you want built.</h2>
+          <p class="dim" style="margin-top:1.2rem;max-width:40ch">
+            A paragraph is plenty. You will get a real answer the same working
+            day, including if I think it is the wrong thing to build.
+          </p>
+          <p style="margin-top:2rem">
+            <a href="mailto:rishiorion2912@gmail.com" style="color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(255,122,53,.4);padding-bottom:2px">rishiorion2912@gmail.com</a>
+          </p>
+        </div>
+
+        <div class="card rise">
+          <!-- No server behind this page, so the form hands the brief to your own
+               mail app with everything filled in. It cannot silently swallow a
+               message, and it needs no hosting account to work. -->
+          <form id="brief">
+            <label>Your name
+              <input type="text" name="name" required autocomplete="name">
+            </label>
+            <label>Email
+              <input type="email" name="email" required autocomplete="email">
+            </label>
+            <label>What do you want built?
+              <textarea name="brief" required rows="5" placeholder="A five-page site for my joinery business, with a gallery and a quote form."></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit" style="justify-self:start;cursor:pointer;font-family:inherit">Send the brief &rarr;</button>
+            <p class="mute" style="font-size:.84rem" id="formnote">Opens your mail app with the brief written out, so you keep a copy.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>&copy; <span id="yr">2026</span> Orion &middot; United Kingdom</span>
+    <a href="mailto:rishiorion2912@gmail.com">rishiorion2912@gmail.com</a>
+  </div>
+</footer>
+
+<script>
+/* Everything below is the entire JavaScript on this page. */
+
+// Reveal on scroll.
+var io = new IntersectionObserver(function (rows) {
+  rows.forEach(function (r) { if (r.isIntersecting) { r.target.classList.add("in"); io.unobserve(r.target); } });
+}, { rootMargin: "0px 0px -8% 0px" });
+document.querySelectorAll(".rise").forEach(function (el, i) {
+  el.style.transitionDelay = Math.min(i % 4, 3) * 70 + "ms";
+  io.observe(el);
+});
+
+// Header gets its rule only once the page has moved.
+var hdr = document.getElementById("hdr");
+addEventListener("scroll", function () { hdr.classList.toggle("stuck", scrollY > 12); }, { passive: true });
+
+// The form composes a mail message rather than posting to a server this page
+// does not have. A form that appears to send and does not is worse than none.
+document.getElementById("brief").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var f = e.target;
+  var name = f.name.value.trim(), email = f.email.value.trim(), brief = f.brief.value.trim();
+  var subject = "Website brief" + (name ? " from " + name : "");
+  var body = brief + "\n\n--\n" + name + (email ? "\n" + email : "");
+  location.href = "mailto:rishiorion2912@gmail.com?subject=" +
+    encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  document.getElementById("formnote").textContent =
+    "Your mail app should have opened. If it did not, email rishiorion2912@gmail.com directly.";
+});
+
+document.getElementById("yr").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
