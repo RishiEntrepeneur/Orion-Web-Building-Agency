@@ -1,127 +1,55 @@
-# ORION — 3D & AI Agency Landing Page
+# Orion
 
-A production-ready, dark-themed, cinematic landing page for an agency selling
-next-generation 3D and AI-driven websites to premium brands and local
-businesses.
+A web studio site. Two versions live in this repository, and they exist for
+different reasons.
 
-Built as a **single core page** (`app/page.tsx`) composed of seven sections,
-with a small set of statutory pages under `/legal`.
+## `site/` — the one that is deployed
 
----
+One HTML document, plus one serverless function. No framework, no bundler, no
+dependencies past a font stylesheet, and **no build step** — which is the point.
+Nothing between writing a page and having it online can fail, because there is
+nothing in between.
 
-## Stack
+- `site/index.html` — the whole front end, about 20 KB
+- `site/functions/api/contact.js` — the contact endpoint, zero dependencies
+- `site/_headers` — security headers, applied at the edge
 
-| Concern     | Choice                                                  |
-| ----------- | ------------------------------------------------------- |
-| Framework   | Next.js 16 (App Router, React 19, TypeScript, Turbopack) |
-| Styling     | Tailwind CSS v4 (CSS-first `@theme` configuration)      |
-| Icons       | `lucide-react`                                          |
-| Motion      | Native CSS animations + `IntersectionObserver`          |
-| Fonts       | Space Grotesk (display) + Inter (body) via `next/font`  |
+### Deploy it
 
-No animation library, no 3D runtime, no CSS-in-JS — every effect is CSS or a
-handful of lines of vanilla DOM work, so the page ships as fully static HTML.
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/RishiEntrepeneur/Orion-Web-Building-Agency)
 
----
+Or by hand, which takes about two minutes:
 
-## Getting started
+1. **dash.cloudflare.com** → Workers & Pages → Create → Pages → Connect to Git
+2. Pick this repository and the branch `claude/agency-landing-3d-ai-gyutrd`
+3. **Framework preset:** None · **Build command:** *leave empty* ·
+   **Build output directory:** `site`
+4. Deploy
 
-```bash
-npm install
-npm run dev        # http://localhost:3000
-```
+The empty build command is deliberate. Cloudflare finds `site/functions/`
+on its own and deploys the endpoint alongside the page.
 
-```bash
-npm run build      # production build (all routes prerender statically)
-npm run start      # serve the production build
-npm run typecheck  # tsc --noEmit
-```
+### Make the contact form deliver
 
----
+Settings → Environment variables:
 
-## Page architecture
+| Variable | Value |
+| --- | --- |
+| `RESEND_API_KEY` | a key from [resend.com](https://resend.com) |
+| `CONTACT_TO` | where briefs should land |
+| `CONTACT_FROM` | only once a domain is verified in Resend |
 
-```
-app/
-  layout.tsx              Root shell: fonts, SEO metadata, JSON-LD, page chrome
-  page.tsx                The single core landing page
-  globals.css             Tailwind v4 theme: palette, keyframes, utilities
-  icon.svg                Favicon
-  legal/                  Privacy · Terms · Cookies · Accessibility
-components/
-  Navbar.tsx              Sticky nav: blur, scroll progress, scrollspy, drawer
-  CookieConsent.tsx       UK GDPR / PECR cookie control
-  LegalPage.tsx           Shared shell for the statutory pages
-  sections/
-    Hero.tsx              Headline, subheadline, dual CTAs, 3D viewframe
-    ScrollTransformation.tsx  Bento grid: how 2D flats become 3D environments
-    Pricing.tsx           Three productised packages
-    Process.tsx           Three-step production timeline
-    Faq.tsx               Objection-handling accordion + FAQPage structured data
-    Footer.tsx            Legal compliance footer
-  ui/
-    Viewframe3D.tsx       Simulated Spline/Dora scene with HUD chrome
-    DepthStack.tsx        Interactive "flat 2D → spatial 3D" demonstration
-    SpotlightCard.tsx     Glass card with a cursor-tracking spotlight
-    Reveal.tsx            Scroll-triggered entrance animation
-    CtaLink.tsx           Glowing call-to-action anchor
-    SectionHeading.tsx    Shared eyebrow / title / description header
-    AmbientBackdrop.tsx   Grid mesh, nebula orbs, grain, vignette
-    LogoMark.tsx          Animated wireframe-cube logo marker
-    CookiePreferencesButton.tsx
-lib/
-  site.ts                 Brand, contact, navigation and UK legal details
-  faqs.ts                 FAQ copy (also feeds the FAQPage structured data)
-  utils.ts                `cn()` classname joiner
-```
+Redeploy after adding them — variables are read at build time.
 
----
+Without a key the endpoint still validates the brief and reports that delivery
+is not configured, and the form hands the message to the visitor's own mail app
+instead. It never reports a send that did not happen.
 
-## Dropping in a real 3D scene
+## `app/` — the one with the WebGL film
 
-`components/ui/Viewframe3D.tsx` renders a dependency-free stand-in: a real CSS
-3D cube inside a HUD shell with crosshairs, scanlines and live telemetry. Every
-HUD layer is absolutely positioned over the scene, so swapping the scene leaves
-the chrome untouched.
+A Next.js application: a volumetric cloud sky raymarched in a fragment shader,
+a seven-chapter scroll film that plays itself, a brief-to-layout engine, and a
+keyboard-first command palette. It is the more interesting piece of work and
+the harder thing to keep running.
 
-```bash
-npm install @splinetool/react-spline
-```
-
-Then replace `<SimulatedScene />` inside the viewport `<div>`:
-
-```tsx
-<Spline scene="https://prod.spline.design/<your-scene>/scene.splinecode" />
-```
-
-An `<iframe>` (Spline's share embed or a Dora export) works the same way.
-
----
-
-## Rebranding
-
-Almost everything brand-facing lives in **`lib/site.ts`**: name, tagline,
-domain, email, phone, and the UK legal block. Colours and motion live in the
-`@theme` blocks at the top of **`app/globals.css`**.
-
-> **The legal pages ship with placeholder content.** Replace the company
-> number, VAT number, ICO registration and registered office in `lib/site.ts`,
-> and have `app/legal/*` reviewed by a qualified UK solicitor before relying on
-> them commercially.
-
----
-
-## Accessibility & performance notes
-
-- Semantic HTML5 landmarks, one `<h1>`, ordered heading outline, skip link.
-- The accordion, mobile drawer and cookie dialog are keyboard operable with
-  correct `aria-expanded` / `aria-controls` wiring.
-- All decorative chrome (grid mesh, HUD, orbs, the 3D scene) is
-  `aria-hidden`; the depth demonstration carries a descriptive `role="img"`
-  label.
-- `prefers-reduced-motion: reduce` disables every animation and forces all
-  scroll-reveal content visible.
-- Text colours meet WCAG 2.2 AA contrast against the dark surfaces.
-- Cursor parallax writes transforms straight to the DOM inside a
-  `requestAnimationFrame` loop, so pointer movement never re-renders React.
-- Verified with no horizontal overflow from 320px to 1920px.
+It needs a working Node toolchain: `npm install`, then `npm run dev`.

@@ -1,0 +1,16 @@
+# Security headers, applied by Cloudflare Pages at the edge.
+#
+# The application version set these in next.config.mjs. A static site has no
+# config file to put them in, so Pages reads them from here -- same protections,
+# no build step to produce them.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# The page never changes name, so let the browser keep it briefly but always
+# revalidate: a price edit should reach people within minutes, not days.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
