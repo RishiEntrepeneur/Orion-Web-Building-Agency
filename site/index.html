@@ -140,6 +140,7 @@ section { padding-block: clamp(4.5rem, 11vw, 9rem); }
 
 .grid { display: grid; gap: 1.1rem; margin-top: clamp(2.5rem, 6vw, 4rem); }
 @media (min-width: 760px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 980px) { .grid.three { grid-template-columns: repeat(3, 1fr); } }
 
 .card {
   border: 1px solid var(--line); border-radius: 18px; padding: clamp(1.5rem, 3vw, 2.2rem);
@@ -160,8 +161,9 @@ ol.steps .k { font-size: .74rem; letter-spacing: .16em; text-transform: uppercas
 ol.steps p { color: var(--paper-dim); font-size: .97rem; }
 
 /* Price */
-.price { border: 1px solid var(--line); border-radius: 22px; padding: clamp(1.7rem, 4vw, 2.8rem); background: linear-gradient(165deg, rgba(255,122,53,.09), rgba(250,248,245,.02)); }
-.price .amt { font-family: Fraunces, serif; font-size: clamp(2.6rem, 7vw, 4rem); line-height: 1; }
+.price { border: 1px solid var(--line); border-radius: 22px; padding: clamp(1.5rem, 3vw, 2.1rem); display: flex; flex-direction: column; background: linear-gradient(165deg, rgba(255,122,53,.09), rgba(250,248,245,.02)); }
+.price .amt { font-family: Fraunces, serif; font-size: clamp(2.1rem, 4.4vw, 2.9rem); line-height: 1; margin-top: .8rem; }
+.price.featured { border-color: rgba(255,122,53,.45); box-shadow: 0 0 0 1px rgba(255,122,53,.14), 0 24px 60px -30px rgba(255,122,53,.5); }
 .price ul { list-style: none; padding: 0; margin: 1.6rem 0 0; display: grid; gap: .7rem; }
 .price li { display: flex; gap: .7rem; align-items: flex-start; color: var(--paper-dim); font-size: .97rem; }
 .price li::before { content: "→"; color: var(--amber); flex: none; }
@@ -232,7 +234,7 @@ footer { border-top: 1px solid var(--line); padding-block: 3rem; }
       <div class="facts rise">
         <div class="fact"><b>7 days</b><span>Brief to live, typical build</span></div>
         <div class="fact"><b>Under 1s</b><span>Target load on 4G</span></div>
-        <div class="fact"><b>Fixed</b><span>Price agreed before I start</span></div>
+        <div class="fact"><b>From &pound;1,200</b><span>Fixed, agreed before I start</span></div>
       </div>
     </div>
   </section>
@@ -293,29 +295,54 @@ footer { border-top: 1px solid var(--line); padding-block: 3rem; }
     <div class="wrap">
       <div class="head rise">
         <p class="eyebrow">Price</p>
-        <h2>One number, agreed before I start.</h2>
-        <p>I am early in building this studio, and the price reflects that rather than pretending otherwise. It buys you the person writing the code, not an account manager.</p>
+        <h2>Three ways in. One number, agreed first.</h2>
+        <p>Every price is fixed in writing before I start, and it buys you the person writing the code rather than an account manager passing messages along.</p>
       </div>
 
-      <div class="grid two">
+      <div class="grid three">
         <div class="price rise">
-          <p class="eyebrow">Most projects</p>
-          <p class="amt">&pound;600<span style="font-size:1rem;color:var(--paper-mute)"> &ndash; &pound;1,500</span></p>
-          <p class="mute" style="margin-top:.7rem;font-size:.92rem">Depending on how many pages and whether it needs custom motion.</p>
+          <p class="eyebrow">Landing page</p>
+          <p class="amt">from &pound;1,200</p>
+          <p class="mute" style="margin-top:.7rem;font-size:.92rem">One page, one job. Usually live in three days.</p>
           <ul>
-            <li>Fixed price, agreed in writing before work starts</li>
-            <li>Live link from day three, updated as I build</li>
-            <li>Fast and accessible, measured and shown to you</li>
-            <li>You own the code, the domain and the hosting account</li>
+            <li>Written by hand, not assembled from a template</li>
+            <li>Built to load in under a second on mobile data</li>
+            <li>Copy structured around the one action that matters</li>
+            <li>Analytics wired so you can see what it did</li>
+          </ul>
+        </div>
+
+        <div class="price rise featured">
+          <p class="eyebrow">Business site</p>
+          <p class="amt">from &pound;2,800</p>
+          <p class="mute" style="margin-top:.7rem;font-size:.92rem">Five to ten pages. The usual choice. One week.</p>
+          <ul>
+            <li>Everything in the landing page, across the whole site</li>
+            <li>Accessible by construction, and measured to prove it</li>
+            <li>Contact handling that actually reaches your inbox</li>
+            <li>Search fundamentals done properly, not bolted on</li>
             <li>Two weeks of fixes after launch, free</li>
           </ul>
         </div>
 
-        <div class="card rise" style="display:flex;flex-direction:column;justify-content:center">
-          <h3>What I will tell you honestly</h3>
-          <p style="margin-bottom:1rem">If a template would genuinely serve you better, I will say so — a five-page site for a plumber does not need me.</p>
-          <p style="margin-bottom:1rem">If your brief is really two projects, I will split it rather than quote a number I cannot hit.</p>
-          <p>If I have not built the specific thing you need before, I will tell you that too, and price it accordingly.</p>
+        <div class="price rise">
+          <p class="eyebrow">Motion &amp; 3D</p>
+          <p class="amt">from &pound;5,500</p>
+          <p class="mute" style="margin-top:.7rem;font-size:.92rem">Real-time graphics, scroll-driven sequences. Two to three weeks.</p>
+          <ul>
+            <li>Shaders and scenes written for your product specifically</li>
+            <li>Performance budget agreed first, then held to</li>
+            <li>A reduced-motion path built alongside, not after</li>
+            <li>Falls back gracefully on machines that cannot run it</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card rise" style="margin-top:1.1rem">
+        <h3>What I will tell you honestly</h3>
+        <div class="grid two" style="margin-top:1rem">
+          <p>If a template would genuinely serve you better, I will say so. A five-page site for a plumber does not need me, and I would rather tell you than take the work.</p>
+          <p>If your brief is really two projects, I will split it rather than quote a number I cannot hit. And if I have not built the specific thing you need before, you will hear that too.</p>
         </div>
       </div>
     </div>
@@ -351,8 +378,11 @@ footer { border-top: 1px solid var(--line); padding-block: 3rem; }
             <label>What do you want built?
               <textarea name="brief" required rows="5" placeholder="A five-page site for my joinery business, with a gallery and a quote form."></textarea>
             </label>
+            <!-- Visible to bots, not to people. A value here means a bot. -->
+            <input name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"
+                   style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <button class="btn btn-primary" type="submit" style="justify-self:start;cursor:pointer;font-family:inherit">Send the brief &rarr;</button>
-            <p class="mute" style="font-size:.84rem" id="formnote">Opens your mail app with the brief written out, so you keep a copy.</p>
+            <p class="mute" style="font-size:.84rem" id="formnote" role="status" aria-live="polite">Goes straight to the studio inbox. No autoresponder, no sequence.</p>
           </form>
         </div>
       </div>
@@ -383,18 +413,62 @@ document.querySelectorAll(".rise").forEach(function (el, i) {
 var hdr = document.getElementById("hdr");
 addEventListener("scroll", function () { hdr.classList.toggle("stuck", scrollY > 12); }, { passive: true });
 
-// The form composes a mail message rather than posting to a server this page
-// does not have. A form that appears to send and does not is worse than none.
-document.getElementById("brief").addEventListener("submit", function (e) {
-  e.preventDefault();
-  var f = e.target;
-  var name = f.name.value.trim(), email = f.email.value.trim(), brief = f.brief.value.trim();
-  var subject = "Website brief" + (name ? " from " + name : "");
-  var body = brief + "\n\n--\n" + name + (email ? "\n" + email : "");
+/* The form posts to a real endpoint. If that endpoint is not deployed, is not
+   configured, or the network is down, it hands the brief to the visitor's own
+   mail app instead. A contact form that appears to send and does not is the one
+   failure a small studio genuinely cannot afford, so there is always a way out
+   that does not depend on a server being up. */
+var form = document.getElementById("brief");
+var note = document.getElementById("formnote");
+
+function mailtoFallback(name, email, brief, message) {
+  note.textContent = message;
   location.href = "mailto:rishiorion2912@gmail.com?subject=" +
-    encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-  document.getElementById("formnote").textContent =
-    "Your mail app should have opened. If it did not, email rishiorion2912@gmail.com directly.";
+    encodeURIComponent("Website brief" + (name ? " from " + name : "")) +
+    "&body=" + encodeURIComponent(brief + "\n\n--\n" + name + (email ? "\n" + email : ""));
+}
+
+form.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  var btn = form.querySelector("button");
+  if (btn.disabled) return;
+
+  var name = form.name.value.trim(),
+      email = form.email.value.trim(),
+      brief = form.brief.value.trim(),
+      company = form.company.value;
+
+  btn.disabled = true;
+  var label = btn.textContent;
+  btn.textContent = "Sending\u2026";
+  note.textContent = "Sending\u2026";
+
+  try {
+    var res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: name, email: email, brief: brief, company: company })
+    });
+    var data = await res.json().catch(function () { return {}; });
+
+    if (res.ok && data.ok && data.delivered) {
+      form.reset();
+      note.textContent = "Sent. You will get a real answer within one working day.";
+    } else if (res.ok && data.ok) {
+      // Reached the server, but delivery is not configured on this deployment.
+      mailtoFallback(name, email, brief,
+        "Opening your mail app \u2014 delivery is not switched on here yet.");
+    } else {
+      mailtoFallback(name, email, brief,
+        data.error || "Could not send that. Opening your mail app instead.");
+    }
+  } catch (err) {
+    mailtoFallback(name, email, brief,
+      "No connection to the server. Opening your mail app instead.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
 });
 
 document.getElementById("yr").textContent = new Date().getFullYear();
